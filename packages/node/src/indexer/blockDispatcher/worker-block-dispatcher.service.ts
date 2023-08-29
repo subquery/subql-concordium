@@ -5,7 +5,6 @@ import path from 'path';
 import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
-  getLogger,
   NodeConfig,
   Worker,
   SmartBatchService,
@@ -18,13 +17,17 @@ import {
   HostDynamicDS,
   WorkerBlockDispatcher,
   IUnfinalizedBlocksService,
-  HostConnectionPoolState,
   ConnectionPoolStateManager,
   connectionPoolStateHostFunctions,
+  baseWorkerFunctions,
+  storeHostFunctions,
+  dynamicDsHostFunctions,
+  IProjectUpgradeService,
+  HostUnfinalizedBlocks,
 } from '@subql/node-core';
 import { Store } from '@subql/types-ethereum';
 import {
-  SubqlProjectDs,
+  EthereumProjectDs,
   SubqueryProject,
 } from '../../configure/SubqueryProject';
 import { EthereumApiConnection } from '../../ethereum/api.connection';
@@ -33,9 +36,6 @@ import { EthereumBlockWrapped } from '../../ethereum/block.ethereum';
 import { DynamicDsService } from '../dynamic-ds.service';
 import { UnfinalizedBlocksService } from '../unfinalizedBlocks.service';
 import { IIndexerWorker, IInitIndexerWorker } from '../worker/worker';
-import { HostUnfinalizedBlocks } from '../worker/worker.unfinalizedBlocks.service';
-
-const logger = getLogger('WorkerBlockDispatcherService');
 
 type IndexerWorker = IIndexerWorker & {
   terminate: () => Promise<number>;
@@ -43,7 +43,7 @@ type IndexerWorker = IIndexerWorker & {
 
 async function createIndexerWorker(
   store: Store,
-  dynamicDsService: IDynamicDsService<SubqlProjectDs>,
+  dynamicDsService: IDynamicDsService<EthereumProjectDs>,
   unfinalizedBlocksService: IUnfinalizedBlocksService<EthereumBlockWrapped>,
   connectionPoolState: ConnectionPoolStateManager<EthereumApiConnection>,
 
@@ -51,32 +51,13 @@ async function createIndexerWorker(
 ): Promise<IndexerWorker> {
   const indexerWorker = Worker.create<
     IInitIndexerWorker,
-    HostDynamicDS<SubqlProjectDs> & HostStore & HostUnfinalizedBlocks
+    HostDynamicDS<EthereumProjectDs> & HostStore & HostUnfinalizedBlocks
   >(
     path.resolve(__dirname, '../../../dist/indexer/worker/worker.js'),
-    [
-      'initWorker',
-      'processBlock',
-      'fetchBlock',
-      'numFetchedBlocks',
-      'numFetchingBlocks',
-      'getStatus',
-      'getMemoryLeft',
-      'waitForWorkerBatchSize',
-    ],
+    [...baseWorkerFunctions, 'initWorker'],
     {
-      storeGet: store.get.bind(store),
-      storeGetByField: store.getByField.bind(store),
-      storeGetOneByField: store.getOneByField.bind(store),
-      storeSet: store.set.bind(store),
-      storeBulkCreate: store.bulkCreate.bind(store),
-      storeBulkUpdate: store.bulkUpdate.bind(store),
-      storeRemove: store.remove.bind(store),
-      storeBulkRemove: store.bulkRemove.bind(store),
-      dynamicDsCreateDynamicDatasource:
-        dynamicDsService.createDynamicDatasource.bind(dynamicDsService),
-      dynamicDsGetDynamicDatasources:
-        dynamicDsService.getDynamicDatasources.bind(dynamicDsService),
+      ...storeHostFunctions(store),
+      ...dynamicDsHostFunctions(dynamicDsService),
       unfinalizedBlocksProcess:
         unfinalizedBlocksService.processUnfinalizedBlockHeader.bind(
           unfinalizedBlocksService,
@@ -93,13 +74,16 @@ async function createIndexerWorker(
 
 @Injectable()
 export class WorkerBlockDispatcherService
-  extends WorkerBlockDispatcher<SubqlProjectDs, IndexerWorker>
+  extends WorkerBlockDispatcher<EthereumProjectDs, IndexerWorker>
   implements OnApplicationShutdown
 {
   constructor(
     nodeConfig: NodeConfig,
     eventEmitter: EventEmitter2,
-    @Inject('IProjectService') projectService: IProjectService<SubqlProjectDs>,
+    @Inject('IProjectService')
+    projectService: IProjectService<EthereumProjectDs>,
+    @Inject('IProjectUpgradeService')
+    projectUpgadeService: IProjectUpgradeService,
     smartBatchService: SmartBatchService,
     storeService: StoreService,
     storeCacheService: StoreCacheService,
@@ -113,6 +97,7 @@ export class WorkerBlockDispatcherService
       nodeConfig,
       eventEmitter,
       projectService,
+      projectUpgadeService,
       smartBatchService,
       storeService,
       storeCacheService,
@@ -135,7 +120,7 @@ export class WorkerBlockDispatcherService
     height: number,
   ): Promise<void> {
     const start = new Date();
-    await worker.fetchBlock(height);
+    await worker.fetchBlock(height, null);
     const end = new Date();
 
     // const waitTime = end.getTime() - start.getTime();
