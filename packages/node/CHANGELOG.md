@@ -8,9 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fallback to singular provider if batch provider is not supported (#144)
 - Fix missing ds option for event in dictionary query entries (#145)
+- Node runner options being overwritten by yargs defaults (#148)
 
 ### Added
 - Custom provider for Celo (#147)
+
+### Changed
+- Update node-core and add support for project upgrades feature (#148)
 
 ## [2.11.1] - 2023-08-14
 ### Changed
@@ -21,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.10.0] - 2023-07-31
 ### Added
 - Added `!null` filter for logs (#135)
+
 ### Changed
 - Update license to GPL-3.0 (#137)
 - Updated retry logic for eth requests (#134)
