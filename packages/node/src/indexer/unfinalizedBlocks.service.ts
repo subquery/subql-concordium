@@ -1,7 +1,7 @@
 // Copyright 2020-2023 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import { Block } from '@ethersproject/abstract-provider';
+import { BlockInfo } from '@concordium/node-sdk';
 import { Injectable } from '@nestjs/common';
 import {
   ApiService,
@@ -10,13 +10,13 @@ import {
   NodeConfig,
   StoreCacheService,
 } from '@subql/node-core';
-import { BlockWrapper, EthereumBlock } from '@subql/types-ethereum';
+import { BlockWrapper, ConcordiumBlock } from '@subql/types-concordium';
 
-export function blockToHeader(block: EthereumBlock | Block): Header {
+export function blockToHeader(block: ConcordiumBlock | BlockInfo): Header {
   return {
-    blockHeight: block.number,
-    blockHash: block.hash,
-    parentHash: block.parentHash,
+    blockHeight: Number(block.blockHeight),
+    blockHash: block.blockHash,
+    parentHash: block.blockParent,
   };
 }
 

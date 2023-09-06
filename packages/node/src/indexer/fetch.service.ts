@@ -7,11 +7,10 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 
 import {
   isCustomDs,
-  EthereumHandlerKind,
-  EthereumLogFilter,
-  SubqlEthereumProcessorOptions,
-  EthereumTransactionFilter,
-} from '@subql/common-ethereum';
+  SubqlConcordiumHandlerKind,
+  SubqlConcordiumProcessorOptions,
+  ConcordiumTransactionFilter,
+} from '@subql/common-concordium';
 import {
   NodeConfig,
   BaseFetchService,
@@ -20,17 +19,17 @@ import {
   getModulos,
 } from '@subql/node-core';
 import { DictionaryQueryCondition, DictionaryQueryEntry } from '@subql/types';
-import { SubqlDatasource } from '@subql/types-ethereum';
+import { SubqlDatasource } from '@subql/types-concordium';
 import { groupBy, partition, sortBy, uniqBy } from 'lodash';
+import { ConcordiumApi } from '../concordium';
+import { calcInterval } from '../concordium/utils.concordium';
 import {
-  EthereumProjectDs,
+  ConcordiumProjectDs,
   SubqueryProject,
 } from '../configure/SubqueryProject';
-import { EthereumApi } from '../ethereum';
-import { calcInterval } from '../ethereum/utils.ethereum';
 import { eventToTopic, functionToSighash } from '../utils/string';
 import { yargsOptions } from '../yargs';
-import { IEthereumBlockDispatcher } from './blockDispatcher';
+import { IConcordiumBlockDispatcher } from './blockDispatcher';
 import { DictionaryService } from './dictionary.service';
 import { DsProcessorService } from './ds-processor.service';
 import { DynamicDsService } from './dynamic-ds.service';
@@ -47,7 +46,9 @@ const BLOCK_TIME_VARIANCE = 5000;
 const INTERVAL_PERCENT = 0.9;
 
 function appendDsOptions(
-  dsOptions: SubqlEthereumProcessorOptions | SubqlEthereumProcessorOptions[],
+  dsOptions:
+    | SubqlConcordiumProcessorOptions
+    | SubqlConcordiumProcessorOptions[],
   conditions: DictionaryQueryCondition[],
 ): void {
   const queryAddressLimit = yargsOptions.argv['query-address-limit'];
@@ -78,99 +79,11 @@ function appendDsOptions(
   }
 }
 
-function eventFilterToQueryEntry(
-  filter: EthereumLogFilter,
-  dsOptions: SubqlEthereumProcessorOptions | SubqlEthereumProcessorOptions[],
-): DictionaryQueryEntry {
-  const conditions: DictionaryQueryCondition[] = [];
-  appendDsOptions(dsOptions, conditions);
-  if (filter.topics) {
-    for (let i = 0; i < Math.min(filter.topics.length, 4); i++) {
-      const topic = filter.topics[i];
-      if (!topic) {
-        continue;
-      }
-      const field = `topics${i}`;
-
-      if (topic === '!null') {
-        conditions.push({
-          field,
-          value: false as any, // TODO update types to allow boolean
-          matcher: 'isNull',
-        });
-      } else {
-        conditions.push({
-          field,
-          value: eventToTopic(topic),
-          matcher: 'equalTo',
-        });
-      }
-    }
-  }
-  return {
-    entity: 'evmLogs',
-    conditions,
-  };
-}
-
-function callFilterToQueryEntry(
-  filter: EthereumTransactionFilter,
-  dsOptions: SubqlEthereumProcessorOptions | SubqlEthereumProcessorOptions[],
-): DictionaryQueryEntry {
-  const conditions: DictionaryQueryCondition[] = [];
-  appendDsOptions(dsOptions, conditions);
-
-  for (const condition of conditions) {
-    if (condition.field === 'address') {
-      condition.field = 'to';
-    }
-  }
-  if (filter.from) {
-    conditions.push({
-      field: 'from',
-      value: filter.from.toLowerCase(),
-      matcher: 'equalTo',
-    });
-  }
-  const optionsAddresses = conditions.find((c) => c.field === 'to');
-  if (!optionsAddresses) {
-    if (filter.to) {
-      conditions.push({
-        field: 'to',
-        value: filter.to.toLowerCase(),
-        matcher: 'equalTo',
-      });
-    } else if (filter.to === null) {
-      conditions.push({
-        field: 'to',
-        value: true as any, // TODO update types to allow boolean
-        matcher: 'isNull',
-      });
-    }
-  } else {
-    logger.warn(
-      `TransactionFilter 'to' conflict with 'address' in data source options`,
-    );
-  }
-
-  if (filter.function) {
-    conditions.push({
-      field: 'func',
-      value: functionToSighash(filter.function),
-      matcher: 'equalTo',
-    });
-  }
-  return {
-    entity: 'evmTransactions',
-    conditions,
-  };
-}
-
-type GroupedEthereumProjectDs = SubqlDatasource & {
-  groupedOptions?: SubqlEthereumProcessorOptions[];
+type GroupedConcordiumProjectDs = SubqlDatasource & {
+  groupedOptions?: SubqlConcordiumProcessorOptions[];
 };
 export function buildDictionaryQueryEntries(
-  dataSources: GroupedEthereumProjectDs[],
+  dataSources: GroupedConcordiumProjectDs[],
 ): DictionaryQueryEntry[] {
   const queryEntries: DictionaryQueryEntry[] = [];
 
@@ -180,33 +93,17 @@ export function buildDictionaryQueryEntries(
       if (!handler.filter) return [];
 
       switch (handler.kind) {
-        case EthereumHandlerKind.Block:
+        case SubqlConcordiumHandlerKind.Block:
           return [];
-        case EthereumHandlerKind.Call: {
-          const filter = handler.filter as EthereumTransactionFilter;
-          if (
-            filter.from !== undefined ||
-            filter.to !== undefined ||
-            filter.function
-          ) {
-            queryEntries.push(callFilterToQueryEntry(filter, ds.options));
-          } else {
-            return [];
-          }
-          break;
+        case SubqlConcordiumHandlerKind.Transaction: {
+          // TODO
+          return [];
         }
-        case EthereumHandlerKind.Event: {
-          const filter = handler.filter as EthereumLogFilter;
-          if (ds.groupedOptions) {
-            queryEntries.push(
-              eventFilterToQueryEntry(filter, ds.groupedOptions),
-            );
-          } else if (ds.options?.address || filter.topics) {
-            queryEntries.push(eventFilterToQueryEntry(filter, ds.options));
-          } else {
-            return [];
-          }
-          break;
+        case SubqlConcordiumHandlerKind.TransactionEvent: {
+          return []; // TODO
+        }
+        case SubqlConcordiumHandlerKind.SpecialEvent: {
+          return []; // TODO
         }
         default:
       }
@@ -225,7 +122,7 @@ export function buildDictionaryQueryEntries(
 @Injectable()
 export class FetchService extends BaseFetchService<
   SubqlDatasource,
-  IEthereumBlockDispatcher,
+  IConcordiumBlockDispatcher,
   DictionaryService
 > {
   constructor(
@@ -234,7 +131,7 @@ export class FetchService extends BaseFetchService<
     @Inject('IProjectService') projectService: ProjectService,
     @Inject('ISubqueryProject') project: SubqueryProject,
     @Inject('IBlockDispatcher')
-    blockDispatcher: IEthereumBlockDispatcher,
+    blockDispatcher: IConcordiumBlockDispatcher,
     dictionaryService: DictionaryService,
     private dsProcessorService: DsProcessorService,
     dynamicDsService: DynamicDsService,
@@ -254,7 +151,7 @@ export class FetchService extends BaseFetchService<
     );
   }
 
-  get api(): EthereumApi {
+  get api(): ConcordiumApi {
     return this.apiService.unsafeApi;
   }
 
@@ -298,7 +195,7 @@ export class FetchService extends BaseFetchService<
   }
 
   protected async getBestHeight(): Promise<number> {
-    return this.api.getBestBlockHeight();
+    return Number(await this.api.getBestBlockHeight());
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -312,7 +209,7 @@ export class FetchService extends BaseFetchService<
     return getModulos(
       this.projectService.getAllDataSources(),
       isCustomDs,
-      EthereumHandlerKind.Block,
+      SubqlConcordiumHandlerKind.Block,
     );
   }
 
@@ -321,7 +218,7 @@ export class FetchService extends BaseFetchService<
   }
 
   protected async preLoopHook(): Promise<void> {
-    // Ethereum doesn't need to do anything here
+    // Concordium doesn't need to do anything here
     return Promise.resolve();
   }
 }

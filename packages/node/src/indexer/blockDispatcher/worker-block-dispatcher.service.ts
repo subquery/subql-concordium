@@ -25,14 +25,14 @@ import {
   IProjectUpgradeService,
   HostUnfinalizedBlocks,
 } from '@subql/node-core';
-import { Store } from '@subql/types-ethereum';
+import { Store } from '@subql/types-concordium';
+import { ConcordiumApiConnection } from '../../concordium/api.connection';
+
+import { ConcordiumBlockWrapped } from '../../concordium/block.concordium';
 import {
-  EthereumProjectDs,
+  ConcordiumProjectDs,
   SubqueryProject,
 } from '../../configure/SubqueryProject';
-import { EthereumApiConnection } from '../../ethereum/api.connection';
-
-import { EthereumBlockWrapped } from '../../ethereum/block.ethereum';
 import { DynamicDsService } from '../dynamic-ds.service';
 import { UnfinalizedBlocksService } from '../unfinalizedBlocks.service';
 import { IIndexerWorker, IInitIndexerWorker } from '../worker/worker';
@@ -43,15 +43,15 @@ type IndexerWorker = IIndexerWorker & {
 
 async function createIndexerWorker(
   store: Store,
-  dynamicDsService: IDynamicDsService<EthereumProjectDs>,
-  unfinalizedBlocksService: IUnfinalizedBlocksService<EthereumBlockWrapped>,
-  connectionPoolState: ConnectionPoolStateManager<EthereumApiConnection>,
+  dynamicDsService: IDynamicDsService<ConcordiumProjectDs>,
+  unfinalizedBlocksService: IUnfinalizedBlocksService<ConcordiumBlockWrapped>,
+  connectionPoolState: ConnectionPoolStateManager<ConcordiumApiConnection>,
 
   root: string,
 ): Promise<IndexerWorker> {
   const indexerWorker = Worker.create<
     IInitIndexerWorker,
-    HostDynamicDS<EthereumProjectDs> & HostStore & HostUnfinalizedBlocks
+    HostDynamicDS<ConcordiumProjectDs> & HostStore & HostUnfinalizedBlocks
   >(
     path.resolve(__dirname, '../../../dist/indexer/worker/worker.js'),
     [...baseWorkerFunctions, 'initWorker'],
@@ -74,14 +74,14 @@ async function createIndexerWorker(
 
 @Injectable()
 export class WorkerBlockDispatcherService
-  extends WorkerBlockDispatcher<EthereumProjectDs, IndexerWorker>
+  extends WorkerBlockDispatcher<ConcordiumProjectDs, IndexerWorker>
   implements OnApplicationShutdown
 {
   constructor(
     nodeConfig: NodeConfig,
     eventEmitter: EventEmitter2,
     @Inject('IProjectService')
-    projectService: IProjectService<EthereumProjectDs>,
+    projectService: IProjectService<ConcordiumProjectDs>,
     @Inject('IProjectUpgradeService')
     projectUpgadeService: IProjectUpgradeService,
     smartBatchService: SmartBatchService,
@@ -91,7 +91,7 @@ export class WorkerBlockDispatcherService
     @Inject('ISubqueryProject') project: SubqueryProject,
     dynamicDsService: DynamicDsService,
     unfinalizedBlocksSevice: UnfinalizedBlocksService,
-    connectionPoolState: ConnectionPoolStateManager<EthereumApiConnection>,
+    connectionPoolState: ConnectionPoolStateManager<ConcordiumApiConnection>,
   ) {
     super(
       nodeConfig,

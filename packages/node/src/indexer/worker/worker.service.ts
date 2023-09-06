@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import { Inject, Injectable } from '@nestjs/common';
-import { SubqlEthereumDataSource } from '@subql/common-ethereum';
+import { SubqlConcordiumDataSource } from '@subql/common-concordium';
 import {
   NodeConfig,
   IProjectService,
@@ -11,8 +11,8 @@ import {
   BaseWorkerService,
   IProjectUpgradeService,
 } from '@subql/node-core';
-import { BlockWrapper } from '@subql/types-ethereum';
-import { EthereumProjectDs } from '../../configure/SubqueryProject';
+import { BlockWrapper } from '@subql/types-concordium';
+import { ConcordiumProjectDs } from '../../configure/SubqueryProject';
 import { IndexerManager } from '../indexer.manager';
 
 export type FetchBlockResponse = { parentHash: string } | undefined;
@@ -28,14 +28,14 @@ export type WorkerStatusResponse = {
 export class WorkerService extends BaseWorkerService<
   BlockWrapper,
   FetchBlockResponse,
-  SubqlEthereumDataSource,
+  SubqlConcordiumDataSource,
   {}
 > {
   constructor(
     private apiService: ApiService,
     private indexerManager: IndexerManager,
     @Inject('IProjectService')
-    projectService: IProjectService<EthereumProjectDs>,
+    projectService: IProjectService<ConcordiumProjectDs>,
     @Inject('IProjectUpgradeService')
     projectUpgradeService: IProjectUpgradeService,
     nodeConfig: NodeConfig,
@@ -53,13 +53,13 @@ export class WorkerService extends BaseWorkerService<
 
   protected toBlockResponse(block: BlockWrapper): { parentHash: string } {
     return {
-      parentHash: block.block.parentHash,
+      parentHash: block.block.blockParent,
     };
   }
 
   protected async processFetchedBlock(
     block: BlockWrapper,
-    dataSources: SubqlEthereumDataSource[],
+    dataSources: SubqlConcordiumDataSource[],
   ): Promise<ProcessBlockResponse> {
     return this.indexerManager.indexBlock(block, dataSources);
   }

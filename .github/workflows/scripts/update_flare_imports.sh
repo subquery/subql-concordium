@@ -4,10 +4,10 @@ set -e
 
 replace_paths() {
     file="${1}"
-    sed -i "s/@subql\/common-ethereum/@subql\/common-flare/g" ${file}
-    sed -i "s/@subql\/types-ethereum/@subql\/types-flare/g" ${file}
-    sed -i "s/@subql\/node-ethereum/@subql\/node-flare/g" ${file}
-    sed -i "s/subql-node-ethereum/subql-node-flare/g" ${file}
+    sed -i "s/@subql\/common-concordium/@subql\/common-flare/g" ${file}
+    sed -i "s/@subql\/types-concordium/@subql\/types-flare/g" ${file}
+    sed -i "s/@subql\/node-concordium/@subql\/node-flare/g" ${file}
+    sed -i "s/subql-node-concordium/subql-node-flare/g" ${file}
 }
 
 for file in $(find ./packages -name '*.ts' -or -name 'package.json');

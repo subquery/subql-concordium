@@ -14,10 +14,10 @@ import {
   StoreService,
   TestRunner,
 } from '@subql/node-core';
+import { ConcordiumApiService } from '../concordium';
+import { ConcordiumApiConnection } from '../concordium/api.connection';
 import { ConfigureModule } from '../configure/configure.module';
 import { SubqueryProject } from '../configure/SubqueryProject';
-import { EthereumApiService } from '../ethereum';
-import { EthereumApiConnection } from '../ethereum/api.connection';
 import { DsProcessorService } from '../indexer/ds-processor.service';
 import { DynamicDsService } from '../indexer/dynamic-ds.service';
 import { FetchModule } from '../indexer/fetch.module';
@@ -50,11 +50,11 @@ import { TestingService } from './testing.service';
       provide: ApiService,
       useFactory: async (
         project: SubqueryProject,
-        connectionPoolService: ConnectionPoolService<EthereumApiConnection>,
+        connectionPoolService: ConnectionPoolService<ConcordiumApiConnection>,
         eventEmitter: EventEmitter2,
         nodeConfig: NodeConfig,
       ) => {
-        const apiService = new EthereumApiService(
+        const apiService = new ConcordiumApiService(
           project,
           connectionPoolService,
           eventEmitter,
@@ -74,7 +74,7 @@ import { TestingService } from './testing.service';
     TestRunner,
     {
       provide: 'IApi',
-      useClass: EthereumApiService,
+      useClass: ConcordiumApiService,
     },
     {
       provide: 'IIndexerManager',

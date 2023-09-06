@@ -194,7 +194,7 @@ export const yargsOptions = yargs(hideBin(process.argv))
       demandOption: false,
       default: 20,
       describe:
-        'The number of blocks behind the head to be considered finalized, this has no effect with Ethereum',
+        'The number of blocks behind the head to be considered finalized, this has no effect with Concordium',
       type: 'number',
     },
     config: {

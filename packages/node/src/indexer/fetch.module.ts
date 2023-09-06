@@ -19,9 +19,9 @@ import {
   MmrQueryService,
   IProjectUpgradeService,
 } from '@subql/node-core';
+import { ConcordiumApiConnection } from '../concordium/api.connection';
+import { ConcordiumApiService } from '../concordium/api.service.concordium';
 import { SubqueryProject } from '../configure/SubqueryProject';
-import { EthereumApiConnection } from '../ethereum/api.connection';
-import { EthereumApiService } from '../ethereum/api.service.ethereum';
 import {
   BlockDispatcherService,
   WorkerBlockDispatcherService,
@@ -43,11 +43,11 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
       provide: ApiService,
       useFactory: async (
         project: SubqueryProject,
-        connectionPoolService: ConnectionPoolService<EthereumApiConnection>,
+        connectionPoolService: ConnectionPoolService<ConcordiumApiConnection>,
         eventEmitter: EventEmitter2,
         nodeConfig: NodeConfig,
       ) => {
-        const apiService = new EthereumApiService(
+        const apiService = new ConcordiumApiService(
           project,
           connectionPoolService,
           eventEmitter,
@@ -87,7 +87,7 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
         eventEmitter: EventEmitter2,
         projectService: ProjectService,
         projectUpgradeService: IProjectUpgradeService,
-        apiService: EthereumApiService,
+        apiService: ConcordiumApiService,
         indexerManager: IndexerManager,
         smartBatchService: SmartBatchService,
         storeService: StoreService,
@@ -96,7 +96,7 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
         project: SubqueryProject,
         dynamicDsService: DynamicDsService,
         unfinalizedBlocks: UnfinalizedBlocksService,
-        connectionPoolState: ConnectionPoolStateManager<EthereumApiConnection>,
+        connectionPoolState: ConnectionPoolStateManager<ConcordiumApiConnection>,
       ) =>
         nodeConfig.workers !== undefined
           ? new WorkerBlockDispatcherService(

@@ -7,7 +7,7 @@ import {
   HostUnfinalizedBlocks,
   IUnfinalizedBlocksService,
 } from '@subql/node-core';
-import { BlockWrapper } from '@subql/types-ethereum';
+import { BlockWrapper } from '@subql/types-concordium';
 
 @Injectable()
 export class WorkerUnfinalizedBlocksService
@@ -20,7 +20,7 @@ export class WorkerUnfinalizedBlocksService
   }
 
   async processUnfinalizedBlocks({
-    block: { hash: blockHash, parentHash },
+    block: { blockHash, blockParent: parentHash },
     blockHeight,
   }: BlockWrapper): Promise<number | null> {
     return this.host.unfinalizedBlocksProcess({

@@ -4,15 +4,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
   isBlockHandlerProcessor,
-  isCallHandlerProcessor,
-  isEventHandlerProcessor,
+  isTransactionHandlerProcessor,
+  isTransactionEventHandlerProcessor,
   isCustomDs,
   isRuntimeDs,
-  SubqlEthereumCustomDataSource,
-  EthereumHandlerKind,
-  EthereumRuntimeHandlerInputMap,
-  SubqlEthereumDataSource,
-} from '@subql/common-ethereum';
+  SubqlConcordiumCustomDataSource,
+  ConcordiumRuntimeHandlerInputMap,
+  SubqlConcordiumDataSource,
+  isSpecialEventHandlerProcessor,
+} from '@subql/common-concordium';
 import {
   NodeConfig,
   getLogger,
@@ -23,19 +23,23 @@ import {
   ApiService,
 } from '@subql/node-core';
 import {
-  EthereumTransaction,
-  EthereumLog,
-  EthereumBlockWrapper,
-  EthereumBlock,
+  ConcordiumTransaction,
+  ConcordiumBlockWrapper,
+  ConcordiumBlock,
   SubqlRuntimeDatasource,
-  EthereumBlockFilter,
-  EthereumLogFilter,
-  EthereumTransactionFilter,
-} from '@subql/types-ethereum';
-import { EthereumProjectDs } from '../configure/SubqueryProject';
-import { EthereumApi, EthereumApiService } from '../ethereum';
-import { EthereumBlockWrapped } from '../ethereum/block.ethereum';
-import SafeEthProvider from '../ethereum/safe-api';
+  ConcordiumBlockFilter,
+  ConcordiumTransactionFilter,
+  ConcordiumSpecialEvent,
+  ConcordiumTransactionEvent,
+  ConcordiumSpecialEventFilter,
+  ConcordiumTransactionEventFilter,
+  ConcordiumHandlerKind,
+  SubqlDatasource,
+} from '@subql/types-concordium';
+import { ConcordiumApi, ConcordiumApiService } from '../concordium';
+import { ConcordiumBlockWrapped } from '../concordium/block.concordium';
+import SafeConcordiumGRPCClient from '../concordium/safe-api';
+import { ConcordiumProjectDs } from '../configure/SubqueryProject';
 import {
   asSecondLayerHandlerProcessor_1_0_0,
   DsProcessorService,
@@ -49,15 +53,15 @@ const logger = getLogger('indexer');
 
 @Injectable()
 export class IndexerManager extends BaseIndexerManager<
-  SafeEthProvider,
-  EthereumApi,
-  EthereumBlockWrapper,
+  SafeConcordiumGRPCClient,
+  ConcordiumApi,
+  ConcordiumBlockWrapper,
   ApiService,
-  SubqlEthereumDataSource,
-  SubqlEthereumCustomDataSource,
+  SubqlConcordiumDataSource,
+  SubqlConcordiumCustomDataSource,
   typeof FilterTypeMap,
   typeof ProcessorTypeMap,
-  EthereumRuntimeHandlerInputMap
+  ConcordiumRuntimeHandlerInputMap
 > {
   protected isRuntimeDs = isRuntimeDs;
   protected isCustomDs = isCustomDs;
@@ -91,131 +95,164 @@ export class IndexerManager extends BaseIndexerManager<
 
   @profiler()
   async indexBlock(
-    block: EthereumBlockWrapper,
-    dataSources: SubqlEthereumDataSource[],
+    block: ConcordiumBlockWrapper,
+    dataSources: SubqlConcordiumDataSource[],
   ): Promise<ProcessBlockResponse> {
     return super.internalIndexBlock(block, dataSources, () =>
       this.getApi(block),
     );
   }
 
-  getBlockHeight(block: EthereumBlockWrapper): number {
+  getBlockHeight(block: ConcordiumBlockWrapper): number {
     return block.blockHeight;
   }
 
-  getBlockHash(block: EthereumBlockWrapper): string {
-    return block.block.hash;
+  getBlockHash(block: ConcordiumBlockWrapper): string {
+    return block.hash;
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  private async getApi(block: EthereumBlockWrapper): Promise<SafeEthProvider> {
-    return this.apiService.safeApi(this.getBlockHeight(block));
+  private async getApi(
+    block: ConcordiumBlockWrapper,
+  ): Promise<SafeConcordiumGRPCClient> {
+    return null;
+    //return this.apiService.safeApi(this.getBlockHeight(block));
   }
 
   protected async indexBlockData(
-    { block, transactions }: EthereumBlockWrapper,
-    dataSources: EthereumProjectDs[],
-    getVM: (d: EthereumProjectDs) => Promise<IndexerSandbox>,
+    {
+      block,
+      specialEvents,
+      transactionEvents,
+      transactions,
+    }: ConcordiumBlockWrapper,
+    dataSources: ConcordiumProjectDs[],
+    getVM: (d: ConcordiumProjectDs) => Promise<IndexerSandbox>,
   ): Promise<void> {
     await this.indexBlockContent(block, dataSources, getVM);
+
+    for (const event of specialEvents) {
+      await this.indexSpecialEvent(event, dataSources, getVM);
+    }
 
     for (const tx of transactions) {
       await this.indexTransaction(tx, dataSources, getVM);
 
-      for (const log of tx.logs ?? []) {
-        await this.indexEvent(log, dataSources, getVM);
+      for (const event of transactionEvents?.filter(
+        (evt) => evt.transaction.hash === tx.hash,
+      ) ?? []) {
+        await this.indexTransactionEvent(event, dataSources, getVM);
       }
     }
   }
 
   private async indexBlockContent(
-    block: EthereumBlock,
-    dataSources: EthereumProjectDs[],
-    getVM: (d: EthereumProjectDs) => Promise<IndexerSandbox>,
+    block: ConcordiumBlock,
+    dataSources: ConcordiumProjectDs[],
+    getVM: (d: ConcordiumProjectDs) => Promise<IndexerSandbox>,
   ): Promise<void> {
     for (const ds of dataSources) {
-      await this.indexData(EthereumHandlerKind.Block, block, ds, getVM);
+      await this.indexData(ConcordiumHandlerKind.Block, block, ds, getVM);
     }
   }
 
   private async indexTransaction(
-    tx: EthereumTransaction,
-    dataSources: EthereumProjectDs[],
-    getVM: (d: EthereumProjectDs) => Promise<IndexerSandbox>,
+    tx: ConcordiumTransaction,
+    dataSources: ConcordiumProjectDs[],
+    getVM: (d: ConcordiumProjectDs) => Promise<IndexerSandbox>,
   ): Promise<void> {
     for (const ds of dataSources) {
-      await this.indexData(EthereumHandlerKind.Call, tx, ds, getVM);
+      await this.indexData(ConcordiumHandlerKind.Transaction, tx, ds, getVM);
     }
   }
 
-  private async indexEvent(
-    log: EthereumLog,
-    dataSources: EthereumProjectDs[],
-    getVM: (d: EthereumProjectDs) => Promise<IndexerSandbox>,
+  private async indexSpecialEvent(
+    event: ConcordiumSpecialEvent,
+    dataSources: ConcordiumProjectDs[],
+    getVM: (d: ConcordiumProjectDs) => Promise<IndexerSandbox>,
   ): Promise<void> {
     for (const ds of dataSources) {
-      await this.indexData(EthereumHandlerKind.Event, log, ds, getVM);
+      await this.indexData(
+        ConcordiumHandlerKind.SpecialEvent,
+        event,
+        ds,
+        getVM,
+      );
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
-  protected async prepareFilteredData(
-    kind: EthereumHandlerKind,
-    data: any,
-    ds: SubqlRuntimeDatasource,
-  ): Promise<any> {
-    return DataAbiParser[kind](this.apiService.api)(data, ds);
+  private async indexTransactionEvent(
+    event: ConcordiumTransactionEvent,
+    dataSources: ConcordiumProjectDs[],
+    getVM: (d: ConcordiumProjectDs) => Promise<IndexerSandbox>,
+  ): Promise<void> {
+    for (const ds of dataSources) {
+      await this.indexData(
+        ConcordiumHandlerKind.TransactionEvent,
+        event,
+        ds,
+        getVM,
+      );
+    }
+  }
+
+  protected async prepareFilteredData<T = any>(
+    kind: ConcordiumHandlerKind,
+    data: T,
+    ds: SubqlDatasource,
+  ): Promise<T> {
+    return Promise.resolve(data);
   }
 }
 
 type ProcessorTypeMap = {
-  [EthereumHandlerKind.Block]: typeof isBlockHandlerProcessor;
-  [EthereumHandlerKind.Event]: typeof isEventHandlerProcessor;
-  [EthereumHandlerKind.Call]: typeof isCallHandlerProcessor;
+  [ConcordiumHandlerKind.Block]: typeof isBlockHandlerProcessor;
+  [ConcordiumHandlerKind.Transaction]: typeof isTransactionHandlerProcessor;
+  [ConcordiumHandlerKind.TransactionEvent]: typeof isTransactionEventHandlerProcessor;
+  [ConcordiumHandlerKind.SpecialEvent]: typeof isSpecialEventHandlerProcessor;
 };
 
 const ProcessorTypeMap = {
-  [EthereumHandlerKind.Block]: isBlockHandlerProcessor,
-  [EthereumHandlerKind.Event]: isEventHandlerProcessor,
-  [EthereumHandlerKind.Call]: isCallHandlerProcessor,
+  [ConcordiumHandlerKind.Block]: isBlockHandlerProcessor,
+  [ConcordiumHandlerKind.Transaction]: isTransactionHandlerProcessor,
+  [ConcordiumHandlerKind.TransactionEvent]: isTransactionEventHandlerProcessor,
+  [ConcordiumHandlerKind.SpecialEvent]: isSpecialEventHandlerProcessor,
 };
 
 const FilterTypeMap = {
-  [EthereumHandlerKind.Block]: (
-    data: EthereumBlock,
-    filter: EthereumBlockFilter,
-    ds: SubqlEthereumDataSource,
+  [ConcordiumHandlerKind.Block]: (
+    data: ConcordiumBlock,
+    filter: ConcordiumBlockFilter,
+    ds: SubqlConcordiumDataSource,
   ) =>
-    EthereumBlockWrapped.filterBlocksProcessor(
+    ConcordiumBlockWrapped.filterBlocksProcessor(
       data,
       filter,
       ds.options?.address,
     ),
-  [EthereumHandlerKind.Event]: (
-    data: EthereumLog,
-    filter: EthereumLogFilter,
-    ds: SubqlEthereumDataSource,
+  [ConcordiumHandlerKind.SpecialEvent]: (
+    data: ConcordiumSpecialEvent,
+    filter: ConcordiumSpecialEventFilter,
+    ds: SubqlConcordiumDataSource,
+  ) => ConcordiumBlockWrapped.filterSpecialEventProcessor(data, filter),
+  [ConcordiumHandlerKind.TransactionEvent]: (
+    data: ConcordiumTransactionEvent,
+    filter: ConcordiumTransactionEventFilter,
+    ds: SubqlConcordiumDataSource,
   ) =>
-    EthereumBlockWrapped.filterLogsProcessor(data, filter, ds.options?.address),
-  [EthereumHandlerKind.Call]: (
-    data: EthereumTransaction,
-    filter: EthereumTransactionFilter,
-    ds: SubqlEthereumDataSource,
-  ) =>
-    EthereumBlockWrapped.filterTransactionsProcessor(
+    ConcordiumBlockWrapped.filterTxEventProcessor(
       data,
       filter,
       ds.options?.address,
     ),
-};
-
-const DataAbiParser = {
-  [EthereumHandlerKind.Block]: () => (data: EthereumBlock) => data,
-  [EthereumHandlerKind.Event]:
-    (api: EthereumApi) => (data: EthereumLog, ds: SubqlRuntimeDatasource) =>
-      api.parseLog(data, ds),
-  [EthereumHandlerKind.Call]:
-    (api: EthereumApi) =>
-    (data: EthereumTransaction, ds: SubqlRuntimeDatasource) =>
-      api.parseTransaction(data, ds),
+  [ConcordiumHandlerKind.Transaction]: (
+    data: ConcordiumTransaction,
+    filter: ConcordiumTransactionFilter,
+    ds: SubqlConcordiumDataSource,
+  ) =>
+    ConcordiumBlockWrapped.filterTransactionsProcessor(
+      data,
+      filter,
+      ds.options?.address,
+    ),
 };

@@ -15,9 +15,9 @@ import {
   ApiService,
   IProjectUpgradeService,
 } from '@subql/node-core';
-import { EthereumBlockWrapper } from '@subql/types-ethereum';
+import { ConcordiumBlockWrapper } from '@subql/types-concordium';
 import {
-  EthereumProjectDs,
+  ConcordiumProjectDs,
   SubqueryProject,
 } from '../../configure/SubqueryProject';
 import { DynamicDsService } from '../dynamic-ds.service';
@@ -28,7 +28,7 @@ import { IndexerManager } from '../indexer.manager';
  */
 @Injectable()
 export class BlockDispatcherService
-  extends BlockDispatcher<EthereumBlockWrapper, EthereumProjectDs>
+  extends BlockDispatcher<ConcordiumBlockWrapper, ConcordiumProjectDs>
   implements OnApplicationShutdown
 {
   constructor(
@@ -37,7 +37,7 @@ export class BlockDispatcherService
     private indexerManager: IndexerManager,
     eventEmitter: EventEmitter2,
     @Inject('IProjectService')
-    projectService: IProjectService<EthereumProjectDs>,
+    projectService: IProjectService<ConcordiumProjectDs>,
     @Inject('IProjectUpgradeService')
     projectUpgradeService: IProjectUpgradeService,
     smartBatchService: SmartBatchService,
@@ -62,12 +62,12 @@ export class BlockDispatcherService
     );
   }
 
-  protected getBlockHeight(block: EthereumBlockWrapper): number {
+  protected getBlockHeight(block: ConcordiumBlockWrapper): number {
     return block.blockHeight;
   }
 
   protected async indexBlock(
-    block: EthereumBlockWrapper,
+    block: ConcordiumBlockWrapper,
   ): Promise<ProcessBlockResponse> {
     return this.indexerManager.indexBlock(
       block,

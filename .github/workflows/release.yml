@@ -22,7 +22,7 @@ jobs:
   Build-Publish:
     name: Build-Publish
     needs: pre-ci
-    if: "!startsWith(github.event.head_commit.message, '[SKIP CI]') && startsWith(github.event.head_commit.message, '[release]') && github.repository == 'subquery/subql-ethereum'"
+    if: "!startsWith(github.event.head_commit.message, '[SKIP CI]') && startsWith(github.event.head_commit.message, '[release]') && github.repository == 'subquery/subql-concordium'"
     runs-on: ubuntu-latest
     steps:
       #Check out
@@ -37,14 +37,14 @@ jobs:
 
     #Identify changes
       - uses: marceloprado/has-changed-path@v1
-        id: changed-types-ethereum
+        id: changed-types-concordium
         with:
           paths: packages/types
 
       - uses: marceloprado/has-changed-path@v1
-        id: changed-common-ethereum
+        id: changed-common-concordium
         with:
-          paths: packages/common-ethereum
+          paths: packages/common-concordium
 
       - uses: marceloprado/has-changed-path@v1
         id: changed-node
@@ -57,19 +57,19 @@ jobs:
         run: yarn build
 
       #Publish to npm and github releases
-      - name: Publish Types ethereum
-        if: steps.changed-types-ethereum.outputs.changed == 'true'
+      - name: Publish Types concordium
+        if: steps.changed-types-concordium.outputs.changed == 'true'
         uses: ./.github/actions/create-release
         with:
           package-path: packages/types
           repo-token: ${{ secrets.REPO_TOKEN }}
           npm-token: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish Common ethereum
-        if: steps.changed-common-ethereum.outputs.changed == 'true'
+      - name: Publish Common concordium
+        if: steps.changed-common-concordium.outputs.changed == 'true'
         uses: ./.github/actions/create-release
         with:
-          package-path: packages/common-ethereum
+          package-path: packages/common-concordium
           repo-token: ${{ secrets.REPO_TOKEN }}
           npm-token: ${{ secrets.NPM_TOKEN }}
 
@@ -84,7 +84,7 @@ jobs:
   Build-Flare-Publish:
     name: Build-Flare-Publish
     needs: Build-Publish
-    if: "!startsWith(github.event.head_commit.message, '[SKIP CI]') && startsWith(github.event.head_commit.message, '[release]') && github.repository == 'subquery/subql-ethereum'"
+    if: "!startsWith(github.event.head_commit.message, '[SKIP CI]') && startsWith(github.event.head_commit.message, '[release]') && github.repository == 'subquery/subql-concordium'"
     runs-on: ubuntu-latest
     steps:
       #Check out
@@ -106,7 +106,7 @@ jobs:
       - uses: marceloprado/has-changed-path@v1
         id: changed-common-flare
         with:
-          paths: packages/common-ethereum
+          paths: packages/common-concordium
 
       - uses: marceloprado/has-changed-path@v1
         id: changed-node
@@ -114,19 +114,19 @@ jobs:
           paths: packages/node
 
       #Changes packages names
-      - name: Change common ethereum to flare
+      - name: Change common concordium to flare
         uses: jaywcjlove/github-action-package@main
         with:
-          path: packages/common-ethereum/package.json
+          path: packages/common-concordium/package.json
           rename: '@subql/common-flare'
 
-      - name: Change types ethereum to flare
+      - name: Change types concordium to flare
         uses: jaywcjlove/github-action-package@main
         with:
           path: packages/types/package.json
           rename: '@subql/types-flare'
 
-      - name: Change node ethereum to flare
+      - name: Change node concordium to flare
         uses: jaywcjlove/github-action-package@main
         with:
           path: packages/node/package.json
@@ -155,7 +155,7 @@ jobs:
         if: steps.changed-common-flare.outputs.changed == 'true'
         uses: ./.github/actions/create-release
         with:
-          package-path: packages/common-ethereum
+          package-path: packages/common-concordium
           repo-token: ${{ secrets.REPO_TOKEN }}
           npm-token: ${{ secrets.NPM_TOKEN }}
 

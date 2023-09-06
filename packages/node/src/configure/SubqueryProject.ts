@@ -10,17 +10,17 @@ import {
   validateSemver,
 } from '@subql/common';
 import {
-  EthereumProjectNetworkConfig,
-  parseEthereumProjectManifest,
-  SubqlEthereumDataSource,
-  EthereumBlockFilter,
+  ConcordiumProjectNetworkConfig,
+  parseConcordiumProjectManifest,
+  SubqlConcordiumDataSource,
+  ConcordiumBlockFilter,
   ProjectManifestV1_0_0Impl,
   isRuntimeDs,
-  EthereumHandlerKind,
+  SubqlConcordiumHandlerKind,
   isCustomDs,
   RuntimeDatasourceTemplate,
   CustomDatasourceTemplate,
-} from '@subql/common-ethereum';
+} from '@subql/common-concordium';
 import {
   insertBlockFiltersCronSchedules,
   ISubqueryProject,
@@ -31,17 +31,16 @@ import {
 import { buildSchemaFromString } from '@subql/utils';
 import Cron from 'cron-converter';
 import { GraphQLSchema } from 'graphql';
-import { updateDatasourcesFlare } from '../utils/project';
 
 const { version: packageVersion } = require('../../package.json');
 
-export type EthereumProjectDs = SubqlProjectDs<SubqlEthereumDataSource>;
+export type ConcordiumProjectDs = SubqlProjectDs<SubqlConcordiumDataSource>;
 
-export type EthereumProjectDsTemplate =
+export type ConcordiumProjectDsTemplate =
   | SubqlProjectDs<RuntimeDatasourceTemplate>
   | SubqlProjectDs<CustomDatasourceTemplate>;
 
-export type SubqlProjectBlockFilter = EthereumBlockFilter & {
+export type SubqlProjectBlockFilter = ConcordiumBlockFilter & {
   cronSchedule?: {
     schedule: Cron.Seeker;
     next: number;
@@ -53,26 +52,26 @@ const NOT_SUPPORT = (name: string) => {
 };
 
 // This is the runtime type after we have mapped genesisHash to chainId and endpoint/dict have been provided when dealing with deployments
-type NetworkConfig = EthereumProjectNetworkConfig & { chainId: string };
+type NetworkConfig = ConcordiumProjectNetworkConfig & { chainId: string };
 
 @Injectable()
 export class SubqueryProject implements ISubqueryProject {
-  #dataSources: EthereumProjectDs[];
+  #dataSources: ConcordiumProjectDs[];
 
   constructor(
     readonly id: string,
     readonly root: string,
     readonly network: NetworkConfig,
-    dataSources: EthereumProjectDs[],
+    dataSources: ConcordiumProjectDs[],
     readonly schema: GraphQLSchema,
-    readonly templates: EthereumProjectDsTemplate[],
+    readonly templates: ConcordiumProjectDsTemplate[],
     readonly runner?: RunnerSpecs,
     readonly parent?: ParentProject,
   ) {
     this.#dataSources = dataSources;
   }
 
-  get dataSources(): EthereumProjectDs[] {
+  get dataSources(): ConcordiumProjectDs[] {
     return this.#dataSources;
   }
 
@@ -83,7 +82,7 @@ export class SubqueryProject implements ISubqueryProject {
       this.dataSources,
       getTimestamp,
       isRuntimeDs,
-      EthereumHandlerKind.Block,
+      SubqlConcordiumHandlerKind.Block,
     );
   }
 
@@ -92,7 +91,7 @@ export class SubqueryProject implements ISubqueryProject {
     rawManifest: unknown,
     reader: Reader,
     root: string, // If project local then directory otherwise temp directory
-    networkOverrides?: Partial<EthereumProjectNetworkConfig>,
+    networkOverrides?: Partial<ConcordiumProjectNetworkConfig>,
   ): Promise<SubqueryProject> {
     // rawManifest and reader can be reused here.
     // It has been pre-fetched and used for rebase manifest runner options with args
@@ -103,7 +102,7 @@ export class SubqueryProject implements ISubqueryProject {
     if (rawManifest === undefined) {
       throw new Error(`Get manifest from project path ${path} failed`);
     }
-    const manifest = parseEthereumProjectManifest(rawManifest);
+    const manifest = parseConcordiumProjectManifest(rawManifest);
 
     if (manifest.isV1_0_0) {
       return loadProjectFromManifestBase(
@@ -136,7 +135,7 @@ async function loadProjectFromManifestBase(
   reader: Reader,
   path: string,
   root: string,
-  networkOverrides?: Partial<EthereumProjectNetworkConfig>,
+  networkOverrides?: Partial<ConcordiumProjectNetworkConfig>,
 ): Promise<SubqueryProject> {
   if (typeof projectManifest.network.endpoint === 'string') {
     projectManifest.network.endpoint = [projectManifest.network.endpoint];
@@ -163,10 +162,11 @@ async function loadProjectFromManifestBase(
   }
   const schema = buildSchemaFromString(schemaString);
 
-  const dataSources = await updateDatasourcesFlare(
+  const dataSources = await updateDataSourcesV1_0_0(
     projectManifest.dataSources,
     reader,
     root,
+    isCustomDs,
   );
 
   const templates = await loadProjectTemplates(

@@ -3,10 +3,10 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import {
-  EthereumRuntimeDataSourceImpl,
+  ConcordiumRuntimeDataSourceImpl,
   isCustomDs,
   isRuntimeDs,
-} from '@subql/common-ethereum';
+} from '@subql/common-concordium';
 import {
   DatasourceParams,
   DynamicDsService as BaseDynamicDsService,
@@ -15,13 +15,13 @@ import { plainToClass } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import { cloneDeep } from 'lodash';
 import {
-  EthereumProjectDs,
+  ConcordiumProjectDs,
   SubqueryProject,
 } from '../configure/SubqueryProject';
 import { DsProcessorService } from './ds-processor.service';
 
 @Injectable()
-export class DynamicDsService extends BaseDynamicDsService<EthereumProjectDs> {
+export class DynamicDsService extends BaseDynamicDsService<ConcordiumProjectDs> {
   constructor(
     private readonly dsProcessorService: DsProcessorService,
     @Inject('ISubqueryProject') private readonly project: SubqueryProject,
@@ -31,7 +31,7 @@ export class DynamicDsService extends BaseDynamicDsService<EthereumProjectDs> {
 
   protected async getDatasource(
     params: DatasourceParams,
-  ): Promise<EthereumProjectDs> {
+  ): Promise<ConcordiumProjectDs> {
     const template = cloneDeep(
       this.project.templates?.find((t) => t.name === params.templateName),
     );
@@ -45,7 +45,7 @@ export class DynamicDsService extends BaseDynamicDsService<EthereumProjectDs> {
     const dsObj = {
       ...template,
       startBlock: params.startBlock,
-    } as EthereumProjectDs;
+    } as ConcordiumProjectDs;
     try {
       if (isCustomDs(dsObj)) {
         dsObj.processor.options = {
@@ -59,7 +59,7 @@ export class DynamicDsService extends BaseDynamicDsService<EthereumProjectDs> {
           ...params.args,
         };
 
-        const parsedDs = plainToClass(EthereumRuntimeDataSourceImpl, dsObj);
+        const parsedDs = plainToClass(ConcordiumRuntimeDataSourceImpl, dsObj);
 
         const errors = validateSync(parsedDs, {
           whitelist: true,

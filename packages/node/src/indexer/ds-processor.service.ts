@@ -3,24 +3,24 @@
 
 import { Injectable } from '@nestjs/common';
 import {
-  EthereumHandlerKind,
+  SubqlConcordiumHandlerKind,
   isCustomDs,
-  SubqlEthereumCustomDataSource,
-  SubqlEthereumDataSource,
+  SubqlConcordiumCustomDataSource,
+  SubqlConcordiumDataSource,
   SubqlDatasourceProcessor,
-} from '@subql/common-ethereum';
+} from '@subql/common-concordium';
 import { BaseDsProcessorService } from '@subql/node-core';
 import {
   SecondLayerHandlerProcessor_0_0_0,
   SecondLayerHandlerProcessor_1_0_0,
   SubqlCustomDatasource,
-} from '@subql/types-ethereum';
+} from '@subql/types-concordium';
 
 export function isSecondLayerHandlerProcessor_0_0_0<
-  K extends EthereumHandlerKind,
+  K extends SubqlConcordiumHandlerKind,
   F,
   E,
-  DS extends SubqlCustomDatasource = SubqlEthereumCustomDataSource,
+  DS extends SubqlCustomDatasource = SubqlConcordiumCustomDataSource,
 >(
   processor:
     | SecondLayerHandlerProcessor_0_0_0<K, F, E, DS>
@@ -31,10 +31,10 @@ export function isSecondLayerHandlerProcessor_0_0_0<
 }
 
 export function isSecondLayerHandlerProcessor_1_0_0<
-  K extends EthereumHandlerKind,
+  K extends SubqlConcordiumHandlerKind,
   F,
   E,
-  DS extends SubqlEthereumCustomDataSource = SubqlEthereumCustomDataSource,
+  DS extends SubqlConcordiumCustomDataSource = SubqlConcordiumCustomDataSource,
 >(
   processor:
     | SecondLayerHandlerProcessor_0_0_0<K, F, E, DS>
@@ -44,10 +44,10 @@ export function isSecondLayerHandlerProcessor_1_0_0<
 }
 
 export function asSecondLayerHandlerProcessor_1_0_0<
-  K extends EthereumHandlerKind,
+  K extends SubqlConcordiumHandlerKind,
   F,
   E,
-  DS extends SubqlEthereumCustomDataSource = SubqlEthereumCustomDataSource,
+  DS extends SubqlConcordiumCustomDataSource = SubqlConcordiumCustomDataSource,
 >(
   processor:
     | SecondLayerHandlerProcessor_0_0_0<K, F, E, DS>
@@ -75,8 +75,8 @@ export function asSecondLayerHandlerProcessor_1_0_0<
 
 @Injectable()
 export class DsProcessorService extends BaseDsProcessorService<
-  SubqlEthereumDataSource,
-  SubqlEthereumCustomDataSource<string>,
+  SubqlConcordiumDataSource,
+  SubqlConcordiumCustomDataSource<string>,
   SubqlDatasourceProcessor<string, unknown>
 > {
   protected isCustomDs = isCustomDs;

@@ -2,35 +2,40 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import {
-  EthereumBlock,
-  EthereumBlockFilter,
-  EthereumLog,
-  EthereumLogFilter,
-  EthereumTransaction,
-  EthereumTransactionFilter,
-} from './ethereum';
+  ConcordiumBlock,
+  ConcordiumBlockFilter,
+  ConcordiumSpecialEvent,
+  ConcordiumSpecialEventFilter,
+  ConcordiumTransaction,
+  ConcordiumTransactionFilter,
+  ConcordiumTransactionEvent,
+  ConcordiumTransactionEventFilter,
+} from './concordium';
 import {ApiWrapper} from './interfaces';
 
-export enum EthereumDatasourceKind {
-  Runtime = 'ethereum/Runtime',
+export enum ConcordiumDatasourceKind {
+  Runtime = 'concordium/Runtime',
 }
 
-export enum EthereumHandlerKind {
-  Block = 'ethereum/BlockHandler',
-  Call = 'ethereum/TransactionHandler',
-  Event = 'ethereum/LogHandler',
+export enum ConcordiumHandlerKind {
+  Block = 'concordium/BlockHandler',
+  Transaction = 'concordium/TransactionHandler',
+  TransactionEvent = 'concordium/TransactionEventHandler',
+  SpecialEvent = 'concordium/SpecialEventHandler',
 }
 
-export type EthereumRuntimeHandlerInputMap = {
-  [EthereumHandlerKind.Block]: EthereumBlock;
-  [EthereumHandlerKind.Call]: EthereumTransaction;
-  [EthereumHandlerKind.Event]: EthereumLog;
+export type ConcordiumRuntimeHandlerInputMap = {
+  [ConcordiumHandlerKind.Block]: ConcordiumBlock;
+  [ConcordiumHandlerKind.Transaction]: ConcordiumTransaction;
+  [ConcordiumHandlerKind.TransactionEvent]: ConcordiumTransactionEvent;
+  [ConcordiumHandlerKind.SpecialEvent]: ConcordiumSpecialEvent;
 };
 
-type EthereumRuntimeFilterMap = {
-  [EthereumHandlerKind.Block]: EthereumBlockFilter;
-  [EthereumHandlerKind.Event]: EthereumLogFilter;
-  [EthereumHandlerKind.Call]: EthereumTransactionFilter;
+type ConcordiumRuntimeFilterMap = {
+  [ConcordiumHandlerKind.Block]: ConcordiumBlockFilter;
+  [ConcordiumHandlerKind.Transaction]: ConcordiumTransactionFilter;
+  [ConcordiumHandlerKind.TransactionEvent]: ConcordiumTransactionEventFilter;
+  [ConcordiumHandlerKind.SpecialEvent]: ConcordiumSpecialEvent;
 };
 
 export interface ProjectManifest {
@@ -50,20 +55,26 @@ export interface ProjectManifest {
 
 export interface SubqlBlockHandler {
   handler: string;
-  kind: EthereumHandlerKind.Block;
-  filter?: EthereumBlockFilter;
+  kind: ConcordiumHandlerKind.Block;
+  filter?: ConcordiumBlockFilter;
 }
 
-export interface SubqlCallHandler {
+export interface SubqlTransactionHandler {
   handler: string;
-  kind: EthereumHandlerKind.Call;
-  filter?: EthereumTransactionFilter;
+  kind: ConcordiumHandlerKind.Transaction;
+  filter?: ConcordiumTransactionFilter;
 }
 
-export interface SubqlEventHandler {
+export interface SubqlTransactionEventHandler {
   handler: string;
-  kind: EthereumHandlerKind.Event;
-  filter?: EthereumLogFilter;
+  kind: ConcordiumHandlerKind.TransactionEvent;
+  filter?: ConcordiumTransactionEventFilter;
+}
+
+export interface SubqlSpecialEventHandler {
+  handler: string;
+  kind: ConcordiumHandlerKind.SpecialEvent;
+  filter?: ConcordiumSpecialEventFilter;
 }
 
 export interface SubqlCustomHandler<K extends string = string, F = Record<string, unknown>> {
@@ -72,11 +83,19 @@ export interface SubqlCustomHandler<K extends string = string, F = Record<string
   filter?: F;
 }
 
-export type SubqlRuntimeHandler = SubqlBlockHandler | SubqlCallHandler | SubqlEventHandler;
+export type SubqlRuntimeHandler =
+  | SubqlBlockHandler
+  | SubqlTransactionHandler
+  | SubqlTransactionEventHandler
+  | SubqlSpecialEventHandler;
 
 export type SubqlHandler = SubqlRuntimeHandler | SubqlCustomHandler<string, unknown>;
 
-export type SubqlHandlerFilter = EthereumBlockFilter | EthereumTransactionFilter | EthereumLogFilter;
+export type SubqlHandlerFilter =
+  | ConcordiumBlockFilter
+  | ConcordiumTransactionFilter
+  | ConcordiumTransactionEventFilter
+  | ConcordiumSpecialEventFilter;
 
 export interface SubqlMapping<T extends SubqlHandler = SubqlHandler> {
   file: string;
@@ -90,15 +109,15 @@ interface ISubqlDatasource<M extends SubqlMapping> {
   mapping: M;
 }
 
-export interface SubqlEthereumProcessorOptions {
+export interface SubqlConcordiumProcessorOptions {
   abi?: string;
   address?: string;
 }
 
 export interface SubqlRuntimeDatasource<M extends SubqlMapping<SubqlRuntimeHandler> = SubqlMapping<SubqlRuntimeHandler>>
   extends ISubqlDatasource<M> {
-  kind: EthereumDatasourceKind.Runtime;
-  options?: SubqlEthereumProcessorOptions;
+  kind: ConcordiumDatasourceKind.Runtime;
+  options?: SubqlConcordiumProcessorOptions;
   assets?: Map<string, {file: string}>;
 }
 
@@ -123,26 +142,26 @@ export interface SubqlCustomDatasource<
 > extends ISubqlDatasource<M> {
   kind: K;
   assets: Map<string, CustomDataSourceAsset>;
-  options?: SubqlEthereumProcessorOptions;
+  options?: SubqlConcordiumProcessorOptions;
   processor: Processor<O>;
 }
 
 export interface HandlerInputTransformer_0_0_0<
-  T extends EthereumHandlerKind,
+  T extends ConcordiumHandlerKind,
   E,
   DS extends SubqlCustomDatasource = SubqlCustomDatasource
 > {
-  (input: EthereumRuntimeHandlerInputMap[T], ds: DS, api: ApiWrapper, assets?: Record<string, string>): Promise<E>; //  | SubstrateBuiltinDataSource
+  (input: ConcordiumRuntimeHandlerInputMap[T], ds: DS, api: ApiWrapper, assets?: Record<string, string>): Promise<E>; //  | SubstrateBuiltinDataSource
 }
 
 export interface HandlerInputTransformer_1_0_0<
-  T extends EthereumHandlerKind,
+  T extends ConcordiumHandlerKind,
   F,
   E,
   DS extends SubqlCustomDatasource = SubqlCustomDatasource
 > {
   (params: {
-    input: EthereumRuntimeHandlerInputMap[T];
+    input: ConcordiumRuntimeHandlerInputMap[T];
     ds: DS;
     filter?: F;
     api: ApiWrapper;
@@ -167,9 +186,10 @@ export type SecondLayerHandlerProcessorArray<
   T,
   DS extends SubqlCustomDatasource<K> = SubqlCustomDatasource<K>
 > =
-  | SecondLayerHandlerProcessor<EthereumHandlerKind.Block, F, T, DS>
-  | SecondLayerHandlerProcessor<EthereumHandlerKind.Call, F, T, DS>
-  | SecondLayerHandlerProcessor<EthereumHandlerKind.Event, F, T, DS>;
+  | SecondLayerHandlerProcessor<ConcordiumHandlerKind.Block, F, T, DS>
+  | SecondLayerHandlerProcessor<ConcordiumHandlerKind.Transaction, F, T, DS>
+  | SecondLayerHandlerProcessor<ConcordiumHandlerKind.TransactionEvent, F, T, DS>
+  | SecondLayerHandlerProcessor<ConcordiumHandlerKind.SpecialEvent, F, T, DS>;
 
 export interface SubqlDatasourceProcessor<
   K extends string,
@@ -187,40 +207,40 @@ export interface SubqlDatasourceProcessor<
 }
 
 interface SecondLayerHandlerProcessorBase<
-  K extends EthereumHandlerKind,
+  K extends ConcordiumHandlerKind,
   F,
   DS extends SubqlCustomDatasource = SubqlCustomDatasource
 > {
   baseHandlerKind: K;
-  baseFilter: EthereumRuntimeFilterMap[K] | EthereumRuntimeFilterMap[K][];
+  baseFilter: ConcordiumRuntimeFilterMap[K] | ConcordiumRuntimeFilterMap[K][];
   filterValidator: (filter?: F) => void;
   dictionaryQuery?: (filter: F, ds: DS) => DictionaryQueryEntry | undefined;
 }
 
 export interface SecondLayerHandlerProcessor_0_0_0<
-  K extends EthereumHandlerKind,
+  K extends ConcordiumHandlerKind,
   F,
   E,
   DS extends SubqlCustomDatasource = SubqlCustomDatasource
 > extends SecondLayerHandlerProcessorBase<K, F, DS> {
   specVersion: undefined;
   transformer: HandlerInputTransformer_0_0_0<K, E, DS>;
-  filterProcessor: (filter: F | undefined, input: EthereumRuntimeHandlerInputMap[K], ds: DS) => boolean;
+  filterProcessor: (filter: F | undefined, input: ConcordiumRuntimeHandlerInputMap[K], ds: DS) => boolean;
 }
 
 export interface SecondLayerHandlerProcessor_1_0_0<
-  K extends EthereumHandlerKind,
+  K extends ConcordiumHandlerKind,
   F,
   E,
   DS extends SubqlCustomDatasource = SubqlCustomDatasource
 > extends SecondLayerHandlerProcessorBase<K, F, DS> {
   specVersion: '1.0.0';
   transformer: HandlerInputTransformer_1_0_0<K, F, E, DS>;
-  filterProcessor: (params: {filter: F | undefined; input: EthereumRuntimeHandlerInputMap[K]; ds: DS}) => boolean;
+  filterProcessor: (params: {filter: F | undefined; input: ConcordiumRuntimeHandlerInputMap[K]; ds: DS}) => boolean;
 }
 
 export type SecondLayerHandlerProcessor<
-  K extends EthereumHandlerKind,
+  K extends ConcordiumHandlerKind,
   F,
   E,
   DS extends SubqlCustomDatasource = SubqlCustomDatasource

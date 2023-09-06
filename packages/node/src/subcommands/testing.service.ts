@@ -10,23 +10,23 @@ import {
   NestLogger,
   TestRunner,
 } from '@subql/node-core';
-import { EthereumBlockWrapper } from '@subql/types-ethereum';
+import { ConcordiumBlockWrapper } from '@subql/types-concordium';
+import { ConcordiumApi } from '../concordium';
+import SafeEthProvider from '../concordium/safe-api';
 import {
-  EthereumProjectDs,
+  ConcordiumProjectDs,
   SubqueryProject,
 } from '../configure/SubqueryProject';
-import { EthereumApi } from '../ethereum';
-import SafeEthProvider from '../ethereum/safe-api';
 import { IndexerManager } from '../indexer/indexer.manager';
 import { ProjectService } from '../indexer/project.service';
 import { TestingModule } from './testing.module';
 
 @Injectable()
 export class TestingService extends BaseTestingService<
-  EthereumApi,
+  ConcordiumApi,
   SafeEthProvider,
-  EthereumBlockWrapper,
-  EthereumProjectDs
+  ConcordiumBlockWrapper,
+  ConcordiumProjectDs
 > {
   constructor(
     nodeConfig: NodeConfig,
@@ -37,10 +37,10 @@ export class TestingService extends BaseTestingService<
 
   async getTestRunner(): Promise<
     TestRunner<
-      EthereumApi,
+      ConcordiumApi,
       SafeEthProvider,
-      EthereumBlockWrapper,
-      EthereumProjectDs
+      ConcordiumBlockWrapper,
+      ConcordiumProjectDs
     >
   > {
     const testContext = await NestFactory.createApplicationContext(
@@ -53,7 +53,7 @@ export class TestingService extends BaseTestingService<
     await testContext.init();
 
     const projectService: ProjectService = testContext.get(ProjectService);
-    const apiService = testContext.get(EthereumApi);
+    const apiService = testContext.get(ConcordiumApi);
 
     // Initialise async services, we do this here rather than in factories, so we can capture one off events
     await apiService.init();
@@ -63,7 +63,7 @@ export class TestingService extends BaseTestingService<
   }
 
   async indexBlock(
-    block: EthereumBlockWrapper,
+    block: ConcordiumBlockWrapper,
     handler: string,
     indexerManager: IndexerManager,
   ): Promise<void> {

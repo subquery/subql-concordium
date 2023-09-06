@@ -18,9 +18,9 @@ import {
   PgMmrCacheService,
   MmrQueryService,
 } from '@subql/node-core';
+import { ConcordiumApiService } from '../concordium';
+import { ConcordiumApiConnection } from '../concordium/api.connection';
 import { SubqueryProject } from '../configure/SubqueryProject';
-import { EthereumApiService } from '../ethereum';
-import { EthereumApiConnection } from '../ethereum/api.connection';
 import { DsProcessorService } from './ds-processor.service';
 import { DynamicDsService } from './dynamic-ds.service';
 import { IndexerManager } from './indexer.manager';
@@ -49,11 +49,11 @@ import { WorkerUnfinalizedBlocksService } from './worker/worker.unfinalizedBlock
       provide: ApiService,
       useFactory: async (
         project: SubqueryProject,
-        connectionPoolService: ConnectionPoolService<EthereumApiConnection>,
+        connectionPoolService: ConnectionPoolService<ConcordiumApiConnection>,
         eventEmitter: EventEmitter2,
         nodeConfig: NodeConfig,
       ) => {
-        const apiService = new EthereumApiService(
+        const apiService = new ConcordiumApiService(
           project,
           connectionPoolService,
           eventEmitter,

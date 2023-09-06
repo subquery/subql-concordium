@@ -10,7 +10,7 @@ The future is multi-chain - SubQuery is no different. SubQuery is well on our wa
 
 - [Polkadot (and all Substrate networks)](https://academy.subquery.network/quickstart/quickstart_chains/polkadot.html)
 - [Cosmos (and all CosmWasm and Ethermint networks)](https://academy.subquery.network/quickstart/quickstart_chains/cosmos.html)
-- [ethereum (and all ethereum Subnets)](https://academy.subquery.network/quickstart/quickstart_chains/ethereum.html)
+- [concordium (and all concordium Subnets)](https://academy.subquery.network/quickstart/quickstart_chains/concordium.html)
 - [Algorand](https://academy.subquery.network/quickstart/quickstart_chains/algorand.html)
 - [Terra](https://academy.subquery.network/quickstart/quickstart_chains/terra.html)
 

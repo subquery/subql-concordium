@@ -12,8 +12,8 @@ import {
   ISubqueryProject,
   ApiService,
 } from '@subql/node-core';
-import { Store } from '@subql/types-ethereum';
-import SafeEthProvider from '../ethereum/safe-api';
+import { Store } from '@subql/types-concordium';
+import SafeEthProvider from '../concordium/safe-api';
 
 /* It would be nice to move this to node core but need to find a way to inject other things into the sandbox */
 @Injectable()
