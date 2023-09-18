@@ -1,7 +1,7 @@
 // Copyright 2020-2023 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import {TransactionSummaryType} from '@concordium/node-sdk';
+import {TransactionEventTag, TransactionSummaryType} from '@concordium/node-sdk';
 import {
   ConcordiumHandlerKind,
   ConcordiumDatasourceKind,
@@ -50,9 +50,19 @@ export class TransactionFilter implements ConcordiumTransactionFilter {
   @IsOptional()
   @IsString()
   type?: TransactionSummaryType;
+  @IsOptional()
+  @IsObject()
+  values?: {[key: string]: string};
 }
 
-export class TransactionEventFilter implements ConcordiumTransactionEventFilter {}
+export class TransactionEventFilter implements ConcordiumTransactionEventFilter {
+  @IsOptional()
+  @IsString()
+  type?: TransactionEventTag;
+  @IsOptional()
+  @IsObject()
+  values?: {[key: string]: string};
+}
 
 export class SpecialEventFilter implements ConcordiumSpecialEventFilter {}
 
@@ -93,7 +103,6 @@ export class BlockHandler implements SubqlBlockHandler {
 }
 
 export class TransactionHandler implements SubqlTransactionHandler {
-  @forbidNonWhitelisted({from: '', to: '', function: ''})
   @IsOptional()
   @ValidateNested()
   @Type(() => TransactionFilter)
@@ -105,7 +114,6 @@ export class TransactionHandler implements SubqlTransactionHandler {
 }
 
 export class TransactionEventHandler implements SubqlTransactionEventHandler {
-  @forbidNonWhitelisted({topics: ''})
   @IsOptional()
   @ValidateNested()
   @Type(() => TransactionEventFilter)
@@ -117,7 +125,6 @@ export class TransactionEventHandler implements SubqlTransactionEventHandler {
 }
 
 export class SpecialEventHandler implements SubqlSpecialEventHandler {
-  @forbidNonWhitelisted({topics: ''})
   @IsOptional()
   @ValidateNested()
   @Type(() => SpecialEventFilter)

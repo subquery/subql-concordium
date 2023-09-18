@@ -7,10 +7,9 @@ import {
   BlockInfo,
   BlockItemSummary,
   BlockSpecialEvent,
-  BlockSummary,
-  BlockSummaryV2,
   TransactionEvent,
   TransactionSummaryType,
+  TransactionEventTag,
 } from '@concordium/node-sdk';
 import {BlockWrapper} from '../interfaces';
 
@@ -21,10 +20,16 @@ export interface ConcordiumBlockFilter {
 
 export interface ConcordiumTransactionFilter {
   type?: TransactionSummaryType;
+  values?: {
+    [key: string]: string;
+  };
 }
 
 export interface ConcordiumTransactionEventFilter {
-  type?: string;
+  type?: TransactionEventTag;
+  values?: {
+    [key: string]: string;
+  };
 }
 
 export interface ConcordiumSpecialEventFilter {

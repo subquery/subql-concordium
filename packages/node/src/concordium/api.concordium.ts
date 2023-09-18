@@ -37,47 +37,6 @@ const { version: packageVersion } = require('../../package.json');
 
 const logger = getLogger('api.concordium');
 
-async function loadAssets(
-  ds: SubqlRuntimeDatasource,
-): Promise<Record<string, string>> {
-  if (!ds.assets) {
-    return {};
-  }
-  const res: Record<string, string> = {};
-
-  for (const [name, { file }] of Object.entries(ds.assets)) {
-    try {
-      res[name] = await fs.promises.readFile(file, { encoding: 'utf8' });
-    } catch (e) {
-      throw new Error(`Failed to load datasource asset ${file}`);
-    }
-  }
-
-  return res;
-}
-
-function getHttpAgents() {
-  // By default Nodejs doesn't cache DNS lookups
-  // https://httptoolkit.com/blog/configuring-nodejs-dns/
-  const lookup = new CacheableLookup();
-
-  const options: http.AgentOptions = {
-    keepAlive: true,
-    /*, maxSockets: 100*/
-  };
-
-  const httpAgent = new http.Agent(options);
-  const httpsAgent = new https.Agent(options);
-
-  lookup.install(httpAgent);
-  lookup.install(httpsAgent);
-
-  return {
-    http: httpAgent,
-    https: httpsAgent,
-  };
-}
-
 export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
   private client: ConcordiumGRPCClient;
   private transport: GrpcTransport;
@@ -85,40 +44,41 @@ export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
   private chainId: string;
   private name: string;
 
-  // Concordium POS
-  private supportsFinalization = true;
-  private blockConfirmations = yargsOptions.argv['block-confirmations'];
-
   constructor(private endpoint: string, private eventEmitter: EventEmitter2) {
     const { hostname, protocol, searchParams } = new URL(endpoint);
 
     const protocolStr = protocol.replace(':', '');
 
-    logger.info(`Api host: ${hostname}, method: ${protocolStr}`);
-    if (protocolStr === 'https' || protocolStr === 'http') {
-      const options: GrpcOptions = {
-        host: this.endpoint,
-        channelCredentials: ChannelCredentials.createInsecure(),
-        meta: {
-          'User-Agent': `Subquery-Node ${packageVersion}`,
-        },
-      };
+    //logger.info(`Api host: ${hostname}, method: ${protocolStr}`);
+    //if (protocolStr === 'https' || protocolStr === 'http') {
+    const options: GrpcOptions = {
+      host: this.endpoint,
+      channelCredentials: ChannelCredentials.createInsecure(),
+      meta: {
+        'User-Agent': `Subquery-Node ${packageVersion}`,
+      },
+    };
 
-      this.transport = new GrpcTransport(options);
+    this.transport = new GrpcTransport(options);
 
-      this.client = new ConcordiumGRPCClient(this.transport);
-    } else {
-      throw new Error(`Unsupported protocol: ${protocol}`);
-    }
+    this.client = new ConcordiumGRPCClient(this.transport);
+    //} else {
+    //  throw new Error(`Unsupported protocol: ${protocol}`);
+    //}
   }
 
   async init(): Promise<void> {
+    logger.info('here0');
     const genesisBlock = await this.client
       .getBlocksAtHeight(BigInt(0))
-      .then((hashes) => this.client.getBlockInfo(hashes[0]));
+      .then((hashes) => {
+        logger.info('here1');
+        return this.client.getBlockInfo(hashes[0]);
+      });
+
+    logger.info('here');
 
     this.genesisBlock = genesisBlock;
-    this.supportsFinalization = false;
     this.chainId = genesisBlock.blockHash;
   }
 

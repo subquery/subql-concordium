@@ -4,6 +4,7 @@
 import {
   ConcordiumBlock,
   ConcordiumTransactionFilter,
+  ConcordiumTransactionEventFilter,
   ConcordiumBlockFilter,
   ConcordiumBlockWrapper,
   ConcordiumTransaction,
@@ -11,12 +12,6 @@ import {
   ConcordiumSpecialEvent,
   ConcordiumSpecialEventFilter,
 } from '@subql/types-concordium';
-import {
-  eventToTopic,
-  functionToSighash,
-  hexStringEq,
-  stringNormalizedEq,
-} from '../utils/string';
 
 export class ConcordiumBlockWrapped implements ConcordiumBlockWrapper {
   constructor(
@@ -73,7 +68,7 @@ export class ConcordiumBlockWrapped implements ConcordiumBlockWrapper {
 
   static filterTxEventProcessor(
     txEvent: ConcordiumTransactionEvent,
-    filter: ConcordiumTransactionFilter,
+    filter: ConcordiumTransactionEventFilter,
     address?: string,
   ): boolean {
     if (!filter) return true;
