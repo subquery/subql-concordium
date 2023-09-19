@@ -63,6 +63,14 @@ export class ConcordiumBlockWrapped implements ConcordiumBlockWrapper {
   ): boolean {
     if (!filter) return true;
 
+    if (filter.type && transaction.type !== filter.type) return false;
+
+    if (filter.values) {
+      for (const key in filter.values) {
+        if (filter.values[key] !== transaction[key]) return false;
+      }
+    }
+
     return true;
   }
 

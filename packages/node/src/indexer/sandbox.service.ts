@@ -12,7 +12,7 @@ import {
   ISubqueryProject,
   ApiService,
 } from '@subql/node-core';
-import { Store } from '@subql/types-concordium';
+import { Store } from '@subql/types';
 import SafeEthProvider from '../concordium/safe-api';
 
 /* It would be nice to move this to node core but need to find a way to inject other things into the sandbox */

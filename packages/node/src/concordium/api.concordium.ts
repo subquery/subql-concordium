@@ -1,9 +1,6 @@
 // Copyright 2020-2023 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import fs from 'fs';
-import http from 'http';
-import https from 'https';
 import {
   AccountTransferredEvent,
   BlockInfo,
@@ -24,11 +21,8 @@ import {
   ConcordiumSpecialEvent,
   ConcordiumTransaction,
   ConcordiumTransactionEvent,
-  SubqlRuntimeDatasource,
 } from '@subql/types-concordium';
-import CacheableLookup from 'cacheable-lookup';
-import { flatMap } from 'lodash';
-import { yargsOptions } from '../yargs';
+import { flatMap, cloneDeep } from 'lodash';
 import { ConcordiumBlockWrapped } from './block.concordium';
 import SafeConcordiumGRPCClient from './safe-api';
 
@@ -45,12 +39,6 @@ export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
   private name: string;
 
   constructor(private endpoint: string, private eventEmitter: EventEmitter2) {
-    const { hostname, protocol, searchParams } = new URL(endpoint);
-
-    const protocolStr = protocol.replace(':', '');
-
-    //logger.info(`Api host: ${hostname}, method: ${protocolStr}`);
-    //if (protocolStr === 'https' || protocolStr === 'http') {
     const options: GrpcOptions = {
       host: this.endpoint,
       channelCredentials: ChannelCredentials.createInsecure(),
@@ -62,21 +50,14 @@ export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
     this.transport = new GrpcTransport(options);
 
     this.client = new ConcordiumGRPCClient(this.transport);
-    //} else {
-    //  throw new Error(`Unsupported protocol: ${protocol}`);
-    //}
   }
 
   async init(): Promise<void> {
-    logger.info('here0');
     const genesisBlock = await this.client
       .getBlocksAtHeight(BigInt(0))
       .then((hashes) => {
-        logger.info('here1');
         return this.client.getBlockInfo(hashes[0]);
       });
-
-    logger.info('here');
 
     this.genesisBlock = genesisBlock;
     this.chainId = genesisBlock.blockHash;
@@ -236,7 +217,7 @@ export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
       return {
         ...evt,
         block: null,
-        transaction: null,
+        transaction: tx,
       } as ConcordiumTransactionEvent;
     });
   }
@@ -272,6 +253,7 @@ export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
     wrappedBlock.transactionEvents = flatMap(
       wrappedBlock.transactions.map((tx) => this.wrapTransactionEvents(tx)),
     );
+
     return wrappedBlock;
   }
 

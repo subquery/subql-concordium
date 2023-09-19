@@ -36,12 +36,15 @@ export class TestingService extends BaseTestingService<
   }
 
   async getTestRunner(): Promise<
-    TestRunner<
-      ConcordiumApi,
-      SafeEthProvider,
-      ConcordiumBlockWrapper,
-      ConcordiumProjectDs
-    >
+    [
+      close: () => Promise<void>,
+      runner: TestRunner<
+        ConcordiumApi,
+        SafeEthProvider,
+        ConcordiumBlockWrapper,
+        ConcordiumProjectDs
+      >,
+    ]
   > {
     const testContext = await NestFactory.createApplicationContext(
       TestingModule,
@@ -53,13 +56,9 @@ export class TestingService extends BaseTestingService<
     await testContext.init();
 
     const projectService: ProjectService = testContext.get(ProjectService);
-    const apiService = testContext.get(ConcordiumApi);
-
-    // Initialise async services, we do this here rather than in factories, so we can capture one off events
-    await apiService.init();
     await projectService.init();
 
-    return testContext.get(TestRunner);
+    return [testContext.close.bind(testContext), testContext.get(TestRunner)];
   }
 
   async indexBlock(

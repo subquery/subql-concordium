@@ -6,7 +6,6 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   PoiBenchmarkService,
   IndexingBenchmarkService,
-  MmrService,
   StoreService,
   PoiService,
   ApiService,
@@ -15,8 +14,6 @@ import {
   ConnectionPoolStateManager,
   SmartBatchService,
   StoreCacheService,
-  PgMmrCacheService,
-  MmrQueryService,
   IProjectUpgradeService,
 } from '@subql/node-core';
 import { ConcordiumApiConnection } from '../concordium/api.connection';
@@ -66,13 +63,6 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
     IndexerManager,
     ConnectionPoolStateManager,
     ConnectionPoolService,
-    {
-      provide: SmartBatchService,
-      useFactory: (nodeConfig: NodeConfig) => {
-        return new SmartBatchService(nodeConfig.batchSize);
-      },
-      inject: [NodeConfig],
-    },
     {
       provide: SmartBatchService,
       useFactory: (nodeConfig: NodeConfig) => {
@@ -168,15 +158,12 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
     DsProcessorService,
     DynamicDsService,
     PoiService,
-    MmrService,
-    MmrQueryService,
-    PgMmrCacheService,
     {
       useClass: ProjectService,
       provide: 'IProjectService',
     },
     UnfinalizedBlocksService,
   ],
-  exports: [StoreService, MmrService, StoreCacheService, MmrQueryService],
+  exports: [StoreService, StoreCacheService],
 })
 export class FetchModule {}

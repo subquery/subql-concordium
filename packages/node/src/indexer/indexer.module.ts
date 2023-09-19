@@ -8,15 +8,12 @@ import {
   ApiService,
   StoreService,
   PoiService,
-  MmrService,
   ConnectionPoolService,
   StoreCacheService,
   WorkerDynamicDsService,
   WorkerConnectionPoolStateManager,
   ConnectionPoolStateManager,
   NodeConfig,
-  PgMmrCacheService,
-  MmrQueryService,
 } from '@subql/node-core';
 import { ConcordiumApiService } from '../concordium';
 import { ConcordiumApiConnection } from '../concordium/api.connection';
@@ -81,9 +78,6 @@ import { WorkerUnfinalizedBlocksService } from './worker/worker.unfinalizedBlock
       },
     },
     PoiService,
-    MmrService,
-    PgMmrCacheService,
-    MmrQueryService,
     {
       provide: 'IProjectService',
       useClass: ProjectService,
@@ -99,6 +93,6 @@ import { WorkerUnfinalizedBlocksService } from './worker/worker.unfinalizedBlock
       },
     },
   ],
-  exports: [StoreService, MmrService, MmrQueryService],
+  exports: [StoreService],
 })
 export class IndexerModule {}
