@@ -1,6 +1,7 @@
 // Copyright 2020-2023 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
+import { getLogger } from '@subql/node-core';
 import {
   ConcordiumBlock,
   ConcordiumTransactionFilter,
@@ -12,6 +13,8 @@ import {
   ConcordiumSpecialEvent,
   ConcordiumSpecialEventFilter,
 } from '@subql/types-concordium';
+
+const logger = getLogger('block');
 
 export class ConcordiumBlockWrapped implements ConcordiumBlockWrapper {
   constructor(
@@ -81,6 +84,14 @@ export class ConcordiumBlockWrapped implements ConcordiumBlockWrapper {
   ): boolean {
     if (!filter) return true;
 
+    if (filter.type && txEvent.tag !== filter.type) return false;
+
+    if (filter.values) {
+      for (const key in filter.values) {
+        if (filter.values[key] !== txEvent[key]) return false;
+      }
+    }
+
     return true;
   }
 
@@ -89,6 +100,14 @@ export class ConcordiumBlockWrapped implements ConcordiumBlockWrapper {
     filter: ConcordiumSpecialEventFilter,
   ): boolean {
     if (!filter) return true;
+
+    if (filter.type && specialEvent.tag !== filter.type) return false;
+
+    if (filter.values) {
+      for (const key in filter.values) {
+        if (filter.values[key] !== specialEvent[key]) return false;
+      }
+    }
 
     return true;
   }

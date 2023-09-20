@@ -43,7 +43,7 @@ import { WorkerUnfinalizedBlocksService } from './worker/worker.unfinalizedBlock
     },
     ConnectionPoolService,
     {
-      provide: ApiService,
+      provide: ConcordiumApiService,
       useFactory: async (
         project: SubqueryProject,
         connectionPoolService: ConnectionPoolService<ConcordiumApiConnection>,

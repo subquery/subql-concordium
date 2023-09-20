@@ -37,7 +37,7 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
     StoreService,
     StoreCacheService,
     {
-      provide: ApiService,
+      provide: ConcordiumApiService,
       useFactory: async (
         project: SubqueryProject,
         connectionPoolService: ConnectionPoolService<ConcordiumApiConnection>,

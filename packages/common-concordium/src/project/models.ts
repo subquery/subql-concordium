@@ -64,7 +64,14 @@ export class TransactionEventFilter implements ConcordiumTransactionEventFilter 
   values?: {[key: string]: string};
 }
 
-export class SpecialEventFilter implements ConcordiumSpecialEventFilter {}
+export class SpecialEventFilter implements ConcordiumSpecialEventFilter {
+  @IsOptional()
+  @IsString()
+  type?: string;
+  @IsOptional()
+  @IsObject()
+  values?: {[key: string]: string};
+}
 
 export function forbidNonWhitelisted(keys: any, validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {

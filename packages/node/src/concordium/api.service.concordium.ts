@@ -17,8 +17,6 @@ import SafeConcordiumGRPCClient from './safe-api';
 
 const logger = getLogger('api');
 
-const MAX_RECONNECT_ATTEMPTS = 5;
-
 @Injectable()
 export class ConcordiumApiService extends ApiService<
   ConcordiumApi,
@@ -69,7 +67,7 @@ export class ConcordiumApiService extends ApiService<
     return this.unsafeApi;
   }
 
-  safeApi(height: number): SafeConcordiumGRPCClient {
+  async getSafeApi(height: number): Promise<SafeConcordiumGRPCClient> {
     const maxRetries = 5;
 
     const retryErrorCodes = [
@@ -104,7 +102,7 @@ export class ConcordiumApiService extends ApiService<
                   `Request failed with api at height ${height} (retry ${retries}): ${error.message}`,
                 );
                 throwingError = error;
-                currentApi = this.unsafeApi.getSafeApi(height);
+                currentApi = await this.unsafeApi.getSafeApi(height);
                 retries++;
               }
             }
@@ -119,7 +117,7 @@ export class ConcordiumApiService extends ApiService<
       },
     };
 
-    return new Proxy(this.unsafeApi.getSafeApi(height), handler);
+    return new Proxy(await this.unsafeApi.getSafeApi(height), handler);
   }
 
   private async fetchBlockBatches(

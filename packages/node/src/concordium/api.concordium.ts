@@ -258,19 +258,15 @@ export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
   }
 
   async fetchBlock(height: number): Promise<ConcordiumBlockWrapped> {
-    try {
-      const block = await this.getAndWrapBlock(height);
-      const ret = new ConcordiumBlockWrapped(
-        block,
-        block.transactions,
-        block.transactionEvents,
-        block.specialEvents,
-      );
-      this.eventEmitter.emit('fetchBlock');
-      return ret;
-    } catch (e) {
-      throw this.handleError(e);
-    }
+    const block = await this.getAndWrapBlock(height);
+    const ret = new ConcordiumBlockWrapped(
+      block,
+      block.transactions,
+      block.transactionEvents,
+      block.specialEvents,
+    );
+    this.eventEmitter.emit('fetchBlock');
+    return ret;
   }
 
   async fetchBlocks(bufferBlocks: number[]): Promise<ConcordiumBlockWrapper[]> {
@@ -281,10 +277,12 @@ export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
     return this.client;
   }
 
-  getSafeApi(blockHeight: number): SafeConcordiumGRPCClient {
-    // TODO
-    return null;
-    //return new SafeConcordiumGRPCClient(this.transport, blockHeight, null);
+  async getSafeApi(blockHeight: number): Promise<SafeConcordiumGRPCClient> {
+    return new SafeConcordiumGRPCClient(
+      this.transport,
+      blockHeight,
+      (await this.api.getBlocksAtHeight(BigInt(blockHeight)))[0],
+    );
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -295,14 +293,5 @@ export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
 
   async disconnect(): Promise<void> {
     await this.client.shutdown();
-  }
-
-  handleError(e: Error): Error {
-    if ((e as any)?.status === 429) {
-      const { hostname } = new URL(this.endpoint);
-      return new Error(`Rate Limited at endpoint: ${hostname}`);
-    }
-
-    return e;
   }
 }

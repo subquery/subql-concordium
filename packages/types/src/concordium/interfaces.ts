@@ -34,6 +34,9 @@ export interface ConcordiumTransactionEventFilter {
 
 export interface ConcordiumSpecialEventFilter {
   type?: string;
+  values?: {
+    [key: string]: string;
+  };
 }
 
 export type ConcordiumBlock = BlockInfo & {

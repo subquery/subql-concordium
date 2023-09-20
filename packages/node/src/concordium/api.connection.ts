@@ -14,7 +14,7 @@ import {
 } from '@subql/node-core';
 import { ConcordiumBlockWrapper } from '@subql/types-concordium';
 import { ConcordiumApi } from './api.concordium';
-import SafeEthProvider from './safe-api';
+import SafeConcordiumGRPCClient from './safe-api';
 
 type FetchFunc = (
   api: ConcordiumApi,
@@ -25,7 +25,7 @@ export class ConcordiumApiConnection
   implements
     IApiConnectionSpecific<
       ConcordiumApi,
-      SafeEthProvider,
+      SafeConcordiumGRPCClient,
       ConcordiumBlockWrapper[]
     >
 {
@@ -54,7 +54,7 @@ export class ConcordiumApiConnection
     return new ConcordiumApiConnection(api, fetchBlockBatches);
   }
 
-  safeApi(height: number): SafeEthProvider {
+  safeApi(height: number): SafeConcordiumGRPCClient {
     throw new Error(`Not Implemented`);
   }
 
