@@ -19,16 +19,15 @@ import {
   getModulos,
 } from '@subql/node-core';
 import { DictionaryQueryCondition, DictionaryQueryEntry } from '@subql/types';
-import { SubqlDatasource } from '@subql/types-concordium';
-import { groupBy, partition, sortBy, uniqBy } from 'lodash';
+import {
+  ConcordiumSpecialEventFilter,
+  ConcordiumTransactionEventFilter,
+  SubqlDatasource,
+} from '@subql/types-concordium';
+import { groupBy, partition, setWith, sortBy, uniqBy } from 'lodash';
 import { ConcordiumApi } from '../concordium';
 import { calcInterval } from '../concordium/utils.concordium';
-import {
-  ConcordiumProjectDs,
-  SubqueryProject,
-} from '../configure/SubqueryProject';
-import { eventToTopic, functionToSighash } from '../utils/string';
-import { yargsOptions } from '../yargs';
+import { SubqueryProject } from '../configure/SubqueryProject';
 import { IConcordiumBlockDispatcher } from './blockDispatcher';
 import { DictionaryService } from './dictionary.service';
 import { DsProcessorService } from './ds-processor.service';
@@ -45,43 +44,103 @@ const BLOCK_TIME_VARIANCE = 5000;
 
 const INTERVAL_PERCENT = 0.9;
 
-function appendDsOptions(
-  dsOptions:
-    | SubqlConcordiumProcessorOptions
-    | SubqlConcordiumProcessorOptions[],
-  conditions: DictionaryQueryCondition[],
-): void {
-  const queryAddressLimit = yargsOptions.argv['query-address-limit'];
-  if (Array.isArray(dsOptions)) {
-    const addresses = dsOptions.map((option) => option.address).filter(Boolean);
+export function txFilterToQueryEntry(
+  filter: ConcordiumTransactionFilter,
+): DictionaryQueryEntry {
+  const conditions: DictionaryQueryCondition[] = [
+    {
+      field: 'type',
+      value: filter.type,
+      matcher: 'equalTo',
+    },
+  ];
 
-    if (addresses.length > queryAddressLimit) {
-      logger.warn(
-        `Addresses length: ${addresses.length} is exceeding limit: ${queryAddressLimit}. Consider increasing this value with the flag --query-address-limit  `,
-      );
-    }
+  if (filter.values !== undefined) {
+    const nested = {};
 
-    if (addresses.length !== 0 && addresses.length <= queryAddressLimit) {
-      conditions.push({
-        field: 'address',
-        value: addresses,
-        matcher: 'in',
-      });
-    }
-  } else {
-    if (dsOptions?.address) {
-      conditions.push({
-        field: 'address',
-        value: dsOptions.address.toLowerCase(),
-        matcher: 'equalTo',
-      });
-    }
+    Object.keys(filter.values).map((key) => {
+      const value = filter.values[key];
+      setWith(nested, key, value);
+    });
+
+    conditions.push({
+      field: 'data',
+      value: nested as any, // Cast to any for compat with node core
+      matcher: 'contains',
+    });
   }
+  return {
+    entity: 'transactions',
+    conditions: conditions,
+  };
+}
+
+export function txEventFilterToQueryEntry(
+  filter: ConcordiumTransactionEventFilter,
+): DictionaryQueryEntry {
+  const conditions: DictionaryQueryCondition[] = [
+    {
+      field: 'type',
+      value: filter.type,
+      matcher: 'equalTo',
+    },
+  ];
+
+  if (filter.values !== undefined) {
+    const nested = {};
+
+    Object.keys(filter.values).map((key) => {
+      const value = filter.values[key];
+      setWith(nested, key, value);
+    });
+
+    conditions.push({
+      field: 'data',
+      value: nested as any, // Cast to any for compat with node core
+      matcher: 'contains',
+    });
+  }
+  return {
+    entity: 'txEvents',
+    conditions: conditions,
+  };
+}
+
+export function speicalEventFilterToQueryEntry(
+  filter: ConcordiumSpecialEventFilter,
+): DictionaryQueryEntry {
+  const conditions: DictionaryQueryCondition[] = [
+    {
+      field: 'type',
+      value: filter.type,
+      matcher: 'equalTo',
+    },
+  ];
+
+  if (filter.values !== undefined) {
+    const nested = {};
+
+    Object.keys(filter.values).map((key) => {
+      const value = filter.values[key];
+      setWith(nested, key, value);
+    });
+
+    conditions.push({
+      field: 'data',
+      value: nested as any, // Cast to any for compat with node core
+      matcher: 'contains',
+    });
+  }
+  return {
+    entity: 'specialEvents',
+    conditions: conditions,
+  };
 }
 
 type GroupedConcordiumProjectDs = SubqlDatasource & {
   groupedOptions?: SubqlConcordiumProcessorOptions[];
 };
+
 export function buildDictionaryQueryEntries(
   dataSources: GroupedConcordiumProjectDs[],
 ): DictionaryQueryEntry[] {
@@ -96,14 +155,31 @@ export function buildDictionaryQueryEntries(
         case SubqlConcordiumHandlerKind.Block:
           return [];
         case SubqlConcordiumHandlerKind.Transaction: {
-          // TODO
-          return [];
+          const filter = handler.filter;
+          if (filter.type || filter.values) {
+            queryEntries.push(txFilterToQueryEntry(filter));
+          } else {
+            return [];
+          }
+          break;
         }
         case SubqlConcordiumHandlerKind.TransactionEvent: {
-          return []; // TODO
+          const filter = handler.filter;
+          if (filter.type || filter.values) {
+            queryEntries.push(txEventFilterToQueryEntry(filter));
+          } else {
+            return [];
+          }
+          break;
         }
         case SubqlConcordiumHandlerKind.SpecialEvent: {
-          return []; // TODO
+          const filter = handler.filter;
+          if (filter.type || filter.values) {
+            queryEntries.push(speicalEventFilterToQueryEntry(filter));
+          } else {
+            return [];
+          }
+          break;
         }
         default:
       }
