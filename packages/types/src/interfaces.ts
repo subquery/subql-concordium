@@ -2,16 +2,12 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import {BlockInfo} from '@concordium/node-sdk';
-import {Block} from '@ethersproject/abstract-provider';
 import {
   ConcordiumBlock,
   ConcordiumBlockWrapper,
   ConcordiumSpecialEvent,
-  ConcordiumSpecialEventFilter,
   ConcordiumTransactionEvent,
-  ConcordiumTransactionEventFilter,
   ConcordiumTransaction,
-  ConcordiumTransactionFilter,
 } from './concordium';
 
 export interface Entity {
