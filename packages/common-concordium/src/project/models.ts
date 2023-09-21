@@ -23,18 +23,7 @@ import {
   SubqlSpecialEventHandler,
 } from '@subql/types-concordium';
 import {plainToClass, Transform, Type} from 'class-transformer';
-import {
-  IsArray,
-  IsEnum,
-  IsInt,
-  IsOptional,
-  IsString,
-  IsObject,
-  ValidateNested,
-  registerDecorator,
-  ValidationOptions,
-  ValidationArguments,
-} from 'class-validator';
+import {IsArray, IsEnum, IsInt, IsOptional, IsString, IsObject, ValidateNested} from 'class-validator';
 import {SubqlConcordiumDatasourceKind, SubqlConcordiumHandlerKind, SubqlConcordiumProcessorOptions} from './types';
 
 export class BlockFilter implements ConcordiumBlockFilter {
@@ -71,31 +60,6 @@ export class SpecialEventFilter implements ConcordiumSpecialEventFilter {
   @IsOptional()
   @IsObject()
   values?: {[key: string]: string};
-}
-
-export function forbidNonWhitelisted(keys: any, validationOptions?: ValidationOptions) {
-  return function (object: object, propertyName: string) {
-    registerDecorator({
-      name: 'forbidNonWhitelisted',
-      target: object.constructor,
-      propertyName: propertyName,
-      constraints: [],
-      options: validationOptions,
-      validator: {
-        validate(value: any, args: ValidationArguments) {
-          const isValid = !Object.keys(value).some((key) => !(key in keys));
-          if (!isValid) {
-            throw new Error(
-              `Invalid keys present in value: ${JSON.stringify(value)}. Whitelisted keys: ${JSON.stringify(
-                Object.keys(keys)
-              )}`
-            );
-          }
-          return isValid;
-        },
-      },
-    });
-  };
 }
 
 export class BlockHandler implements SubqlBlockHandler {
@@ -187,9 +151,6 @@ export class CustomMapping implements SubqlMapping<SubqlCustomHandler> {
 }
 
 export class ConcordiumProcessorOptions implements SubqlConcordiumProcessorOptions {
-  @IsOptional()
-  @IsString()
-  abi?: string;
   @IsOptional()
   @IsString()
   address?: string;

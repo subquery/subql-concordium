@@ -110,7 +110,6 @@ interface ISubqlDatasource<M extends SubqlMapping> {
 }
 
 export interface SubqlConcordiumProcessorOptions {
-  abi?: string;
   address?: string;
 }
 
