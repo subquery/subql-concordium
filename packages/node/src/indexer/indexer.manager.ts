@@ -20,6 +20,7 @@ import {
   IndexerSandbox,
   ProcessBlockResponse,
   BaseIndexerManager,
+  ApiService,
 } from '@subql/node-core';
 import {
   ConcordiumTransaction,
@@ -54,7 +55,7 @@ export class IndexerManager extends BaseIndexerManager<
   SafeConcordiumGRPCClient,
   ConcordiumApi,
   ConcordiumBlockWrapper,
-  ConcordiumApiService,
+  ApiService,
   SubqlConcordiumDataSource,
   SubqlConcordiumCustomDataSource,
   typeof FilterTypeMap,
@@ -66,7 +67,7 @@ export class IndexerManager extends BaseIndexerManager<
   protected updateCustomProcessor = asSecondLayerHandlerProcessor_1_0_0;
 
   constructor(
-    apiService: ConcordiumApiService,
+    apiService: ApiService,
     nodeConfig: NodeConfig,
     sandboxService: SandboxService,
     dsProcessorService: DsProcessorService,
@@ -113,7 +114,9 @@ export class IndexerManager extends BaseIndexerManager<
   private async getApi(
     block: ConcordiumBlockWrapper,
   ): Promise<SafeConcordiumGRPCClient> {
-    return this.apiService.getSafeApi(this.getBlockHeight(block));
+    return (this.apiService as ConcordiumApiService).getSafeApi(
+      this.getBlockHeight(block),
+    );
   }
 
   protected async indexBlockData(
