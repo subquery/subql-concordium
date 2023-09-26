@@ -6,7 +6,7 @@ import Pino from 'pino';
 import {Store, DynamicDatasourceCreator} from './interfaces';
 
 declare global {
-  const api: ConcordiumGRPCClient;
+  //const api: ConcordiumGRPCClient;
   const unsafeApi: ConcordiumGRPCClient | undefined;
   const logger: Pino.Logger;
   const store: Store;

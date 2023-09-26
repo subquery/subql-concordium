@@ -221,7 +221,7 @@ export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
       } as ConcordiumTransactionEvent;
     });
   }
-  /* eslint-disable complexity */
+  /* eslint-enable complexity */
 
   async getAndWrapTransactions(
     blockHash: string,
@@ -291,7 +291,8 @@ export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
     throw new Error('Not implemented');
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async disconnect(): Promise<void> {
-    await this.client.shutdown();
+    return Promise.resolve();
   }
 }

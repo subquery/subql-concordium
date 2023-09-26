@@ -114,9 +114,7 @@ export class IndexerManager extends BaseIndexerManager<
   private async getApi(
     block: ConcordiumBlockWrapper,
   ): Promise<SafeConcordiumGRPCClient> {
-    return (this.apiService as ConcordiumApiService).getSafeApi(
-      this.getBlockHeight(block),
-    );
+    return null;
   }
 
   protected async indexBlockData(

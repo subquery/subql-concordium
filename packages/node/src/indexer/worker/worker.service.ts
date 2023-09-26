@@ -9,9 +9,9 @@ import {
   ProcessBlockResponse,
   BaseWorkerService,
   IProjectUpgradeService,
+  ApiService,
 } from '@subql/node-core';
 import { BlockWrapper } from '@subql/types-concordium';
-import { ConcordiumApiService } from '../../concordium';
 import { ConcordiumProjectDs } from '../../configure/SubqueryProject';
 import { IndexerManager } from '../indexer.manager';
 
@@ -32,7 +32,7 @@ export class WorkerService extends BaseWorkerService<
   {}
 > {
   constructor(
-    private apiService: ConcordiumApiService,
+    private apiService: ApiService,
     private indexerManager: IndexerManager,
     @Inject('IProjectService')
     projectService: IProjectService<ConcordiumProjectDs>,
