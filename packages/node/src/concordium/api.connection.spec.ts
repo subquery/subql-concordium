@@ -42,21 +42,14 @@ describe('ConcordiumApiConnection', () => {
 
   it('should handle errors properly', () => {
     expect(
-      ConcordiumApiConnection.handleError(
-        new Error(`No response received from RPC endpoint in`),
-      ),
+      ConcordiumApiConnection.handleError(new Error(`timeout`)),
     ).toBeInstanceOf(TimeoutError);
     expect(
       ConcordiumApiConnection.handleError(new Error(`disconnected from `)),
     ).toBeInstanceOf(DisconnectionError);
     expect(
-      ConcordiumApiConnection.handleError(
-        new Error(`Rate Limited at endpoint`),
-      ),
+      ConcordiumApiConnection.handleError(new Error(`Ratelimit`)),
     ).toBeInstanceOf(RateLimitError);
-    expect(
-      ConcordiumApiConnection.handleError(new Error(`Exceeded max limit of`)),
-    ).toBeInstanceOf(LargeResponseError);
     expect(
       ConcordiumApiConnection.handleError(new Error('Random error')),
     ).toEqual(

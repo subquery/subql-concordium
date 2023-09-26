@@ -76,14 +76,12 @@ export class ConcordiumApiConnection
   //TODO: replace with concordium specific errora
   static handleError(e: Error): ApiConnectionError {
     let formatted_error: ApiConnectionError;
-    if (e.message.startsWith(`No response received from RPC endpoint in`)) {
+    if (e.message.toLowerCase().includes(`timeout`)) {
       formatted_error = new TimeoutError(e);
-    } else if (e.message.startsWith(`disconnected from `)) {
+    } else if (e.message.toLowerCase().includes(`disconnected`)) {
       formatted_error = new DisconnectionError(e);
-    } else if (e.message.startsWith(`Rate Limited at endpoint`)) {
+    } else if (e.message.toLowerCase().includes(`ratelimit`)) {
       formatted_error = new RateLimitError(e);
-    } else if (e.message.includes(`Exceeded max limit of`)) {
-      formatted_error = new LargeResponseError(e);
     } else {
       formatted_error = new ApiConnectionError(
         e.name,
