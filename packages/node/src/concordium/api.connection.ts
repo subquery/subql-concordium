@@ -6,7 +6,6 @@ import {
   ApiConnectionError,
   ApiErrorType,
   DisconnectionError,
-  LargeResponseError,
   NetworkMetadataPayload,
   RateLimitError,
   TimeoutError,
@@ -73,7 +72,6 @@ export class ConcordiumApiConnection
 
   handleError = ConcordiumApiConnection.handleError;
 
-  //TODO: replace with concordium specific errora
   static handleError(e: Error): ApiConnectionError {
     let formatted_error: ApiConnectionError;
     if (e.message.toLowerCase().includes(`timeout`)) {

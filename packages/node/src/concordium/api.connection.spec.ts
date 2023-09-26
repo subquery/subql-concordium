@@ -5,7 +5,6 @@ import {
   TimeoutError,
   DisconnectionError,
   RateLimitError,
-  LargeResponseError,
   ApiConnectionError,
   ApiErrorType,
 } from '@subql/node-core';
