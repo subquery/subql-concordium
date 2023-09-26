@@ -101,9 +101,10 @@ export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
     const events = await streamToList(
       this.client.getBlockSpecialEvents(blockHash),
     );
-    return events.map((evt) => {
+    return events.map((evt, i) => {
       return {
         ...evt,
+        id: i,
         block: null,
       } as ConcordiumSpecialEvent;
     });
@@ -213,9 +214,10 @@ export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
       default:
     }
 
-    return events.map((evt) => {
+    return events.map((evt, i) => {
       return {
         ...evt,
+        id: i,
         block: null,
         transaction: tx,
       } as ConcordiumTransactionEvent;
@@ -252,6 +254,33 @@ export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
 
     wrappedBlock.transactionEvents = flatMap(
       wrappedBlock.transactions.map((tx) => this.wrapTransactionEvents(tx)),
+    );
+
+    const blockClone = cloneDeep(wrappedBlock);
+
+    wrappedBlock.transactions = wrappedBlock.transactions.map((tx) => {
+      return {
+        ...tx,
+        block: blockClone,
+      };
+    });
+
+    wrappedBlock.transactionEvents = wrappedBlock.transactionEvents.map(
+      (txEvent) => {
+        return {
+          ...txEvent,
+          block: blockClone,
+        };
+      },
+    );
+
+    wrappedBlock.specialEvents = wrappedBlock.specialEvents.map(
+      (specialEvt) => {
+        return {
+          ...specialEvt,
+          block: blockClone,
+        };
+      },
     );
 
     return wrappedBlock;

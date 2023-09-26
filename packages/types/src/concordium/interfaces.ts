@@ -53,10 +53,12 @@ export type ConcordiumTransaction = BlockItemSummary & {
 };
 
 export type ConcordiumSpecialEvent = BlockSpecialEvent & {
+  id: number;
   block: ConcordiumBlock;
 };
 
 export type ConcordiumTransactionEvent = (TransactionEvent | AccountTransferredEvent) & {
+  id: number;
   block: ConcordiumBlock;
   transaction: ConcordiumTransaction;
 };
