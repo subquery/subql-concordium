@@ -67,7 +67,7 @@ export class ConcordiumApiService extends ApiService<
     return this.unsafeApi;
   }
 
-  async getSafeApi(height: number): Promise<SafeConcordiumGRPCClient> {
+  getSafeApi(height: number, hash: string): SafeConcordiumGRPCClient {
     const maxRetries = 5;
 
     const retryErrorCodes = [
@@ -102,7 +102,7 @@ export class ConcordiumApiService extends ApiService<
                   `Request failed with api at height ${height} (retry ${retries}): ${error.message}`,
                 );
                 throwingError = error;
-                currentApi = await this.unsafeApi.getSafeApi(height);
+                currentApi = this.unsafeApi.getSafeApi(height, hash);
                 retries++;
               }
             }
@@ -117,7 +117,7 @@ export class ConcordiumApiService extends ApiService<
       },
     };
 
-    return new Proxy(await this.unsafeApi.getSafeApi(height), handler);
+    return new Proxy(this.unsafeApi.getSafeApi(height, hash), handler);
   }
 
   private async fetchBlockBatches(

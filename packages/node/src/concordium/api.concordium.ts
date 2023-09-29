@@ -306,12 +306,8 @@ export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
     return this.client;
   }
 
-  async getSafeApi(blockHeight: number): Promise<SafeConcordiumGRPCClient> {
-    return new SafeConcordiumGRPCClient(
-      this.transport,
-      blockHeight,
-      (await this.api.getBlocksAtHeight(BigInt(blockHeight)))[0],
-    );
+  getSafeApi(blockHeight: number, blockHash: string): SafeConcordiumGRPCClient {
+    return new SafeConcordiumGRPCClient(this.transport, blockHeight, blockHash);
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await

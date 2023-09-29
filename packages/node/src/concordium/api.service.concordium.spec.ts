@@ -103,7 +103,8 @@ describe('ConcordiumApiService', () => {
 
   it('should return a proxy object with safeApi method and handle retry attempts', async () => {
     const height = 1;
-    const api = await apiService.getSafeApi(height);
+    const hash = '0x1';
+    const api = apiService.getSafeApi(height, hash);
     const testError = { code: 'NETWORK_ERROR', message: 'Network error' };
 
     const spy = jest.spyOn(apiService.unsafeApi, 'getSafeApi');
