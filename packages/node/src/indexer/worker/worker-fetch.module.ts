@@ -6,32 +6,27 @@ import { Module } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   ApiService,
-  StoreService,
-  PoiService,
   ConnectionPoolService,
-  StoreCacheService,
   WorkerDynamicDsService,
   WorkerConnectionPoolStateManager,
   ConnectionPoolStateManager,
   NodeConfig,
 } from '@subql/node-core';
-import { ConcordiumApiService } from '../concordium';
-import { ConcordiumApiConnection } from '../concordium/api.connection';
-import { SubqueryProject } from '../configure/SubqueryProject';
-import { DsProcessorService } from './ds-processor.service';
-import { DynamicDsService } from './dynamic-ds.service';
-import { IndexerManager } from './indexer.manager';
-import { ProjectService } from './project.service';
-import { SandboxService } from './sandbox.service';
-import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
-import { WorkerService } from './worker/worker.service';
-import { WorkerUnfinalizedBlocksService } from './worker/worker.unfinalizedBlocks.service';
+import { ConcordiumApiService } from '../../concordium';
+import { ConcordiumApiConnection } from '../../concordium/api.connection';
+import { SubqueryProject } from '../../configure/SubqueryProject';
+import { DsProcessorService } from '../ds-processor.service';
+import { DynamicDsService } from '../dynamic-ds.service';
+import { IndexerManager } from '../indexer.manager';
+import { ProjectService } from '../project.service';
+import { SandboxService } from '../sandbox.service';
+import { UnfinalizedBlocksService } from '../unfinalizedBlocks.service';
+import { WorkerService } from './worker.service';
+import { WorkerUnfinalizedBlocksService } from './worker.unfinalizedBlocks.service';
 
 @Module({
   providers: [
     IndexerManager,
-    StoreCacheService,
-    StoreService,
     {
       provide: ConnectionPoolStateManager,
       useFactory: () => {
@@ -77,7 +72,6 @@ import { WorkerUnfinalizedBlocksService } from './worker/worker.unfinalizedBlock
         return new WorkerDynamicDsService((global as any).host);
       },
     },
-    PoiService,
     {
       provide: 'IProjectService',
       useClass: ProjectService,
@@ -93,6 +87,5 @@ import { WorkerUnfinalizedBlocksService } from './worker/worker.unfinalizedBlock
       },
     },
   ],
-  exports: [StoreService],
 })
-export class IndexerModule {}
+export class WorkerFetchModule {}

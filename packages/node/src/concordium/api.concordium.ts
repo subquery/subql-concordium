@@ -67,7 +67,7 @@ export class ConcordiumApi implements ApiWrapper {
   }
 
   async getBestBlockHeight(): Promise<bigint> {
-    return (await this.client.getBlockInfo()).blockHeight;
+    return (await this.client.getConsensusStatus()).bestBlockHeight;
   }
 
   getRuntimeChain(): string {

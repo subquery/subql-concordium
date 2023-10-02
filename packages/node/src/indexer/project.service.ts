@@ -1,6 +1,7 @@
 // Copyright 2020-2023 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
+import { isMainThread } from 'node:worker_threads';
 import { BlockInfo } from '@concordium/node-sdk';
 import { Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -12,6 +13,7 @@ import {
   ApiService,
   IProjectUpgradeService,
   ISubqueryProject,
+  mainThreadOnly,
 } from '@subql/node-core';
 import { ConcordiumBlock } from '@subql/types-concordium';
 import {
@@ -41,12 +43,12 @@ export class ProjectService extends BaseProjectService<
   constructor(
     dsProcessorService: DsProcessorService,
     apiService: ApiService,
-    poiService: PoiService,
-    sequelize: Sequelize,
+    @Inject(isMainThread ? PoiService : 'Null') poiService: PoiService,
+    @Inject(isMainThread ? Sequelize : 'Null') sequelize: Sequelize,
     @Inject('ISubqueryProject') project: SubqueryProject,
     @Inject('IProjectUpgradeService')
     protected readonly projectUpgradeService: IProjectUpgradeService<SubqueryProject>,
-    storeService: StoreService,
+    @Inject(isMainThread ? StoreService : 'Null') storeService: StoreService,
     nodeConfig: NodeConfig,
     dynamicDsService: DynamicDsService,
     eventEmitter: EventEmitter2,
@@ -78,6 +80,7 @@ export class ProjectService extends BaseProjectService<
     return blockInfo.blockReceiveTime;
   }
 
+  @mainThreadOnly()
   protected onProjectChange(
     project: ISubqueryProject<
       IProjectNetworkConfig,
