@@ -15,7 +15,7 @@ import { ConcordiumApiService } from './api.service.concordium';
 
 const NETWORK_ENDPOINT = 'node.testnet.concordium.com:20000';
 
-export function testSubqueryProject(endpoint: string): SubqueryProject {
+function testSubqueryProject(endpoint: string): SubqueryProject {
   return {
     network: {
       endpoint: [endpoint],
@@ -30,7 +30,7 @@ export function testSubqueryProject(endpoint: string): SubqueryProject {
   } as unknown as SubqueryProject;
 }
 
-export const prepareApiService = async (
+const prepareApiService = async (
   endpoint: string = NETWORK_ENDPOINT,
   project?: SubqueryProject,
 ): Promise<ConcordiumApiService> => {
@@ -103,7 +103,8 @@ describe('ConcordiumApiService', () => {
 
   it('should return a proxy object with safeApi method and handle retry attempts', async () => {
     const height = 1;
-    const hash = '0x1';
+    const hash =
+      '558218c8ed4cf4fa452df8c9bc282fd9d0f9f7eb95331a12fa259569854a9dda';
     const api = apiService.getSafeApi(height, hash);
     const testError = { code: 'NETWORK_ERROR', message: 'Network error' };
 
@@ -117,8 +118,10 @@ describe('ConcordiumApiService', () => {
       await api.getBlockInfo();
     } catch (error) {
       // The method should have been called maxRetries + 1 times (5 retries + initial call)
+      //eslint-disable-next-line jest/no-conditional-expect
       expect(spy).toHaveBeenCalledTimes(6);
       // The error thrown should be the last error we simulated
+      //eslint-disable-next-line jest/no-conditional-expect
       expect(error).toEqual(testError);
     }
 
