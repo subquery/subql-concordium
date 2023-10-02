@@ -3,7 +3,6 @@
 
 import { EventEmitter2 } from 'eventemitter2';
 import { ConcordiumApi } from './api.concordium';
-import { ConcordiumBlockWrapped } from './block.concordium';
 
 describe('ConcordiumApi', () => {
   let api: ConcordiumApi;
@@ -23,8 +22,7 @@ describe('ConcordiumApi', () => {
   it('should get blocks at a specific height', async () => {
     const block = await api.fetchBlock(0);
 
-    expect(block).toBeInstanceOf(ConcordiumBlockWrapped);
-    expect(block.block.blockHeight).toEqual(BigInt(0));
+    expect(block.blockHeight).toEqual(BigInt(0));
   });
 
   it('should get finalized block height', async () => {

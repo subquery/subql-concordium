@@ -7,9 +7,14 @@ import {
   ApiService,
   ConnectionPoolService,
   getLogger,
+  IProjectNetworkConfig,
   NodeConfig,
 } from '@subql/node-core';
-import { ConcordiumBlockWrapper } from '@subql/types-concordium';
+import {
+  ConcordiumBlock,
+  ConcordiumBlockWrapper,
+} from '@subql/types-concordium';
+import { isArray } from 'lodash';
 import { SubqueryProject } from '../configure/SubqueryProject';
 import { ConcordiumApi } from './api.concordium';
 import { ConcordiumApiConnection } from './api.connection';
@@ -21,7 +26,7 @@ const logger = getLogger('api');
 export class ConcordiumApiService extends ApiService<
   ConcordiumApi,
   SafeConcordiumGRPCClient,
-  ConcordiumBlockWrapper[]
+  ConcordiumBlock[]
 > {
   constructor(
     @Inject('ISubqueryProject') private project: SubqueryProject,
@@ -33,9 +38,12 @@ export class ConcordiumApiService extends ApiService<
   }
 
   async init(): Promise<ConcordiumApiService> {
-    let network;
+    let network: IProjectNetworkConfig;
     try {
       network = this.project.network;
+      network.endpoint = isArray(network.endpoint)
+        ? network.endpoint
+        : [network.endpoint];
 
       if (this.nodeConfig.primaryNetworkEndpoint) {
         network.endpoint.push(this.nodeConfig.primaryNetworkEndpoint);
@@ -72,7 +80,6 @@ export class ConcordiumApiService extends ApiService<
 
     const retryErrorCodes = [
       'UNKNOWN_ERROR',
-      'NOT_IMPLEMENTED',
       'NETWORK_ERROR',
       'SERVER_ERROR',
       'TIMEOUT',
@@ -123,7 +130,7 @@ export class ConcordiumApiService extends ApiService<
   private async fetchBlockBatches(
     api: ConcordiumApi,
     batch: number[],
-  ): Promise<ConcordiumBlockWrapper[]> {
+  ): Promise<ConcordiumBlock[]> {
     return api.fetchBlocks(batch);
   }
 }

@@ -11,7 +11,7 @@ import {
   IProjectUpgradeService,
   ApiService,
 } from '@subql/node-core';
-import { BlockWrapper } from '@subql/types-concordium';
+import { ConcordiumBlock } from '@subql/types-concordium';
 import { ConcordiumProjectDs } from '../../configure/SubqueryProject';
 import { IndexerManager } from '../indexer.manager';
 
@@ -26,7 +26,7 @@ export type WorkerStatusResponse = {
 
 @Injectable()
 export class WorkerService extends BaseWorkerService<
-  BlockWrapper,
+  ConcordiumBlock,
   FetchBlockResponse,
   SubqlConcordiumDataSource,
   {}
@@ -46,19 +46,19 @@ export class WorkerService extends BaseWorkerService<
   protected async fetchChainBlock(
     heights: number,
     extra: {},
-  ): Promise<BlockWrapper> {
+  ): Promise<ConcordiumBlock> {
     const [block] = await this.apiService.fetchBlocks([heights]);
     return block;
   }
 
-  protected toBlockResponse(block: BlockWrapper): { parentHash: string } {
+  protected toBlockResponse(block: ConcordiumBlock): { parentHash: string } {
     return {
-      parentHash: block.block.blockParent,
+      parentHash: block.blockParent,
     };
   }
 
   protected async processFetchedBlock(
-    block: BlockWrapper,
+    block: ConcordiumBlock,
     dataSources: SubqlConcordiumDataSource[],
   ): Promise<ProcessBlockResponse> {
     return this.indexerManager.indexBlock(block, dataSources);

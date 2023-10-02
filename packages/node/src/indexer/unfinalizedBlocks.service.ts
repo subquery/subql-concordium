@@ -10,7 +10,7 @@ import {
   NodeConfig,
   StoreCacheService,
 } from '@subql/node-core';
-import { BlockWrapper, ConcordiumBlock } from '@subql/types-concordium';
+import { ConcordiumBlock } from '@subql/types-concordium';
 
 export function blockToHeader(block: ConcordiumBlock | BlockInfo): Header {
   return {
@@ -21,7 +21,7 @@ export function blockToHeader(block: ConcordiumBlock | BlockInfo): Header {
 }
 
 @Injectable()
-export class UnfinalizedBlocksService extends BaseUnfinalizedBlocksService<BlockWrapper> {
+export class UnfinalizedBlocksService extends BaseUnfinalizedBlocksService<ConcordiumBlock> {
   constructor(
     private readonly apiService: ApiService,
     nodeConfig: NodeConfig,
@@ -30,8 +30,8 @@ export class UnfinalizedBlocksService extends BaseUnfinalizedBlocksService<Block
     super(nodeConfig, storeCache);
   }
 
-  protected blockToHeader(block: BlockWrapper): Header {
-    return blockToHeader(block.block);
+  protected blockToHeader(block: ConcordiumBlock): Header {
+    return blockToHeader(block);
   }
 
   protected async getFinalizedHead(): Promise<Header> {

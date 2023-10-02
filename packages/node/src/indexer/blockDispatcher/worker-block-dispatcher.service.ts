@@ -26,9 +26,9 @@ import {
   HostUnfinalizedBlocks,
 } from '@subql/node-core';
 import { Store } from '@subql/types';
+import { ConcordiumBlock } from '@subql/types-concordium';
 import { ConcordiumApiConnection } from '../../concordium/api.connection';
 
-import { ConcordiumBlockWrapped } from '../../concordium/block.concordium';
 import {
   ConcordiumProjectDs,
   SubqueryProject,
@@ -44,7 +44,7 @@ type IndexerWorker = IIndexerWorker & {
 async function createIndexerWorker(
   store: Store,
   dynamicDsService: IDynamicDsService<ConcordiumProjectDs>,
-  unfinalizedBlocksService: IUnfinalizedBlocksService<ConcordiumBlockWrapped>,
+  unfinalizedBlocksService: IUnfinalizedBlocksService<ConcordiumBlock>,
   connectionPoolState: ConnectionPoolStateManager<ConcordiumApiConnection>,
 
   root: string,

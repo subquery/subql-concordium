@@ -23,7 +23,6 @@ import {
   ConcordiumTransactionEvent,
 } from '@subql/types-concordium';
 import { flatMap, cloneDeep } from 'lodash';
-import { ConcordiumBlockWrapped } from './block.concordium';
 import SafeConcordiumGRPCClient from './safe-api';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -31,7 +30,7 @@ const { version: packageVersion } = require('../../package.json');
 
 const logger = getLogger('api.concordium');
 
-export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
+export class ConcordiumApi implements ApiWrapper {
   private client: ConcordiumGRPCClient;
   private transport: GrpcTransport;
   private genesisBlock: BlockInfo;
@@ -53,11 +52,8 @@ export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
   }
 
   async init(): Promise<void> {
-    const genesisBlock = await this.client
-      .getBlocksAtHeight(BigInt(0))
-      .then((hashes) => {
-        return this.client.getBlockInfo(hashes[0]);
-      });
+    const genesisHash = (await this.client.getBlocksAtHeight(BigInt(0)))[0];
+    const genesisBlock = await this.client.getBlockInfo(genesisHash);
 
     this.genesisBlock = genesisBlock;
     this.chainId = genesisBlock.blockHash;
@@ -286,19 +282,13 @@ export class ConcordiumApi implements ApiWrapper<ConcordiumBlockWrapper> {
     return wrappedBlock;
   }
 
-  async fetchBlock(height: number): Promise<ConcordiumBlockWrapped> {
+  async fetchBlock(height: number): Promise<ConcordiumBlock> {
     const block = await this.getAndWrapBlock(height);
-    const ret = new ConcordiumBlockWrapped(
-      block,
-      block.transactions,
-      block.transactionEvents,
-      block.specialEvents,
-    );
     this.eventEmitter.emit('fetchBlock');
-    return ret;
+    return block;
   }
 
-  async fetchBlocks(bufferBlocks: number[]): Promise<ConcordiumBlockWrapper[]> {
+  async fetchBlocks(bufferBlocks: number[]): Promise<ConcordiumBlock[]> {
     return Promise.all(bufferBlocks.map(async (num) => this.fetchBlock(num)));
   }
 

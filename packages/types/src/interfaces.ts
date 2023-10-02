@@ -46,7 +46,7 @@ export interface BlockWrapper<
   specialEvents?: SE[];
 }
 
-export interface ApiWrapper<BW extends BlockWrapper = ConcordiumBlockWrapper> {
+export interface ApiWrapper {
   init: () => Promise<void>;
   getGenesisHash: () => string;
   getRuntimeChain: () => string;
@@ -55,7 +55,7 @@ export interface ApiWrapper<BW extends BlockWrapper = ConcordiumBlockWrapper> {
   getFinalizedBlockHeight: () => Promise<bigint>;
   getBestBlockHeight: () => Promise<bigint>;
   getBlockByHash: (hash: string) => Promise<BlockInfo>;
-  fetchBlocks: (bufferBlocks: number[]) => Promise<BW[]>;
+  fetchBlocks: (bufferBlocks: number[]) => Promise<ConcordiumBlock[]>;
 }
 
 export type DynamicDatasourceCreator = (name: string, args: Record<string, unknown>) => Promise<void>;

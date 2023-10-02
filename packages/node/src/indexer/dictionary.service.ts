@@ -16,7 +16,7 @@ const CHAIN_ALIASES_URL =
 
 @Injectable()
 export class DictionaryService extends CoreDictionaryService {
-  private constructor(
+  constructor(
     @Inject('ISubqueryProject') protected project: SubqueryProject,
     nodeConfig: NodeConfig,
     eventEmitter: EventEmitter2,
@@ -28,28 +28,5 @@ export class DictionaryService extends CoreDictionaryService {
       nodeConfig,
       eventEmitter,
     );
-  }
-
-  static async create(
-    project: SubqueryProject,
-    nodeConfig: NodeConfig,
-    eventEmitter: EventEmitter2,
-  ): Promise<DictionaryService> {
-    /*Some dictionarys for EVM are built with other SDKs as they are chains with an EVM runtime
-     * we maintain a list of aliases so we can map the evmChainId to the genesis hash of the other SDKs
-     * e.g moonbeam is built with Substrate SDK but can be used as an EVM dictionary
-     */
-    const chainAliases = await this.getEvmChainId();
-    const chainAlias = chainAliases[project.network.chainId];
-
-    return new DictionaryService(project, nodeConfig, eventEmitter, chainAlias);
-  }
-
-  private static async getEvmChainId(): Promise<Record<string, string>> {
-    const response = await fetch(CHAIN_ALIASES_URL);
-
-    const raw = await response.text();
-    // We use JSON5 here because the file has comments in it
-    return JSON5.parse(raw);
   }
 }

@@ -73,7 +73,7 @@ export class ProjectService extends BaseProjectService<
       blockHash,
     );
 
-    return blockInfo.blockReceiveTime; // TODO test and make sure its in MS not S
+    return blockInfo.blockReceiveTime;
   }
 
   protected onProjectChange(

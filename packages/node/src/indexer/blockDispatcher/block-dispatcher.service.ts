@@ -15,7 +15,7 @@ import {
   ApiService,
   IProjectUpgradeService,
 } from '@subql/node-core';
-import { ConcordiumBlockWrapper } from '@subql/types-concordium';
+import { ConcordiumBlock } from '@subql/types-concordium';
 import {
   ConcordiumProjectDs,
   SubqueryProject,
@@ -28,7 +28,7 @@ import { IndexerManager } from '../indexer.manager';
  */
 @Injectable()
 export class BlockDispatcherService
-  extends BlockDispatcher<ConcordiumBlockWrapper, ConcordiumProjectDs>
+  extends BlockDispatcher<ConcordiumBlock, ConcordiumProjectDs>
   implements OnApplicationShutdown
 {
   constructor(
@@ -62,12 +62,12 @@ export class BlockDispatcherService
     );
   }
 
-  protected getBlockHeight(block: ConcordiumBlockWrapper): number {
-    return block.blockHeight;
+  protected getBlockHeight(block: ConcordiumBlock): number {
+    return Number(block.blockHeight);
   }
 
   protected async indexBlock(
-    block: ConcordiumBlockWrapper,
+    block: ConcordiumBlock,
   ): Promise<ProcessBlockResponse> {
     return this.indexerManager.indexBlock(
       block,

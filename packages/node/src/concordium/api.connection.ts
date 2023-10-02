@@ -11,21 +11,24 @@ import {
   TimeoutError,
   IApiConnectionSpecific,
 } from '@subql/node-core';
-import { ConcordiumBlockWrapper } from '@subql/types-concordium';
+import {
+  ConcordiumBlock,
+  ConcordiumBlockWrapper,
+} from '@subql/types-concordium';
 import { ConcordiumApi } from './api.concordium';
 import SafeConcordiumGRPCClient from './safe-api';
 
 type FetchFunc = (
   api: ConcordiumApi,
   batch: number[],
-) => Promise<ConcordiumBlockWrapper[]>;
+) => Promise<ConcordiumBlock[]>;
 
 export class ConcordiumApiConnection
   implements
     IApiConnectionSpecific<
       ConcordiumApi,
       SafeConcordiumGRPCClient,
-      ConcordiumBlockWrapper[]
+      ConcordiumBlock[]
     >
 {
   readonly networkMeta: NetworkMetadataPayload;
@@ -65,7 +68,7 @@ export class ConcordiumApiConnection
     await this.unsafeApi.disconnect();
   }
 
-  async fetchBlocks(heights: number[]): Promise<ConcordiumBlockWrapper[]> {
+  async fetchBlocks(heights: number[]): Promise<ConcordiumBlock[]> {
     const blocks = await this.fetchBlocksBatches(this.unsafeApi, heights);
     return blocks;
   }

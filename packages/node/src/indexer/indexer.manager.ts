@@ -24,7 +24,6 @@ import {
 } from '@subql/node-core';
 import {
   ConcordiumTransaction,
-  ConcordiumBlockWrapper,
   ConcordiumBlock,
   ConcordiumBlockFilter,
   ConcordiumTransactionFilter,
@@ -36,7 +35,12 @@ import {
   SubqlDatasource,
 } from '@subql/types-concordium';
 import { ConcordiumApi, ConcordiumApiService } from '../concordium';
-import { ConcordiumBlockWrapped } from '../concordium/block.concordium';
+import {
+  filterBlocksProcessor,
+  filterSpecialEventProcessor,
+  filterTransactionsProcessor,
+  filterTxEventProcessor,
+} from '../concordium/block.concordium';
 import SafeConcordiumGRPCClient from '../concordium/safe-api';
 import { ConcordiumProjectDs } from '../configure/SubqueryProject';
 import {
@@ -54,7 +58,7 @@ const logger = getLogger('indexer');
 export class IndexerManager extends BaseIndexerManager<
   SafeConcordiumGRPCClient,
   ConcordiumApi,
-  ConcordiumBlockWrapper,
+  ConcordiumBlock,
   ApiService,
   SubqlConcordiumDataSource,
   SubqlConcordiumCustomDataSource,
@@ -94,7 +98,7 @@ export class IndexerManager extends BaseIndexerManager<
 
   @profiler()
   async indexBlock(
-    block: ConcordiumBlockWrapper,
+    block: ConcordiumBlock,
     dataSources: SubqlConcordiumDataSource[],
   ): Promise<ProcessBlockResponse> {
     return super.internalIndexBlock(block, dataSources, () =>
@@ -102,44 +106,39 @@ export class IndexerManager extends BaseIndexerManager<
     );
   }
 
-  getBlockHeight(block: ConcordiumBlockWrapper): number {
-    return block.blockHeight;
+  getBlockHeight(block: ConcordiumBlock): number {
+    return Number(block.blockHeight);
   }
 
-  getBlockHash(block: ConcordiumBlockWrapper): string {
-    return block.hash;
+  getBlockHash(block: ConcordiumBlock): string {
+    return block.blockHash;
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
   private async getApi(
-    block: ConcordiumBlockWrapper,
+    block: ConcordiumBlock,
   ): Promise<SafeConcordiumGRPCClient> {
     return (this.apiService as ConcordiumApiService).getSafeApi(
-      block.blockHeight,
-      block.hash,
+      Number(block.blockHeight),
+      block.blockHash,
     );
   }
 
   protected async indexBlockData(
-    {
-      block,
-      specialEvents,
-      transactionEvents,
-      transactions,
-    }: ConcordiumBlockWrapper,
+    block: ConcordiumBlock,
     dataSources: ConcordiumProjectDs[],
     getVM: (d: ConcordiumProjectDs) => Promise<IndexerSandbox>,
   ): Promise<void> {
     await this.indexBlockContent(block, dataSources, getVM);
 
-    for (const event of specialEvents) {
+    for (const event of block.specialEvents) {
       await this.indexSpecialEvent(event, dataSources, getVM);
     }
 
-    for (const tx of transactions) {
+    for (const tx of block.transactions) {
       await this.indexTransaction(tx, dataSources, getVM);
 
-      for (const event of transactionEvents?.filter(
+      for (const event of block.transactionEvents?.filter(
         (evt) => evt.transaction.hash === tx.hash,
       ) ?? []) {
         await this.indexTransactionEvent(event, dataSources, getVM);
@@ -225,35 +224,20 @@ const FilterTypeMap = {
     data: ConcordiumBlock,
     filter: ConcordiumBlockFilter,
     ds: SubqlConcordiumDataSource,
-  ) =>
-    ConcordiumBlockWrapped.filterBlocksProcessor(
-      data,
-      filter,
-      ds.options?.address,
-    ),
+  ) => filterBlocksProcessor(data, filter, ds.options?.address),
   [ConcordiumHandlerKind.SpecialEvent]: (
     data: ConcordiumSpecialEvent,
     filter: ConcordiumSpecialEventFilter,
     ds: SubqlConcordiumDataSource,
-  ) => ConcordiumBlockWrapped.filterSpecialEventProcessor(data, filter),
+  ) => filterSpecialEventProcessor(data, filter),
   [ConcordiumHandlerKind.TransactionEvent]: (
     data: ConcordiumTransactionEvent,
     filter: ConcordiumTransactionEventFilter,
     ds: SubqlConcordiumDataSource,
-  ) =>
-    ConcordiumBlockWrapped.filterTxEventProcessor(
-      data,
-      filter,
-      ds.options?.address,
-    ),
+  ) => filterTxEventProcessor(data, filter, ds.options?.address),
   [ConcordiumHandlerKind.Transaction]: (
     data: ConcordiumTransaction,
     filter: ConcordiumTransactionFilter,
     ds: SubqlConcordiumDataSource,
-  ) =>
-    ConcordiumBlockWrapped.filterTransactionsProcessor(
-      data,
-      filter,
-      ds.options?.address,
-    ),
+  ) => filterTransactionsProcessor(data, filter, ds.options?.address),
 };

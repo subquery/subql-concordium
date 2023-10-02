@@ -11,6 +11,9 @@
   "author": "Ian He",
   "main": "dist/index.js",
   "license": "GPL-3.0",
+  "dependencies": {
+    "@subql/types-core": "latest"
+  },
   "files": [
     "src/global.d.ts",
     "/dist"

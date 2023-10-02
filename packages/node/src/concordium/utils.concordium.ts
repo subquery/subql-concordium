@@ -5,5 +5,5 @@ import { ApiWrapper } from '@subql/types-concordium';
 
 export function calcInterval(api: ApiWrapper): number {
   // TODO find a way to get this from the blockchain
-  return 6000;
+  return 2000;
 }
