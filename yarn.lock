@@ -3890,7 +3890,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/utils@npm:5.62.0":
+"@typescript-eslint/utils@npm:5.62.0, @typescript-eslint/utils@npm:^5.10.0":
   version: 5.62.0
   resolution: "@typescript-eslint/utils@npm:5.62.0"
   dependencies:
@@ -6063,6 +6063,24 @@ __metadata:
   peerDependencies:
     eslint: ^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8
   checksum: e8ae6dd8f06d8adf685f9c1cfd46ac9e053e344a05c4090767e83b63a85c8421ada389807a39e73c643b9bff156715c122e89778169110ed68d6428e12607edf
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-jest@npm:^27.2.3":
+  version: 27.4.2
+  resolution: "eslint-plugin-jest@npm:27.4.2"
+  dependencies:
+    "@typescript-eslint/utils": ^5.10.0
+  peerDependencies:
+    "@typescript-eslint/eslint-plugin": ^5.0.0 || ^6.0.0
+    eslint: ^7.0.0 || ^8.0.0
+    jest: "*"
+  peerDependenciesMeta:
+    "@typescript-eslint/eslint-plugin":
+      optional: true
+    jest:
+      optional: true
+  checksum: 99a8301ae00c37da97866b8b13c89a077716d2c653b26bc417d242e7300a43237c0017fd488c43966fa38585f19050facdbbc71d03ca36a1ce6f2ba930a9143e
   languageName: node
   linkType: hard
 
@@ -11218,6 +11236,7 @@ __metadata:
     eslint-config-prettier: ^8.3.0
     eslint-plugin-header: ^3.1.1
     eslint-plugin-import: ^2.25.4
+    eslint-plugin-jest: ^27.2.3
     eslint-plugin-prettier: ^4.0.0
     eslint-plugin-sort-destructure-keys: ^1.4.0
     husky: ^7.0.4
