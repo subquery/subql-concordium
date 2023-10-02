@@ -18,7 +18,7 @@ import {
 
 export function isSecondLayerHandlerProcessor_0_0_0<
   K extends SubqlConcordiumHandlerKind,
-  F,
+  F extends Record<string, unknown>,
   E,
   DS extends SubqlCustomDatasource = SubqlConcordiumCustomDataSource,
 >(
@@ -32,7 +32,7 @@ export function isSecondLayerHandlerProcessor_0_0_0<
 
 export function isSecondLayerHandlerProcessor_1_0_0<
   K extends SubqlConcordiumHandlerKind,
-  F,
+  F extends Record<string, unknown>,
   E,
   DS extends SubqlConcordiumCustomDataSource = SubqlConcordiumCustomDataSource,
 >(
@@ -45,7 +45,7 @@ export function isSecondLayerHandlerProcessor_1_0_0<
 
 export function asSecondLayerHandlerProcessor_1_0_0<
   K extends SubqlConcordiumHandlerKind,
-  F,
+  F extends Record<string, unknown>,
   E,
   DS extends SubqlConcordiumCustomDataSource = SubqlConcordiumCustomDataSource,
 >(
@@ -77,7 +77,7 @@ export function asSecondLayerHandlerProcessor_1_0_0<
 export class DsProcessorService extends BaseDsProcessorService<
   SubqlConcordiumDataSource,
   SubqlConcordiumCustomDataSource<string>,
-  SubqlDatasourceProcessor<string, unknown>
+  SubqlDatasourceProcessor<string, Record<string, unknown>>
 > {
   protected isCustomDs = isCustomDs;
 }

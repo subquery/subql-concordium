@@ -2,6 +2,14 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import {
+  BaseTemplateDataSource,
+  CommonSubqueryProject,
+  FileReference,
+  IProjectNetworkConfig,
+  Processor,
+  ProjectManifestV1_0_0,
+} from '@subql/types-core';
+import {
   ConcordiumBlock,
   ConcordiumBlockFilter,
   ConcordiumSpecialEvent,
@@ -12,6 +20,11 @@ import {
   ConcordiumTransactionEventFilter,
 } from './concordium';
 import {ApiWrapper} from './interfaces';
+
+export type RuntimeDatasourceTemplate = BaseTemplateDataSource<SubqlDatasource>;
+export type CustomDatasourceTemplate = BaseTemplateDataSource<SubqlCustomDatasource>;
+
+export type ConcordiumProjectManifestV1_0_0 = ProjectManifestV1_0_0<SubqlRuntimeDatasource | SubqlCustomDatasource>;
 
 export enum ConcordiumDatasourceKind {
   Runtime = 'concordium/Runtime',
@@ -37,21 +50,6 @@ type ConcordiumRuntimeFilterMap = {
   [ConcordiumHandlerKind.TransactionEvent]: ConcordiumTransactionEventFilter;
   [ConcordiumHandlerKind.SpecialEvent]: ConcordiumSpecialEvent;
 };
-
-export interface ProjectManifest {
-  specVersion: string;
-  description: string;
-  repository: string;
-
-  schema: string;
-
-  network: {
-    endpoint: string | string[];
-  };
-
-  dataSources: SubqlDatasource[];
-  bypassBlocks?: number[];
-}
 
 export interface SubqlBlockHandler {
   handler: string;
@@ -126,13 +124,7 @@ export interface SubqlNetworkFilter {
 
 export type SubqlDatasource = SubqlRuntimeDatasource | SubqlCustomDatasource;
 
-export interface FileReference {
-  file: string;
-}
-
 export type CustomDataSourceAsset = FileReference;
-
-export type Processor<O = any> = FileReference & {options?: O};
 
 export interface SubqlCustomDatasource<
   K extends string = string,
@@ -244,3 +236,9 @@ export type SecondLayerHandlerProcessor<
   E,
   DS extends SubqlCustomDatasource = SubqlCustomDatasource
 > = SecondLayerHandlerProcessor_0_0_0<K, F, E, DS> | SecondLayerHandlerProcessor_1_0_0<K, F, E, DS>;
+
+export type ConcordiumProject<DS extends SubqlDatasource = SubqlRuntimeDatasource> = CommonSubqueryProject<
+  IProjectNetworkConfig,
+  SubqlRuntimeDatasource | DS,
+  BaseTemplateDataSource<SubqlRuntimeDatasource> | BaseTemplateDataSource<DS>
+>;

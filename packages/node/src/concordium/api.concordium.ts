@@ -17,7 +17,6 @@ import { getLogger } from '@subql/node-core';
 import {
   ApiWrapper,
   ConcordiumBlock,
-  ConcordiumBlockWrapper,
   ConcordiumSpecialEvent,
   ConcordiumTransaction,
   ConcordiumTransactionEvent,

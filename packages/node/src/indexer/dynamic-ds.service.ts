@@ -32,7 +32,7 @@ export class DynamicDsService extends BaseDynamicDsService<ConcordiumProjectDs> 
   protected async getDatasource(
     params: DatasourceParams,
   ): Promise<ConcordiumProjectDs> {
-    const template = cloneDeep(
+    const { name, ...template } = cloneDeep(
       this.project.templates?.find((t) => t.name === params.templateName),
     );
 

@@ -1,20 +1,16 @@
 // Copyright 2020-2023 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import { getLogger } from '@subql/node-core';
 import {
   ConcordiumBlock,
   ConcordiumTransactionFilter,
   ConcordiumTransactionEventFilter,
   ConcordiumBlockFilter,
-  ConcordiumBlockWrapper,
   ConcordiumTransaction,
   ConcordiumTransactionEvent,
   ConcordiumSpecialEvent,
   ConcordiumSpecialEventFilter,
 } from '@subql/types-concordium';
-
-const logger = getLogger('block');
 
 export function filterBlocksProcessor(
   block: ConcordiumBlock,

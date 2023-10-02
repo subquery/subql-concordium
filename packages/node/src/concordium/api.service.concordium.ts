@@ -3,18 +3,14 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ConcordiumProjectNetworkConfig } from '@subql/common-concordium';
 import {
   ApiService,
   ConnectionPoolService,
   getLogger,
-  IProjectNetworkConfig,
   NodeConfig,
 } from '@subql/node-core';
-import {
-  ConcordiumBlock,
-  ConcordiumBlockWrapper,
-} from '@subql/types-concordium';
-import { isArray } from 'lodash';
+import { ConcordiumBlock } from '@subql/types-concordium';
 import { SubqueryProject } from '../configure/SubqueryProject';
 import { ConcordiumApi } from './api.concordium';
 import { ConcordiumApiConnection } from './api.connection';
@@ -38,12 +34,9 @@ export class ConcordiumApiService extends ApiService<
   }
 
   async init(): Promise<ConcordiumApiService> {
-    let network: IProjectNetworkConfig;
+    let network;
     try {
       network = this.project.network;
-      network.endpoint = isArray(network.endpoint)
-        ? network.endpoint
-        : [network.endpoint];
 
       if (this.nodeConfig.primaryNetworkEndpoint) {
         network.endpoint.push(this.nodeConfig.primaryNetworkEndpoint);

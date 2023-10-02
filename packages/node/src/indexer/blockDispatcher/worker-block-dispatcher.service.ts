@@ -25,8 +25,8 @@ import {
   IProjectUpgradeService,
   HostUnfinalizedBlocks,
 } from '@subql/node-core';
-import { Store } from '@subql/types';
 import { ConcordiumBlock } from '@subql/types-concordium';
+import { Store } from '@subql/types-core';
 import { ConcordiumApiConnection } from '../../concordium/api.connection';
 
 import {

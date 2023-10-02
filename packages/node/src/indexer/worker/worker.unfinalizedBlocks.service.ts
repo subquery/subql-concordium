@@ -7,11 +7,11 @@ import {
   HostUnfinalizedBlocks,
   IUnfinalizedBlocksService,
 } from '@subql/node-core';
-import { BlockWrapper } from '@subql/types-concordium';
+import { ConcordiumBlock } from '@subql/types-concordium';
 
 @Injectable()
 export class WorkerUnfinalizedBlocksService
-  implements IUnfinalizedBlocksService<BlockWrapper>
+  implements IUnfinalizedBlocksService<ConcordiumBlock>
 {
   constructor(private host: HostUnfinalizedBlocks) {}
 
@@ -20,13 +20,14 @@ export class WorkerUnfinalizedBlocksService
   }
 
   async processUnfinalizedBlocks({
-    block: { blockHash, blockParent: parentHash },
+    blockHash,
     blockHeight,
-  }: BlockWrapper): Promise<number | null> {
+    blockParent,
+  }: ConcordiumBlock): Promise<number | null> {
     return this.host.unfinalizedBlocksProcess({
       blockHash,
-      blockHeight,
-      parentHash,
+      blockHeight: Number(blockHeight),
+      parentHash: blockParent,
     });
   }
 

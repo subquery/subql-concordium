@@ -26,7 +26,7 @@
     "@nestjs/schedule": "^3.0.1",
     "@subql/common": "dev",
     "@subql/common-concordium": "workspace:*",
-    "@subql/node-core": "4.2.4-16",
+    "@subql/node-core": "5.0.2-1",
     "@subql/testing": "^2.0.0",
     "@subql/types-concordium": "workspace:*",
     "cacheable-lookup": "6",

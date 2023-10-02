@@ -11,10 +11,13 @@ import {
   NodeConfig,
   ApiService,
   IProjectUpgradeService,
-  IProjectNetworkConfig,
   ISubqueryProject,
 } from '@subql/node-core';
-import { ConcordiumBlockWrapper } from '@subql/types-concordium';
+import { ConcordiumBlock } from '@subql/types-concordium';
+import {
+  IProjectNetworkConfig,
+  BaseTemplateDataSource,
+} from '@subql/types-core';
 import { Sequelize } from '@subql/x-sequelize';
 import { ConcordiumApi } from '../concordium';
 import SafeConcordiumGRPCClient from '../concordium/safe-api';
@@ -25,13 +28,12 @@ import {
 import { DsProcessorService } from './ds-processor.service';
 import { DynamicDsService } from './dynamic-ds.service';
 import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
-
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { version: packageVersion } = require('../../package.json');
 
 @Injectable()
 export class ProjectService extends BaseProjectService<
-  ApiService<ConcordiumApi, SafeConcordiumGRPCClient, ConcordiumBlockWrapper[]>,
+  ApiService<ConcordiumApi, SafeConcordiumGRPCClient, ConcordiumBlock[]>,
   ConcordiumProjectDs
 > {
   protected packageVersion = packageVersion;
@@ -80,7 +82,7 @@ export class ProjectService extends BaseProjectService<
     project: ISubqueryProject<
       IProjectNetworkConfig,
       ConcordiumProjectDs,
-      unknown,
+      BaseTemplateDataSource<ConcordiumProjectDs>,
       unknown
     >,
   ): void | Promise<void> {

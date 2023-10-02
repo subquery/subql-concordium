@@ -2,18 +2,22 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import {
-  BaseMapping,
   FileType,
-  NodeSpec,
-  ParentProject,
   ParentProjectModel,
   ProjectManifestBaseImpl,
-  QuerySpec,
   RunnerNodeImpl,
   RunnerQueryBaseModel,
-  RunnerSpecs,
 } from '@subql/common';
-import {SubqlCustomDatasource, SubqlMapping, SubqlRuntimeDatasource} from '@subql/types-concordium';
+import {BaseDeploymentV1_0_0, CommonProjectNetworkV1_0_0} from '@subql/common/dist';
+import {
+  SubqlCustomDatasource,
+  SubqlMapping,
+  SubqlRuntimeDatasource,
+  RuntimeDatasourceTemplate,
+  CustomDatasourceTemplate,
+  ConcordiumProjectManifestV1_0_0,
+} from '@subql/types-concordium';
+import {BaseMapping, NodeSpec, ParentProject, QuerySpec, RunnerSpecs} from '@subql/types-core';
 import {plainToClass, Transform, TransformFnParams, Type} from 'class-transformer';
 import {
   Equals,
@@ -28,7 +32,6 @@ import {
 } from 'class-validator';
 import {CustomDataSourceBase, ConcordiumMapping, RuntimeDataSourceBase} from '../../models';
 import {SubqlConcordiumDataSource, SubqlRuntimeHandler} from '../../types';
-import {CustomDatasourceTemplate, ConcordiumProjectManifestV1_0_0, RuntimeDatasourceTemplate} from './types';
 
 const Concordium_NODE_NAME = `@subql/node-concordium`;
 const Flare_NODE_NAME = `@subql/node-flare`;
@@ -62,10 +65,7 @@ export class ConcordiumRuntimeDataSourceImpl
   }
 }
 
-export class ConcordiumCustomDataSourceImpl<
-    K extends string = string,
-    M extends BaseMapping<any, any> = BaseMapping<Record<string, unknown>, any>
-  >
+export class ConcordiumCustomDataSourceImpl<K extends string = string, M extends BaseMapping<any> = BaseMapping<any>>
   extends CustomDataSourceBase<K, M>
   implements SubqlCustomDatasource<K, M>
 {
@@ -103,25 +103,20 @@ export class ProjectNetworkDeploymentV1_0_0 {
   @Transform(({value}: TransformFnParams) => value.trim())
   @IsString()
   chainId: string;
-  @ValidateNested()
-  @Type(() => FileType)
-  @IsOptional()
-  chaintypes?: FileType;
+
   @IsOptional()
   @IsArray()
   bypassBlocks?: (number | string)[];
 }
 
-export class ProjectNetworkV1_0_0 extends ProjectNetworkDeploymentV1_0_0 {
-  @IsString({each: true})
+export class ProjectNetworkV1_0_0 extends CommonProjectNetworkV1_0_0<FileType> {
+  @ValidateNested()
+  @Type(() => FileType)
   @IsOptional()
-  endpoint?: string | string[];
-  @IsString()
-  @IsOptional()
-  dictionary?: string;
+  chaintypes?: FileType;
 }
 
-export class DeploymentV1_0_0 {
+export class DeploymentV1_0_0 extends BaseDeploymentV1_0_0 {
   @Transform((params) => {
     if (params.value.genesisHash && !params.value.chainId) {
       params.value.chainId = params.value.genesisHash;
@@ -131,16 +126,10 @@ export class DeploymentV1_0_0 {
   @ValidateNested()
   @Type(() => ProjectNetworkDeploymentV1_0_0)
   network: ProjectNetworkDeploymentV1_0_0;
-  @Equals('1.0.0')
-  @IsString()
-  specVersion: string;
   @IsObject()
   @ValidateNested()
   @Type(() => ConcordiumRunnerSpecsImpl)
   runner: RunnerSpecs;
-  @ValidateNested()
-  @Type(() => FileType)
-  schema: FileType;
   @IsArray()
   @ValidateNested()
   @Type(() => ConcordiumCustomDataSourceImpl, {
@@ -162,17 +151,16 @@ export class DeploymentV1_0_0 {
     keepDiscriminatorProperty: true,
   })
   templates?: (RuntimeDatasourceTemplate | CustomDatasourceTemplate)[];
-
-  @IsOptional()
-  @IsObject()
-  @Type(() => ParentProjectModel)
-  parent?: ParentProject;
 }
 
-export class ProjectManifestV1_0_0Impl<D extends object = DeploymentV1_0_0>
-  extends ProjectManifestBaseImpl<D>
+export class ProjectManifestV1_0_0Impl
+  extends ProjectManifestBaseImpl<DeploymentV1_0_0>
   implements ConcordiumProjectManifestV1_0_0
 {
+  constructor() {
+    super(DeploymentV1_0_0);
+  }
+
   @Equals('1.0.0')
   specVersion: string;
   @Type(() => ConcordiumCustomDataSourceImpl, {
@@ -207,19 +195,9 @@ export class ProjectManifestV1_0_0Impl<D extends object = DeploymentV1_0_0>
   @ValidateNested()
   @Type(() => ConcordiumRunnerSpecsImpl)
   runner: RunnerSpecs;
-  protected _deployment: D;
 
   @IsOptional()
   @IsObject()
   @Type(() => ParentProjectModel)
   parent?: ParentProject;
-
-  get deployment(): D {
-    if (!this._deployment) {
-      this._deployment = plainToClass(DeploymentV1_0_0, this) as unknown as D;
-      //validateSync(this._deployment.)
-      validateSync(this._deployment, {whitelist: true});
-    }
-    return this._deployment;
-  }
 }

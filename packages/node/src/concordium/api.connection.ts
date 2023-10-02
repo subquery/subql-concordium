@@ -11,10 +11,7 @@ import {
   TimeoutError,
   IApiConnectionSpecific,
 } from '@subql/node-core';
-import {
-  ConcordiumBlock,
-  ConcordiumBlockWrapper,
-} from '@subql/types-concordium';
+import { ConcordiumBlock } from '@subql/types-concordium';
 import { ConcordiumApi } from './api.concordium';
 import SafeConcordiumGRPCClient from './safe-api';
 

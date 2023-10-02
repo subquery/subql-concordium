@@ -18,12 +18,15 @@ import {
   getLogger,
   getModulos,
 } from '@subql/node-core';
-import { DictionaryQueryCondition, DictionaryQueryEntry } from '@subql/types';
 import {
   ConcordiumSpecialEventFilter,
   ConcordiumTransactionEventFilter,
   SubqlDatasource,
 } from '@subql/types-concordium';
+import {
+  DictionaryQueryCondition,
+  DictionaryQueryEntry,
+} from '@subql/types-core';
 import { groupBy, partition, setWith, sortBy, uniqBy } from 'lodash';
 import { ConcordiumApi } from '../concordium';
 import { calcInterval } from '../concordium/utils.concordium';
@@ -231,8 +234,12 @@ export class FetchService extends BaseFetchService<
     return this.apiService.unsafeApi;
   }
 
+  protected getGenesisHash(): string {
+    return this.apiService.networkMeta.genesisHash;
+  }
+
   protected buildDictionaryQueryEntries(
-    dataSources: SubqlDatasource[],
+    dataSources: (SubqlDatasource & { name?: string })[],
   ): DictionaryQueryEntry[] {
     const [normalDataSources, templateDataSources] = partition(
       dataSources,

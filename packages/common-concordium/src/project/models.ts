@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import {TransactionEventTag, TransactionSummaryType} from '@concordium/node-sdk';
+import {ProcessorImpl} from '@subql/common';
 import {
   ConcordiumHandlerKind,
   ConcordiumDatasourceKind,
@@ -11,7 +12,6 @@ import {
   SubqlRuntimeHandler,
   SubqlRuntimeDatasource,
   SubqlCustomDatasource,
-  FileReference,
   CustomDataSourceAsset,
   ConcordiumBlockFilter,
   SubqlBlockHandler,
@@ -22,6 +22,7 @@ import {
   SubqlTransactionEventHandler,
   SubqlSpecialEventHandler,
 } from '@subql/types-concordium';
+import {FileReference, Processor} from '@subql/types-core';
 import {plainToClass, Transform, Type} from 'class-transformer';
 import {IsArray, IsEnum, IsInt, IsOptional, IsString, IsObject, ValidateNested} from 'class-validator';
 import {SubqlConcordiumDatasourceKind, SubqlConcordiumHandlerKind, SubqlConcordiumProcessorOptions} from './types';
@@ -180,7 +181,7 @@ export class FileReferenceImpl implements FileReference {
   file: string;
 }
 
-export class CustomDataSourceBase<K extends string, M extends SubqlMapping = SubqlMapping<SubqlCustomHandler>>
+export class CustomDataSourceBase<K extends string, M extends SubqlMapping = SubqlMapping<SubqlCustomHandler>, O = any>
   implements SubqlCustomDatasource<K, M>
 {
   @IsString()
@@ -194,9 +195,9 @@ export class CustomDataSourceBase<K extends string, M extends SubqlMapping = Sub
   @Type(() => FileReferenceImpl)
   @ValidateNested({each: true})
   assets: Map<string, CustomDataSourceAsset>;
-  @Type(() => FileReferenceImpl)
+  @Type(() => ProcessorImpl)
   @IsObject()
-  processor: FileReference;
+  processor: Processor<O>;
   @IsOptional()
   @ValidateNested()
   options?: ConcordiumProcessorOptions;

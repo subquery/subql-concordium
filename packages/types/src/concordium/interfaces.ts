@@ -11,7 +11,6 @@ import {
   TransactionSummaryType,
   TransactionEventTag,
 } from '@concordium/node-sdk';
-import {BlockWrapper} from '../interfaces';
 
 export interface ConcordiumBlockFilter {
   modulo?: number;
@@ -62,10 +61,3 @@ export type ConcordiumTransactionEvent = (TransactionEvent | AccountTransferredE
   block: ConcordiumBlock;
   transaction: ConcordiumTransaction;
 };
-
-export type ConcordiumBlockWrapper = BlockWrapper<
-  ConcordiumBlock,
-  ConcordiumTransaction,
-  ConcordiumTransactionEvent,
-  ConcordiumSpecialEvent
->;
