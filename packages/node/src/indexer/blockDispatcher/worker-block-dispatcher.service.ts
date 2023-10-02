@@ -46,8 +46,8 @@ async function createIndexerWorker(
   dynamicDsService: IDynamicDsService<ConcordiumProjectDs>,
   unfinalizedBlocksService: IUnfinalizedBlocksService<ConcordiumBlock>,
   connectionPoolState: ConnectionPoolStateManager<ConcordiumApiConnection>,
-
   root: string,
+  startHeight: number,
 ): Promise<IndexerWorker> {
   const indexerWorker = Worker.create<
     IInitIndexerWorker,
@@ -67,7 +67,7 @@ async function createIndexerWorker(
     root,
   );
 
-  await indexerWorker.initWorker();
+  await indexerWorker.initWorker(startHeight);
 
   return indexerWorker;
 }
@@ -111,6 +111,7 @@ export class WorkerBlockDispatcherService
           unfinalizedBlocksSevice,
           connectionPoolState,
           project.root,
+          projectService.startHeight,
         ),
     );
   }

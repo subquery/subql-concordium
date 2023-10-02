@@ -20,11 +20,10 @@ export class DictionaryService extends CoreDictionaryService {
     @Inject('ISubqueryProject') protected project: SubqueryProject,
     nodeConfig: NodeConfig,
     eventEmitter: EventEmitter2,
-    chainId?: string,
   ) {
     super(
       project.network.dictionary,
-      chainId ?? project.network.chainId,
+      project.network.chainId,
       nodeConfig,
       eventEmitter,
     );
