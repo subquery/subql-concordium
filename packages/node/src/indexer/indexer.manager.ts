@@ -131,10 +131,6 @@ export class IndexerManager extends BaseIndexerManager<
   ): Promise<void> {
     await this.indexBlockContent(block, dataSources, getVM);
 
-    for (const event of block.specialEvents) {
-      await this.indexSpecialEvent(event, dataSources, getVM);
-    }
-
     for (const tx of block.transactions) {
       await this.indexTransaction(tx, dataSources, getVM);
 
@@ -143,6 +139,10 @@ export class IndexerManager extends BaseIndexerManager<
       ) ?? []) {
         await this.indexTransactionEvent(event, dataSources, getVM);
       }
+    }
+
+    for (const event of block.specialEvents) {
+      await this.indexSpecialEvent(event, dataSources, getVM);
     }
   }
 
