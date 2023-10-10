@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import {BlockInfo} from '@concordium/node-sdk';
-import {ConcordiumBlock, ConcordiumSpecialEvent, ConcordiumTransactionEvent, ConcordiumTransaction} from './concordium';
+import {ConcordiumBlock} from './concordium';
 
 export interface ApiWrapper {
   init: () => Promise<void>;
@@ -15,5 +15,3 @@ export interface ApiWrapper {
   getBlockByHash: (hash: string) => Promise<BlockInfo>;
   fetchBlocks: (bufferBlocks: number[]) => Promise<ConcordiumBlock[]>;
 }
-
-export type DynamicDatasourceCreator = (name: string, args: Record<string, unknown>) => Promise<void>;

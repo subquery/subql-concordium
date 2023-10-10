@@ -11,27 +11,57 @@ import {
   TransactionSummaryType,
   TransactionEventTag,
 } from '@concordium/node-sdk';
+import {BlockFilter} from '@subql/types-core';
 
-export interface ConcordiumBlockFilter {
-  modulo?: number;
-  timestamp?: string;
-}
+/**
+ * Represents a filter for Concordium blocks
+ * @interface
+ */
+export type ConcordiumBlockFilter = BlockFilter;
 
+/**
+ * Represents a filter for Concordium Transactions
+ * @interface
+ */
 export interface ConcordiumTransactionFilter {
+  /**
+   * The transaction summary type for filtering transactions (optional).
+   * @type {TransactionSummaryType}
+   * @example
+   * type: 'accountTransaction'
+   */
   type?: TransactionSummaryType;
+  /**
+   * Other fields of the transaction to filter by
+   * */
   values?: {
     [key: string]: string;
   };
 }
 
 export interface ConcordiumTransactionEventFilter {
+  /**
+   * The transaction event type for filtering events (optional).
+   * @type {TransactionEventTag}
+   * @example
+   * type: 'AccountCreated'
+   */
   type?: TransactionEventTag;
+  /**
+   * Other fields of the event to filter by
+   * */
   values?: {
     [key: string]: string;
   };
 }
 
 export interface ConcordiumSpecialEventFilter {
+  /**
+   * The speical event type for filtering special events (optional).
+   * @type {string}
+   * @example
+   * type: 'blockReward'
+   */
   type?: string;
   values?: {
     [key: string]: string;

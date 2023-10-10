@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import {TransactionEventTag, TransactionSummaryType} from '@concordium/node-sdk';
-import {ProcessorImpl} from '@subql/common';
+import {BlockFilterImpl, ProcessorImpl} from '@subql/common';
 import {
   ConcordiumHandlerKind,
   ConcordiumDatasourceKind,
@@ -26,15 +26,6 @@ import {FileReference, Processor} from '@subql/types-core';
 import {plainToClass, Transform, Type} from 'class-transformer';
 import {IsArray, IsEnum, IsInt, IsOptional, IsString, IsObject, ValidateNested} from 'class-validator';
 import {SubqlConcordiumDatasourceKind, SubqlConcordiumHandlerKind, SubqlConcordiumProcessorOptions} from './types';
-
-export class BlockFilter implements ConcordiumBlockFilter {
-  @IsOptional()
-  @IsInt()
-  modulo?: number;
-  @IsOptional()
-  @IsString()
-  timestamp?: string;
-}
 
 export class TransactionFilter implements ConcordiumTransactionFilter {
   @IsOptional()
@@ -66,8 +57,8 @@ export class SpecialEventFilter implements ConcordiumSpecialEventFilter {
 export class BlockHandler implements SubqlBlockHandler {
   @IsObject()
   @IsOptional()
-  @Type(() => BlockFilter)
-  filter?: BlockFilter;
+  @Type(() => BlockFilterImpl)
+  filter?: BlockFilterImpl;
   @IsEnum(SubqlConcordiumHandlerKind, {groups: [SubqlConcordiumHandlerKind.Block]})
   kind: ConcordiumHandlerKind.Block;
   @IsString()

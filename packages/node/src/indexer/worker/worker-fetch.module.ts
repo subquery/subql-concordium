@@ -29,12 +29,8 @@ import { WorkerUnfinalizedBlocksService } from './worker.unfinalizedBlocks.servi
     IndexerManager,
     {
       provide: ConnectionPoolStateManager,
-      useFactory: () => {
-        if (isMainThread) {
-          throw new Error('Expected to be worker thread');
-        }
-        return new WorkerConnectionPoolStateManager((global as any).host);
-      },
+      useFactory: () =>
+        new WorkerConnectionPoolStateManager((global as any).host),
     },
     ConnectionPoolService,
     {
@@ -65,12 +61,7 @@ import { WorkerUnfinalizedBlocksService } from './worker.unfinalizedBlocks.servi
     DsProcessorService,
     {
       provide: DynamicDsService,
-      useFactory: () => {
-        if (isMainThread) {
-          throw new Error('Expected to be worker thread');
-        }
-        return new WorkerDynamicDsService((global as any).host);
-      },
+      useFactory: () => new WorkerDynamicDsService((global as any).host),
     },
     {
       provide: 'IProjectService',
@@ -79,12 +70,8 @@ import { WorkerUnfinalizedBlocksService } from './worker.unfinalizedBlocks.servi
     WorkerService,
     {
       provide: UnfinalizedBlocksService,
-      useFactory: () => {
-        if (isMainThread) {
-          throw new Error('Expected to be worker thread');
-        }
-        return new WorkerUnfinalizedBlocksService((global as any).host);
-      },
+      useFactory: () =>
+        new WorkerUnfinalizedBlocksService((global as any).host),
     },
   ],
 })

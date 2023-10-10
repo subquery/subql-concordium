@@ -155,8 +155,13 @@ export function buildDictionaryQueryEntries(
       if (!handler.filter) return [];
 
       switch (handler.kind) {
-        case SubqlConcordiumHandlerKind.Block:
-          return [];
+        case SubqlConcordiumHandlerKind.Block: {
+          const filter = handler.filter;
+          if (filter.modulo === undefined) {
+            return [];
+          }
+          break;
+        }
         case SubqlConcordiumHandlerKind.Transaction: {
           const filter = handler.filter;
           if (filter.type || filter.values) {
