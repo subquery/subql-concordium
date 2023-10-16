@@ -14,6 +14,7 @@ import {
   IProjectUpgradeService,
   ISubqueryProject,
   mainThreadOnly,
+  PoiSyncService,
 } from '@subql/node-core';
 import { ConcordiumBlock } from '@subql/types-concordium';
 import {
@@ -44,6 +45,8 @@ export class ProjectService extends BaseProjectService<
     dsProcessorService: DsProcessorService,
     apiService: ApiService,
     @Inject(isMainThread ? PoiService : 'Null') poiService: PoiService,
+    @Inject(isMainThread ? PoiSyncService : 'Null')
+    poiSyncService: PoiSyncService,
     @Inject(isMainThread ? Sequelize : 'Null') sequelize: Sequelize,
     @Inject('ISubqueryProject') project: SubqueryProject,
     @Inject('IProjectUpgradeService')
@@ -58,6 +61,7 @@ export class ProjectService extends BaseProjectService<
       dsProcessorService,
       apiService,
       poiService,
+      poiSyncService,
       sequelize,
       project,
       projectUpgradeService,

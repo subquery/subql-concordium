@@ -15,6 +15,7 @@ import {
   SmartBatchService,
   StoreCacheService,
   IProjectUpgradeService,
+  PoiSyncService,
 } from '@subql/node-core';
 import { ConcordiumApiConnection } from '../concordium/api.connection';
 import { ConcordiumApiService } from '../concordium/api.service.concordium';
@@ -63,6 +64,7 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
     IndexerManager,
     ConnectionPoolStateManager,
     ConnectionPoolService,
+    PoiSyncService,
     {
       provide: SmartBatchService,
       useFactory: (nodeConfig: NodeConfig) => {
@@ -83,6 +85,7 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
         storeService: StoreService,
         storeCacheService: StoreCacheService,
         poiService: PoiService,
+        poiSyncService: PoiSyncService,
         project: SubqueryProject,
         dynamicDsService: DynamicDsService,
         unfinalizedBlocks: UnfinalizedBlocksService,
@@ -98,6 +101,7 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
               storeService,
               storeCacheService,
               poiService,
+              poiSyncService,
               project,
               dynamicDsService,
               unfinalizedBlocks,
@@ -114,6 +118,7 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
               storeService,
               storeCacheService,
               poiService,
+              poiSyncService,
               project,
               dynamicDsService,
             ),
@@ -128,6 +133,7 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
         StoreService,
         StoreCacheService,
         PoiService,
+        PoiSyncService,
         'ISubqueryProject',
         DynamicDsService,
         UnfinalizedBlocksService,
