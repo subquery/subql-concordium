@@ -1,0 +1,37 @@
+specVersion: '1.0.0'
+
+name: 'uniswap-v3'
+version: '0.0.1'
+runner:
+  node:
+    name: '@subql/node-concordium'
+    version: '*'
+  query:
+    name: '@subql/query'
+    version: '*'
+description: 'This project can be use as a starting point for developing your new Concordium SubQuery project'
+repository: 'https://github.com/subquery/concordium-subql-starter'
+
+schema:
+  file: './schema.graphql'
+
+network:
+  #  endpoint: "fill it in"
+  chainId: '1'
+  endpoint: 'node.testnet.concordium.com:20000'
+
+dataSources:
+  - kind: concordium/Runtime
+    startBlock: 12369621
+    options:
+      # Must be a key of assets
+      abi: Factory
+      address: '0x1F98431c8aD98523631AE4a59f267346ea31F984'
+
+    mapping:
+      file: './dist/index.js'
+      handlers:
+        - handler: handleTransaction
+          kind: concordium/TransactionHandler
+          filter:
+            type: 'accountTransaction'
