@@ -13,6 +13,7 @@
   "main": "dist/index.js",
   "license": "GPL-3.0",
   "dependencies": {
+    "@concordium/node-sdk": "9.4.0",
     "@subql/common": "latest",
     "@subql/types-concordium": "workspace:*",
     "js-yaml": "^4.1.0",
