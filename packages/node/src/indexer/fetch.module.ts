@@ -16,6 +16,7 @@ import {
   StoreCacheService,
   IProjectUpgradeService,
   PoiSyncService,
+  InMemoryCacheService,
 } from '@subql/node-core';
 import { ConcordiumApiConnection } from '../concordium/api.connection';
 import { ConcordiumApiService } from '../concordium/api.service.concordium';
@@ -35,6 +36,7 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
 
 @Module({
   providers: [
+    InMemoryCacheService,
     StoreService,
     StoreCacheService,
     {
@@ -82,6 +84,7 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
         apiService: ConcordiumApiService,
         indexerManager: IndexerManager,
         smartBatchService: SmartBatchService,
+        cacheService: InMemoryCacheService,
         storeService: StoreService,
         storeCacheService: StoreCacheService,
         poiService: PoiService,
@@ -98,6 +101,7 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
               projectService,
               projectUpgradeService,
               smartBatchService,
+              cacheService,
               storeService,
               storeCacheService,
               poiService,
@@ -130,6 +134,7 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
         ApiService,
         IndexerManager,
         SmartBatchService,
+        InMemoryCacheService,
         StoreService,
         StoreCacheService,
         PoiService,

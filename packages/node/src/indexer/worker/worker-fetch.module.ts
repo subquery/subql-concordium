@@ -11,6 +11,7 @@ import {
   WorkerConnectionPoolStateManager,
   ConnectionPoolStateManager,
   NodeConfig,
+  InMemoryCacheService,
 } from '@subql/node-core';
 import { ConcordiumApiService } from '../../concordium';
 import { ConcordiumApiConnection } from '../../concordium/api.connection';
@@ -21,6 +22,7 @@ import { IndexerManager } from '../indexer.manager';
 import { ProjectService } from '../project.service';
 import { SandboxService } from '../sandbox.service';
 import { UnfinalizedBlocksService } from '../unfinalizedBlocks.service';
+import { WorkerInMemoryCacheService } from './woker.inMemoryCache.service';
 import { WorkerService } from './worker.service';
 import { WorkerUnfinalizedBlocksService } from './worker.unfinalizedBlocks.service';
 
@@ -72,6 +74,10 @@ import { WorkerUnfinalizedBlocksService } from './worker.unfinalizedBlocks.servi
       provide: UnfinalizedBlocksService,
       useFactory: () =>
         new WorkerUnfinalizedBlocksService((global as any).host),
+    },
+    {
+      provide: InMemoryCacheService,
+      useFactory: () => new WorkerInMemoryCacheService((global as any).host),
     },
   ],
 })

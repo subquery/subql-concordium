@@ -21,13 +21,15 @@ import {
   connectionPoolStateHostFunctions,
   baseWorkerFunctions,
   storeHostFunctions,
+  cacheHostFunctions,
   dynamicDsHostFunctions,
   IProjectUpgradeService,
   HostUnfinalizedBlocks,
   PoiSyncService,
+  InMemoryCacheService,
 } from '@subql/node-core';
 import { ConcordiumBlock } from '@subql/types-concordium';
-import { Store } from '@subql/types-core';
+import { Store, Cache } from '@subql/types-core';
 import { ConcordiumApiConnection } from '../../concordium/api.connection';
 
 import {
@@ -44,6 +46,7 @@ type IndexerWorker = IIndexerWorker & {
 
 async function createIndexerWorker(
   store: Store,
+  cache: Cache,
   dynamicDsService: IDynamicDsService<ConcordiumProjectDs>,
   unfinalizedBlocksService: IUnfinalizedBlocksService<ConcordiumBlock>,
   connectionPoolState: ConnectionPoolStateManager<ConcordiumApiConnection>,
@@ -57,6 +60,7 @@ async function createIndexerWorker(
     path.resolve(__dirname, '../../../dist/indexer/worker/worker.js'),
     [...baseWorkerFunctions, 'initWorker'],
     {
+      ...cacheHostFunctions(cache),
       ...storeHostFunctions(store),
       ...dynamicDsHostFunctions(dynamicDsService),
       unfinalizedBlocksProcess:
@@ -86,6 +90,7 @@ export class WorkerBlockDispatcherService
     @Inject('IProjectUpgradeService')
     projectUpgadeService: IProjectUpgradeService,
     smartBatchService: SmartBatchService,
+    cacheService: InMemoryCacheService,
     storeService: StoreService,
     storeCacheService: StoreCacheService,
     poiService: PoiService,
@@ -110,6 +115,7 @@ export class WorkerBlockDispatcherService
       () =>
         createIndexerWorker(
           storeService.getStore(),
+          cacheService.getCache(),
           dynamicDsService,
           unfinalizedBlocksSevice,
           connectionPoolState,
