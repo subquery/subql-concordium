@@ -23,14 +23,14 @@ jobs:
       - uses: ./.github/actions/create-release
         with:
           package-path: packages/common-concordium
-          repo-token: ${{ secrets.REPO_TOKEN }}
+          repo-token: ${{ secrets.SQ_SDK_GITHUB_SECRET }}
 
       - uses: ./.github/actions/create-release
         with:
           package-path: packages/node
-          repo-token: ${{ secrets.REPO_TOKEN }}
+          repo-token: ${{ secrets.SQ_SDK_GITHUB_SECRET }}
 
       - uses: ./.github/actions/create-release
         with:
           package-path: packages/types
-          repo-token: ${{ secrets.REPO_TOKEN }}
+          repo-token: ${{ secrets.SQ_SDK_GITHUB_SECRET }}

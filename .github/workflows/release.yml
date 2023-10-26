@@ -17,7 +17,7 @@ jobs:
         with:
           poll-interval-seconds: 10
         env:
-          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.SQ_SDK_GITHUB_SECRET }}
 
   Build-Publish:
     name: Build-Publish
@@ -62,7 +62,7 @@ jobs:
         uses: ./.github/actions/create-release
         with:
           package-path: packages/types
-          repo-token: ${{ secrets.REPO_TOKEN }}
+          repo-token: ${{ secrets.SQ_SDK_GITHUB_SECRET }}
           npm-token: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish Common concordium
@@ -70,7 +70,7 @@ jobs:
         uses: ./.github/actions/create-release
         with:
           package-path: packages/common-concordium
-          repo-token: ${{ secrets.REPO_TOKEN }}
+          repo-token: ${{ secrets.SQ_SDK_GITHUB_SECRET }}
           npm-token: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish Node
@@ -78,5 +78,5 @@ jobs:
         uses: ./.github/actions/create-release
         with:
           package-path: packages/node
-          repo-token: ${{ secrets.REPO_TOKEN }}
+          repo-token: ${{ secrets.SQ_SDK_GITHUB_SECRET }}
           npm-token: ${{ secrets.NPM_TOKEN }}
