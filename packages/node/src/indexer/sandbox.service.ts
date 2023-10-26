@@ -10,6 +10,7 @@ import {
   hostStoreToStore,
   ISubqueryProject,
   ApiService,
+  InMemoryCacheService,
 } from '@subql/node-core';
 import { Store, BaseDataSource } from '@subql/types-core';
 import SafeEthProvider from '../concordium/safe-api';
@@ -23,6 +24,7 @@ export class SandboxService {
     private readonly apiService: ApiService,
     @Inject(isMainThread ? StoreService : 'Null')
     private readonly storeService: StoreService,
+    private readonly cacheService: InMemoryCacheService,
     private readonly nodeConfig: NodeConfig,
     @Inject('ISubqueryProject') private readonly project: ISubqueryProject,
   ) {}
@@ -32,11 +34,13 @@ export class SandboxService {
       ? this.storeService.getStore()
       : hostStoreToStore((global as any).host); // Provided in worker.ts
 
+    const cache = this.cacheService.getCache();
     const entry = this.getDataSourceEntry(ds);
     let processor = this.processorCache[entry];
     if (!processor) {
       processor = new IndexerSandbox(
         {
+          cache,
           store,
           root: this.project.root,
           entry,
