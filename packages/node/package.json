@@ -1,6 +1,6 @@
 {
   "name": "@subql/node-concordium",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "",
   "author": "Ian He",
   "license": "GPL-3.0",
@@ -10,7 +10,8 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nodemon",
-    "start:prod": "node dist/main"
+    "start:prod": "node dist/main",
+    "changelog:release": "echo \"Updating changelog $npm_package_version\" && npx chan release $npm_package_version --git-url \"https://github.com/subquery/subql=concordium\" --release-prefix=\"node-concordium/\""
   },
   "homepage": "https://github.com/subquery/subql",
   "repository": "github:subquery/subql",
@@ -62,6 +63,5 @@
   "files": [
     "/dist",
     "/bin"
-  ],
-  "stableVersion": "2.11.1-2"
+  ]
 }

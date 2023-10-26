@@ -1,19 +1,20 @@
 {
   "name": "@subql/types-concordium",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "",
   "homepage": "https://github.com/subquery/subql",
   "repository": "github:subquery/subql",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rm -rf dist && tsc -b"
+    "build": "rm -rf dist && tsc -b",
+    "changelog:release": "echo \"Updating changelog $npm_package_version\" && npx chan release $npm_package_version --git-url \"https://github.com/subquery/subql-concordium\" --release-prefix=\"types-concordium/\""
   },
   "author": "Ian He",
   "main": "dist/index.js",
   "license": "GPL-3.0",
   "dependencies": {
-    "@subql/types-core": "latest",
-    "@concordium/node-sdk": "9.4.0"
+    "@concordium/node-sdk": "9.4.0",
+    "@subql/types-core": "latest"
   },
   "files": [
     "src/global.d.ts",
