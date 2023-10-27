@@ -7,8 +7,9 @@ import {
   ProjectManifestBaseImpl,
   RunnerNodeImpl,
   RunnerQueryBaseModel,
+  BaseDeploymentV1_0_0,
+  CommonProjectNetworkV1_0_0,
 } from '@subql/common';
-import {BaseDeploymentV1_0_0, CommonProjectNetworkV1_0_0} from '@subql/common/dist';
 import {
   SubqlCustomDatasource,
   SubqlMapping,
