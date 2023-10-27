@@ -21,7 +21,7 @@ import {
 } from './concordium';
 import {ApiWrapper} from './interfaces';
 
-export type RuntimeDatasourceTemplate = BaseTemplateDataSource<SubqlDatasource>;
+export type RuntimeDatasourceTemplate = BaseTemplateDataSource<SubqlRuntimeDatasource>;
 export type CustomDatasourceTemplate = BaseTemplateDataSource<SubqlCustomDatasource>;
 
 export type ConcordiumProjectManifestV1_0_0 = ProjectManifestV1_0_0<SubqlRuntimeDatasource | SubqlCustomDatasource>;
