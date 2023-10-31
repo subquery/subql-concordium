@@ -1,6 +1,6 @@
 {
   "name": "@subql/types-concordium",
-  "version": "3.2.2",
+  "version": "3.2.3-0",
   "description": "",
   "homepage": "https://github.com/subquery/subql",
   "repository": "github:subquery/subql",
@@ -20,5 +20,5 @@
     "src/global.d.ts",
     "/dist"
   ],
-  "stableVersion": "3.2.1"
+  "stableVersion": "3.2.2"
 }
