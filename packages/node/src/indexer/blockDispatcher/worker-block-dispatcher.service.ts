@@ -6,30 +6,19 @@ import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   NodeConfig,
-  Worker,
   SmartBatchService,
   StoreService,
   PoiService,
   StoreCacheService,
   IProjectService,
-  IDynamicDsService,
-  HostStore,
-  HostDynamicDS,
   WorkerBlockDispatcher,
-  IUnfinalizedBlocksService,
   ConnectionPoolStateManager,
-  connectionPoolStateHostFunctions,
-  baseWorkerFunctions,
-  storeHostFunctions,
-  cacheHostFunctions,
-  dynamicDsHostFunctions,
   IProjectUpgradeService,
-  HostUnfinalizedBlocks,
   PoiSyncService,
   InMemoryCacheService,
+  createIndexerWorker,
 } from '@subql/node-core';
 import { ConcordiumBlock } from '@subql/types-concordium';
-import { Store, Cache } from '@subql/types-core';
 import { ConcordiumApiConnection } from '../../concordium/api.connection';
 
 import {
@@ -38,44 +27,11 @@ import {
 } from '../../configure/SubqueryProject';
 import { DynamicDsService } from '../dynamic-ds.service';
 import { UnfinalizedBlocksService } from '../unfinalizedBlocks.service';
-import { IIndexerWorker, IInitIndexerWorker } from '../worker/worker';
+import { IIndexerWorker } from '../worker/worker';
 
 type IndexerWorker = IIndexerWorker & {
   terminate: () => Promise<number>;
 };
-
-async function createIndexerWorker(
-  store: Store,
-  cache: Cache,
-  dynamicDsService: IDynamicDsService<ConcordiumProjectDs>,
-  unfinalizedBlocksService: IUnfinalizedBlocksService<ConcordiumBlock>,
-  connectionPoolState: ConnectionPoolStateManager<ConcordiumApiConnection>,
-  root: string,
-  startHeight: number,
-): Promise<IndexerWorker> {
-  const indexerWorker = Worker.create<
-    IInitIndexerWorker,
-    HostDynamicDS<ConcordiumProjectDs> & HostStore & HostUnfinalizedBlocks
-  >(
-    path.resolve(__dirname, '../../../dist/indexer/worker/worker.js'),
-    [...baseWorkerFunctions, 'initWorker'],
-    {
-      ...cacheHostFunctions(cache),
-      ...storeHostFunctions(store),
-      ...dynamicDsHostFunctions(dynamicDsService),
-      unfinalizedBlocksProcess:
-        unfinalizedBlocksService.processUnfinalizedBlockHeader.bind(
-          unfinalizedBlocksService,
-        ),
-      ...connectionPoolStateHostFunctions(connectionPoolState),
-    },
-    root,
-  );
-
-  await indexerWorker.initWorker(startHeight);
-
-  return indexerWorker;
-}
 
 @Injectable()
 export class WorkerBlockDispatcherService
@@ -113,7 +69,14 @@ export class WorkerBlockDispatcherService
       project,
       dynamicDsService,
       () =>
-        createIndexerWorker(
+        createIndexerWorker<
+          IIndexerWorker,
+          ConcordiumApiConnection,
+          ConcordiumBlock,
+          ConcordiumProjectDs
+        >(
+          path.resolve(__dirname, '../../../dist/indexer/worker/worker.js'),
+          [],
           storeService.getStore(),
           cacheService.getCache(),
           dynamicDsService,

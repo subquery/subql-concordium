@@ -14,7 +14,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@concordium/node-sdk": "9.4.0",
-    "@subql/types-core": "latest"
+    "@subql/types-core": "^0.3.0"
   },
   "files": [
     "src/global.d.ts",
