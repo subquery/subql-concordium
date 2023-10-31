@@ -9,8 +9,10 @@ import {
   ConnectionPoolService,
   ConnectionPoolStateManager,
   DbModule,
+  InMemoryCacheService,
   NodeConfig,
   PoiService,
+  PoiSyncService,
   StoreCacheService,
   StoreService,
   TestRunner,
@@ -21,20 +23,19 @@ import { ConfigureModule } from '../configure/configure.module';
 import { SubqueryProject } from '../configure/SubqueryProject';
 import { DsProcessorService } from '../indexer/ds-processor.service';
 import { DynamicDsService } from '../indexer/dynamic-ds.service';
-import { FetchModule } from '../indexer/fetch.module';
 import { IndexerManager } from '../indexer/indexer.manager';
 import { ProjectService } from '../indexer/project.service';
 import { SandboxService } from '../indexer/sandbox.service';
 import { UnfinalizedBlocksService } from '../indexer/unfinalizedBlocks.service';
-import { MetaModule } from '../meta/meta.module';
-import { TestingService } from './testing.service';
 
 @Module({
   providers: [
+    InMemoryCacheService,
     StoreService,
     StoreCacheService,
     EventEmitter2,
     PoiService,
+    PoiSyncService,
     SandboxService,
     DsProcessorService,
     DynamicDsService,

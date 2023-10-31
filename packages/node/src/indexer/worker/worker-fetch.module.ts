@@ -1,7 +1,6 @@
 // Copyright 2020-2023 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import { isMainThread } from 'worker_threads';
 import { Module } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
@@ -12,6 +11,7 @@ import {
   ConnectionPoolStateManager,
   NodeConfig,
   InMemoryCacheService,
+  WorkerInMemoryCacheService,
 } from '@subql/node-core';
 import { ConcordiumApiService } from '../../concordium';
 import { ConcordiumApiConnection } from '../../concordium/api.connection';
@@ -22,7 +22,6 @@ import { IndexerManager } from '../indexer.manager';
 import { ProjectService } from '../project.service';
 import { SandboxService } from '../sandbox.service';
 import { UnfinalizedBlocksService } from '../unfinalizedBlocks.service';
-import { WorkerInMemoryCacheService } from './woker.inMemoryCache.service';
 import { WorkerService } from './worker.service';
 import { WorkerUnfinalizedBlocksService } from './worker.unfinalizedBlocks.service';
 

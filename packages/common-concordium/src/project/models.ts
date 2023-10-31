@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import {TransactionEventTag, TransactionSummaryType} from '@concordium/node-sdk';
-import {BlockFilterImpl, ProcessorImpl} from '@subql/common';
+import {BaseDataSource, BlockFilterImpl, ProcessorImpl} from '@subql/common';
 import {
   ConcordiumHandlerKind,
   ConcordiumDatasourceKind,
@@ -148,7 +148,10 @@ export class ConcordiumProcessorOptions implements SubqlConcordiumProcessorOptio
   address?: string;
 }
 
-export class RuntimeDataSourceBase<M extends SubqlMapping<SubqlRuntimeHandler>> implements SubqlRuntimeDatasource<M> {
+export class RuntimeDataSourceBase<M extends SubqlMapping<SubqlRuntimeHandler>>
+  extends BaseDataSource
+  implements SubqlRuntimeDatasource<M>
+{
   @IsEnum(SubqlConcordiumDatasourceKind, {
     groups: [SubqlConcordiumDatasourceKind.Runtime],
   })
@@ -156,9 +159,6 @@ export class RuntimeDataSourceBase<M extends SubqlMapping<SubqlRuntimeHandler>> 
   @Type(() => ConcordiumMapping)
   @ValidateNested()
   mapping: M;
-  @IsOptional()
-  @IsInt()
-  startBlock?: number;
   @IsOptional()
   assets?: Map<string, FileReference>;
   @IsOptional()
@@ -173,6 +173,7 @@ export class FileReferenceImpl implements FileReference {
 }
 
 export class CustomDataSourceBase<K extends string, M extends SubqlMapping = SubqlMapping<SubqlCustomHandler>, O = any>
+  extends BaseDataSource
   implements SubqlCustomDatasource<K, M>
 {
   @IsString()
