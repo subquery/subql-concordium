@@ -21,14 +21,14 @@
       "@subql/common-concordium": ["packages/common-concordium/src"],
       "@subql/common-concordium/*": ["packages/common-concordium/src/*"],
       "@subql/types-concordium": ["packages/types/src"],
-      "@subql/types-concordium/*": ["packages/types/src/*"],
+      "@subql/types-concordium/*": ["packages/types/src/*"]
     },
     "skipLibCheck": true
   },
   "references": [
     {"path": "packages/common-concordium"},
     {"path": "packages/node"},
-    {"path": "packages/types"},
+    {"path": "packages/types"}
   ],
   "include": ["packages/**/*"],
   "exclude": ["**/node_modules/**"],
