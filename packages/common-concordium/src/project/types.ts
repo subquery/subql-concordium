@@ -6,7 +6,6 @@ import {IProjectManifest, ProjectNetworkConfig} from '@subql/types-core';
 
 // All of these used to be redefined in this file, re-exporting for simplicity
 export {
-  SubqlConcordiumProcessorOptions,
   SubqlRuntimeHandler,
   SubqlCustomHandler,
   SubqlHandler,

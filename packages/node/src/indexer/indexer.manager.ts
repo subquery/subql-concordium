@@ -37,7 +37,6 @@ import {
 import { ConcordiumApi, ConcordiumApiService } from '../concordium';
 import {
   filterBlocksProcessor,
-  filterSpecialEventProcessor,
   filterTransactionsProcessor,
   filterTxEventProcessor,
 } from '../concordium/block.concordium';
@@ -224,20 +223,20 @@ const FilterTypeMap = {
     data: ConcordiumBlock,
     filter: ConcordiumBlockFilter,
     ds: SubqlConcordiumDataSource,
-  ) => filterBlocksProcessor(data, filter, ds.options?.address),
+  ) => filterBlocksProcessor(data, filter),
   [ConcordiumHandlerKind.SpecialEvent]: (
     data: ConcordiumSpecialEvent,
     filter: ConcordiumSpecialEventFilter,
     ds: SubqlConcordiumDataSource,
-  ) => filterSpecialEventProcessor(data, filter),
+  ) => filterTxEventProcessor(data, filter),
   [ConcordiumHandlerKind.TransactionEvent]: (
     data: ConcordiumTransactionEvent,
     filter: ConcordiumTransactionEventFilter,
     ds: SubqlConcordiumDataSource,
-  ) => filterTxEventProcessor(data, filter, ds.options?.address),
+  ) => filterTxEventProcessor(data, filter),
   [ConcordiumHandlerKind.Transaction]: (
     data: ConcordiumTransaction,
     filter: ConcordiumTransactionFilter,
     ds: SubqlConcordiumDataSource,
-  ) => filterTransactionsProcessor(data, filter, ds.options?.address),
+  ) => filterTransactionsProcessor(data, filter),
 };
