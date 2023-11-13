@@ -1,11 +1,7 @@
 // Copyright 2020-2023 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import {
-  TransactionEventTag,
-  TransactionSummaryType,
-} from '@concordium/node-sdk';
-import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { Test } from '@nestjs/testing';
 import {
   ConnectionPoolService,
@@ -16,10 +12,6 @@ import { GraphQLSchema } from 'graphql';
 import { SubqueryProject } from '../configure/SubqueryProject';
 import { ConcordiumApi } from './api.concordium';
 import { ConcordiumApiService } from './api.service.concordium';
-import {
-  filterTransactionsProcessor,
-  filterTxEventProcessor,
-} from './block.concordium';
 
 const NETWORK_ENDPOINT = 'node.testnet.concordium.com:20000';
 
