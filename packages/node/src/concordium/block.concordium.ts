@@ -57,7 +57,8 @@ export function filterTxEventProcessor(
         filterValue !== eventValue &&
         !equalsAddressAccount(eventValue, filterValue) &&
         !equalsContractAddress(eventValue, filterValue) &&
-        !equalsAddress(eventValue, filterValue)
+        !equalsAddress(eventValue, filterValue) &&
+        !equalsBigInt(eventValue, filterValue)
       ) {
         return false;
       }
@@ -94,4 +95,12 @@ function equalsAddress(t: any, addressOrIndex: string): boolean {
     equalsAddressAccount(t, addressOrIndex) ||
     equalsContractAddress(t.address, addressOrIndex)
   );
+}
+
+function equalsBigInt(a: bigint, b: string): boolean {
+  try {
+    return a === BigInt(b);
+  } catch (e) {
+    return false;
+  }
 }

@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Improved filtering of account and contract addresses (#19)
+- Improved filtering of account and contract addresses as well as bigints (#19)
 
 ## [3.3.1] - 2023-11-13
 ### Changed

@@ -218,6 +218,7 @@ describe('ConcordiumBlockWrapped', () => {
       values: {
         instigator: '4AuT5RRmBwcdkLMA6iVjxTDb1FQmxwAh3wHBS22mggWL8xH6s3',
         address: '6536',
+        amount: '0',
       },
     });
     expect(matchEvent).toBeTruthy();
