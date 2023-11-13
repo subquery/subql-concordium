@@ -6,9 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.3.1] - 2023-11-13
+## [3.4.0] - 2023-11-13
 ### Changed
-- Updates to match changes in 
+- Updates to match changes in `@subql/node-core` (#15)
   - Dictionary service to use dictionary registry
   - Use yargs from node core
 
@@ -36,8 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump release version
 
 ## [3.1.0] - null
-[Unreleased]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.3.1...HEAD
-[3.3.1]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.3.0...node-concordium/3.3.1
+[Unreleased]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.0...HEAD
+[3.4.0]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.3.0...node-concordium/3.4.0
 [3.3.0]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.2.0...node-concordium/3.3.0
 [3.2.0]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.1.3...node-concordium/3.2.0
 [3.1.3]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.1.2...node-concordium/3.1.3
