@@ -18,7 +18,7 @@ schema:
 network:
   #  endpoint: "fill it in"
   chainId: '1'
-  endpoint: 'node.testnet.concordium.com:20000'
+  endpoint: 'http://node.testnet.concordium.com:20000'
 
 dataSources:
   - kind: concordium/Runtime

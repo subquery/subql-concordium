@@ -7,7 +7,7 @@ import { ProjectService } from './project.service';
 
 const mockApiService = (): ConcordiumApiService => {
   const api = new ConcordiumApi(
-    'node.testnet.concordium.com:20000',
+    'http://node.testnet.concordium.com:20000',
     new EventEmitter2(),
   );
 
