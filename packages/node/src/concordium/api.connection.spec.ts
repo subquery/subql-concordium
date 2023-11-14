@@ -12,6 +12,8 @@ import { EventEmitter2 } from 'eventemitter2';
 import { ConcordiumApi } from './api.concordium';
 import { ConcordiumApiConnection } from './api.connection';
 
+const endpoint = 'http://node.testnet.concordium.com:20000';
+
 describe('ConcordiumApiConnection', () => {
   let api: ConcordiumApi;
   let eventEmitter: EventEmitter2;
@@ -20,11 +22,11 @@ describe('ConcordiumApiConnection', () => {
 
   beforeEach(async () => {
     eventEmitter = new EventEmitter2();
-    api = new ConcordiumApi('node.testnet.concordium.com:20000', eventEmitter);
+    api = new ConcordiumApi(endpoint, eventEmitter);
     await api.init();
     fetchBlocksBatches = jest.fn();
     connection = await ConcordiumApiConnection.create(
-      'node.testnet.concordium.com:20000',
+      api,
       fetchBlocksBatches,
       eventEmitter,
     );
