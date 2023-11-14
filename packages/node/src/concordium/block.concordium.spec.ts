@@ -4,6 +4,7 @@
 import {
   TransactionEventTag,
   TransactionSummaryType,
+  TransactionKindString,
 } from '@concordium/node-sdk';
 import {
   ConcordiumBlock,
@@ -13,28 +14,11 @@ import {
 } from '@subql/types-concordium';
 import {
   filterBlocksProcessor,
-  filterSpecialEventProcessor,
   filterTransactionsProcessor,
   filterTxEventProcessor,
 } from './block.concordium';
 
 describe('ConcordiumBlockWrapped', () => {
-  beforeEach(() => {
-    const block = {
-      blockHeight: '10',
-      blockHash: 'hash',
-    } as unknown as ConcordiumBlock;
-    const transactions = [
-      { type: 'transfer', amount: '100' } as unknown as ConcordiumTransaction,
-    ];
-    const txEvents = [
-      { tag: 'event1', amount: '100' } as unknown as ConcordiumTransactionEvent,
-    ];
-    const specialEvents = [
-      { tag: 'event2', amount: '100' } as unknown as ConcordiumSpecialEvent,
-    ];
-  });
-
   it('should filter blocks', () => {
     const block = {
       blockHeight: '10',
@@ -152,7 +136,7 @@ describe('ConcordiumBlockWrapped', () => {
     } as unknown as ConcordiumSpecialEvent;
     const filter = { type: 'event2' };
 
-    expect(filterSpecialEventProcessor(specialEvent, filter)).toBe(true);
+    expect(filterTxEventProcessor(specialEvent, filter)).toBe(true);
   });
 
   it('should filter special events - without values - for false', () => {
@@ -162,7 +146,7 @@ describe('ConcordiumBlockWrapped', () => {
     } as unknown as ConcordiumSpecialEvent;
     const filter = { type: 'event1' };
 
-    expect(filterSpecialEventProcessor(specialEvent, filter)).toBe(false);
+    expect(filterTxEventProcessor(specialEvent, filter)).toBe(false);
   });
 
   it('should filter special events - with values - for true', () => {
@@ -177,7 +161,7 @@ describe('ConcordiumBlockWrapped', () => {
       },
     };
 
-    expect(filterSpecialEventProcessor(specialEvent, filter)).toBe(true);
+    expect(filterTxEventProcessor(specialEvent, filter)).toBe(true);
   });
 
   it('should filter special events - with values - for false', () => {
@@ -192,6 +176,51 @@ describe('ConcordiumBlockWrapped', () => {
       },
     };
 
-    expect(filterSpecialEventProcessor(specialEvent, filter)).toBe(false);
+    expect(filterTxEventProcessor(specialEvent, filter)).toBe(false);
+  });
+
+  it('should filter nested values', () => {
+    const tx = {
+      index: BigInt(0),
+      energyCost: BigInt(3739),
+      hash: '574289208dfd6dff2065e2549164bcfdd97f91e65cb42941a40e574ceccbf7b9',
+      type: TransactionSummaryType.AccountTransaction,
+      cost: BigInt(14685685),
+      sender: '4AuT5RRmBwcdkLMA6iVjxTDb1FQmxwAh3wHBS22mggWL8xH6s3',
+      transactionType: TransactionKindString.Update,
+    } as ConcordiumTransaction;
+
+    const match = filterTransactionsProcessor(tx, {
+      type: TransactionSummaryType.AccountTransaction,
+      values: {
+        sender: '4AuT5RRmBwcdkLMA6iVjxTDb1FQmxwAh3wHBS22mggWL8xH6s3',
+      },
+    });
+    expect(match).toBeTruthy();
+
+    const event = {
+      tag: 'Updated',
+      contractVersion: 1,
+      address: { index: BigInt(6536), subindex: BigInt(0) },
+      instigator: {
+        type: 'AddressAccount',
+        address: '4AuT5RRmBwcdkLMA6iVjxTDb1FQmxwAh3wHBS22mggWL8xH6s3',
+      },
+      amount: BigInt(0),
+      message:
+        '35000000b0373129de61634f2c72ee0c008a9d37f6d10367875108b622bd9480cff50d9f0c000000544539445156524a5430343d005e94526500000000',
+      receiveName: 'Provenance-tag.update_tag_log',
+      events: [],
+    } as ConcordiumTransactionEvent;
+
+    const matchEvent = filterTxEventProcessor(event, {
+      type: TransactionEventTag.Updated,
+      values: {
+        instigator: '4AuT5RRmBwcdkLMA6iVjxTDb1FQmxwAh3wHBS22mggWL8xH6s3',
+        address: '6536',
+        amount: '0',
+      },
+    });
+    expect(matchEvent).toBeTruthy();
   });
 });

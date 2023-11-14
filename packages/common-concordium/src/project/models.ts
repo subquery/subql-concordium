@@ -13,7 +13,6 @@ import {
   SubqlRuntimeDatasource,
   SubqlCustomDatasource,
   CustomDataSourceAsset,
-  ConcordiumBlockFilter,
   SubqlBlockHandler,
   ConcordiumTransactionFilter,
   ConcordiumTransactionEventFilter,
@@ -25,7 +24,7 @@ import {
 import {FileReference, Processor} from '@subql/types-core';
 import {plainToClass, Transform, Type} from 'class-transformer';
 import {IsArray, IsEnum, IsInt, IsOptional, IsString, IsObject, ValidateNested} from 'class-validator';
-import {SubqlConcordiumDatasourceKind, SubqlConcordiumHandlerKind, SubqlConcordiumProcessorOptions} from './types';
+import {SubqlConcordiumDatasourceKind, SubqlConcordiumHandlerKind} from './types';
 
 export class TransactionFilter implements ConcordiumTransactionFilter {
   @IsOptional()
@@ -142,12 +141,6 @@ export class CustomMapping implements SubqlMapping<SubqlCustomHandler> {
   file: string;
 }
 
-export class ConcordiumProcessorOptions implements SubqlConcordiumProcessorOptions {
-  @IsOptional()
-  @IsString()
-  address?: string;
-}
-
 export class RuntimeDataSourceBase<M extends SubqlMapping<SubqlRuntimeHandler>>
   extends BaseDataSource
   implements SubqlRuntimeDatasource<M>
@@ -161,10 +154,6 @@ export class RuntimeDataSourceBase<M extends SubqlMapping<SubqlRuntimeHandler>>
   mapping: M;
   @IsOptional()
   assets?: Map<string, FileReference>;
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => ConcordiumProcessorOptions)
-  options?: ConcordiumProcessorOptions;
 }
 
 export class FileReferenceImpl implements FileReference {
@@ -190,7 +179,4 @@ export class CustomDataSourceBase<K extends string, M extends SubqlMapping = Sub
   @Type(() => ProcessorImpl)
   @IsObject()
   processor: Processor<O>;
-  @IsOptional()
-  @ValidateNested()
-  options?: ConcordiumProcessorOptions;
 }

@@ -170,16 +170,6 @@ interface ISubqlDatasource<M extends SubqlMapping> {
   mapping: M;
 }
 
-export interface SubqlConcordiumProcessorOptions {
-  /**
-   * The specific contract that this datasource should filter.
-   * Alternatively this can be left blank and a transaction to filter can be used instead
-   * @example
-   * address: '',
-   * */
-  address?: string;
-}
-
 /**
  * Represents a runtime datasource for Concordium.
  * @interface
@@ -192,14 +182,6 @@ export interface SubqlRuntimeDatasource<M extends SubqlMapping<SubqlRuntimeHandl
    * @type {ConcordiumDatasourceKind.Runtime}
    */
   kind: ConcordiumDatasourceKind.Runtime;
-  /**
-   * Options to specify details about the contract.
-   * @example
-   * options: {
-   *   address: '',
-   * }
-   * */
-  options?: SubqlConcordiumProcessorOptions;
   assets?: Map<string, {file: string}>;
 }
 
@@ -218,7 +200,6 @@ export interface SubqlCustomDatasource<
 > extends ISubqlDatasource<M> {
   kind: K;
   assets: Map<string, CustomDataSourceAsset>;
-  options?: SubqlConcordiumProcessorOptions;
   processor: Processor<O>;
 }
 

@@ -1,6 +1,8 @@
 // Copyright 2020-2023 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
+import { ContractAddress, AddressAccount, Address } from '@concordium/node-sdk';
+
 import {
   ConcordiumBlock,
   ConcordiumTransactionFilter,
@@ -15,7 +17,6 @@ import {
 export function filterBlocksProcessor(
   block: ConcordiumBlock,
   filter: ConcordiumBlockFilter,
-  address?: string,
 ): boolean {
   if (filter?.modulo && Number(block.blockHeight) % filter.modulo !== 0) {
     return false;
@@ -26,7 +27,6 @@ export function filterBlocksProcessor(
 export function filterTransactionsProcessor(
   transaction: ConcordiumTransaction,
   filter: ConcordiumTransactionFilter,
-  address?: string,
 ): boolean {
   if (!filter) return true;
 
@@ -42,9 +42,8 @@ export function filterTransactionsProcessor(
 }
 
 export function filterTxEventProcessor(
-  txEvent: ConcordiumTransactionEvent,
-  filter: ConcordiumTransactionEventFilter,
-  address?: string,
+  txEvent: ConcordiumTransactionEvent | ConcordiumSpecialEvent,
+  filter: ConcordiumTransactionEventFilter | ConcordiumSpecialEventFilter,
 ): boolean {
   if (!filter) return true;
 
@@ -52,26 +51,56 @@ export function filterTxEventProcessor(
 
   if (filter.values) {
     for (const key in filter.values) {
-      if (filter.values[key] !== txEvent[key]) return false;
+      const filterValue = filter.values[key];
+      const eventValue = txEvent[key];
+      if (
+        filterValue !== eventValue &&
+        !equalsAddressAccount(eventValue, filterValue) &&
+        !equalsContractAddress(eventValue, filterValue) &&
+        !equalsAddress(eventValue, filterValue) &&
+        !equalsBigInt(eventValue, filterValue)
+      ) {
+        return false;
+      }
     }
   }
 
   return true;
 }
 
-export function filterSpecialEventProcessor(
-  specialEvent: ConcordiumSpecialEvent,
-  filter: ConcordiumSpecialEventFilter,
-): boolean {
-  if (!filter) return true;
+function isAddressAccount(t: any): t is AddressAccount {
+  return t.type === 'AddressAccount';
+}
 
-  if (filter.type && specialEvent.tag !== filter.type) return false;
+function equalsAddressAccount(t: any, address: string): boolean {
+  return isAddressAccount(t) && t.address === address;
+}
 
-  if (filter.values) {
-    for (const key in filter.values) {
-      if (filter.values[key] !== specialEvent[key]) return false;
-    }
+function isContractAddress(t: any): t is ContractAddress {
+  return typeof t.index === 'bigint' && typeof t.subindex === 'bigint';
+}
+
+function equalsContractAddress(t: any, index: string): boolean {
+  return isContractAddress(t) && t.index === BigInt(index);
+}
+
+function isAddress(t: any): t is Address {
+  return t.type === 'AddressContract' || isAddressAccount(t);
+}
+
+function equalsAddress(t: any, addressOrIndex: string): boolean {
+  if (!isAddress(t)) return false;
+
+  return (
+    equalsAddressAccount(t, addressOrIndex) ||
+    equalsContractAddress(t.address, addressOrIndex)
+  );
+}
+
+function equalsBigInt(a: bigint, b: string): boolean {
+  try {
+    return a === BigInt(b);
+  } catch (e) {
+    return false;
   }
-
-  return true;
 }
