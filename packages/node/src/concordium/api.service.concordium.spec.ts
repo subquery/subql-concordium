@@ -13,7 +13,7 @@ import { SubqueryProject } from '../configure/SubqueryProject';
 import { ConcordiumApi } from './api.concordium';
 import { ConcordiumApiService } from './api.service.concordium';
 
-const NETWORK_ENDPOINT = 'node.testnet.concordium.com:20000';
+const NETWORK_ENDPOINT = 'http://node.testnet.concordium.com:20000';
 
 function testSubqueryProject(endpoint: string): SubqueryProject {
   return {

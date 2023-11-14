@@ -10,7 +10,10 @@ describe('ConcordiumApi', () => {
 
   beforeEach(() => {
     eventEmitter = new EventEmitter2();
-    api = new ConcordiumApi('node.testnet.concordium.com:20000', eventEmitter);
+    api = new ConcordiumApi(
+      'http://node.testnet.concordium.com:20000',
+      eventEmitter,
+    );
   });
 
   it('should initialize properly', async () => {

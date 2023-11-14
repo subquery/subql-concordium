@@ -1,6 +1,7 @@
 // Copyright 2020-2023 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
+import { URL } from 'node:url';
 import {
   AccountTransferredEvent,
   BlockInfo,
@@ -32,14 +33,18 @@ const logger = getLogger('api.concordium');
 export class ConcordiumApi implements ApiWrapper {
   private client: ConcordiumGRPCClient;
   private transport: GrpcTransport;
-  private genesisBlock: BlockInfo;
   private chainId: string;
   private name: string;
 
-  constructor(private endpoint: string, private eventEmitter: EventEmitter2) {
+  constructor(endpoint: string, private eventEmitter: EventEmitter2) {
+    const { host, protocol } = new URL(endpoint);
+
     const options: GrpcOptions = {
-      host: this.endpoint,
-      channelCredentials: ChannelCredentials.createInsecure(),
+      host,
+      channelCredentials:
+        protocol === 'https:'
+          ? ChannelCredentials.createSsl()
+          : ChannelCredentials.createInsecure(),
       meta: {
         'User-Agent': `Subquery-Node ${packageVersion}`,
       },
@@ -51,11 +56,9 @@ export class ConcordiumApi implements ApiWrapper {
   }
 
   async init(): Promise<void> {
-    const genesisHash = (await this.client.getBlocksAtHeight(BigInt(0)))[0];
-    const genesisBlock = await this.client.getBlockInfo(genesisHash);
+    const [genesisHash] = await this.client.getBlocksAtHeight(BigInt(0));
 
-    this.genesisBlock = genesisBlock;
-    this.chainId = genesisBlock.blockHash;
+    this.chainId = genesisHash;
   }
 
   async getFinalizedBlock(): Promise<BlockInfo> {
@@ -79,7 +82,7 @@ export class ConcordiumApi implements ApiWrapper {
   }
 
   getGenesisHash(): string {
-    return this.genesisBlock.blockHash;
+    return this.chainId;
   }
 
   getSpecName(): string {
@@ -207,6 +210,7 @@ export class ConcordiumApi implements ApiWrapper {
         break;
       }
       default:
+        logger.warn(`Unknown transaction type ${tx.transactionType}`);
     }
 
     return events.map((evt, i) => {

@@ -185,10 +185,6 @@ export interface SubqlRuntimeDatasource<M extends SubqlMapping<SubqlRuntimeHandl
   assets?: Map<string, {file: string}>;
 }
 
-export interface SubqlNetworkFilter {
-  specName?: string;
-}
-
 export type SubqlDatasource = SubqlRuntimeDatasource | SubqlCustomDatasource;
 
 export type CustomDataSourceAsset = FileReference;
