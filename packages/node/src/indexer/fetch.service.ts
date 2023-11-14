@@ -8,7 +8,6 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import {
   isCustomDs,
   SubqlConcordiumHandlerKind,
-  SubqlConcordiumProcessorOptions,
   ConcordiumTransactionFilter,
 } from '@subql/common-concordium';
 import {
@@ -27,7 +26,7 @@ import {
   DictionaryQueryCondition,
   DictionaryQueryEntry,
 } from '@subql/types-core';
-import { groupBy, partition, setWith, sortBy, uniqBy } from 'lodash';
+import { setWith, sortBy, uniqBy } from 'lodash';
 import { ConcordiumApi } from '../concordium';
 import { calcInterval } from '../concordium/utils.concordium';
 import { SubqueryProject } from '../configure/SubqueryProject';
@@ -140,12 +139,8 @@ export function speicalEventFilterToQueryEntry(
   };
 }
 
-type GroupedConcordiumProjectDs = SubqlDatasource & {
-  groupedOptions?: SubqlConcordiumProcessorOptions[];
-};
-
 export function buildDictionaryQueryEntries(
-  dataSources: GroupedConcordiumProjectDs[],
+  dataSources: SubqlDatasource[],
 ): DictionaryQueryEntry[] {
   const queryEntries: DictionaryQueryEntry[] = [];
 
@@ -246,31 +241,7 @@ export class FetchService extends BaseFetchService<
   protected buildDictionaryQueryEntries(
     dataSources: (SubqlDatasource & { name?: string })[],
   ): DictionaryQueryEntry[] {
-    const [normalDataSources, templateDataSources] = partition(
-      dataSources,
-      (ds) => !ds.name,
-    );
-
-    // Group templ
-    const groupedDataSources = Object.values(
-      groupBy(templateDataSources, (ds) => ds.name),
-    ).map((grouped) => {
-      if (grouped.length === 1) {
-        return grouped[0];
-      }
-
-      const options = grouped.map((ds) => ds.options);
-      const ref = grouped[0];
-
-      return {
-        ...ref,
-        groupedOptions: options,
-      };
-    });
-
-    const filteredDs = [...normalDataSources, ...groupedDataSources];
-
-    return buildDictionaryQueryEntries(filteredDs);
+    return buildDictionaryQueryEntries(dataSources);
   }
 
   protected async getFinalizedHeight(): Promise<number> {

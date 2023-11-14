@@ -54,11 +54,6 @@ export class DynamicDsService extends BaseDynamicDsService<ConcordiumProjectDs> 
         };
         await this.dsProcessorService.validateCustomDs([dsObj]);
       } else if (isRuntimeDs(dsObj)) {
-        dsObj.options = {
-          ...dsObj.options,
-          ...params.args,
-        };
-
         const parsedDs = plainToClass(ConcordiumRuntimeDataSourceImpl, dsObj);
 
         const errors = validateSync(parsedDs, {
