@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [3.3.0] - 2023-11-14
 ### Removed
 - `options` field on datasources as they were not used anywhere (#16)
 
@@ -25,7 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump release version
 
 ## [3.1.0] - null
-[Unreleased]: https://github.com/subquery/subql-concordium/compare/common-concordium/3.2.0...HEAD
+[Unreleased]: https://github.com/subquery/subql-concordium/compare/common-concordium/3.3.0...HEAD
+[3.3.0]: https://github.com/subquery/subql-concordium/compare/common-concordium/3.2.0...common-concordium/3.3.0
 [3.2.0]: https://github.com/subquery/subql-concordium/compare/common-concordium/3.1.3...common-concordium/3.2.0
 [3.1.3]: https://github.com/subquery/subql-concordium/compare/common-concordium/3.1.2...common-concordium/3.1.3
 [3.1.2]: https://github.com/subquery/subql-concordium/compare/common-concordium/3.1.1...common-concordium/3.1.2
