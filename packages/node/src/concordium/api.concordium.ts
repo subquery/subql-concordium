@@ -56,7 +56,6 @@ export class ConcordiumApi implements ApiWrapper {
   }
 
   async init(): Promise<void> {
-    console.log('GET GENESIS');
     const [genesisHash] = await this.client.getBlocksAtHeight(BigInt(0));
 
     this.chainId = genesisHash;
