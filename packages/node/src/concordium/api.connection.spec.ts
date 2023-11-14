@@ -26,7 +26,7 @@ describe('ConcordiumApiConnection', () => {
     await api.init();
     fetchBlocksBatches = jest.fn();
     connection = await ConcordiumApiConnection.create(
-      api,
+      endpoint,
       fetchBlocksBatches,
       eventEmitter,
     );
