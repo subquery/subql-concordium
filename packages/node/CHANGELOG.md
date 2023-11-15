@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [3.4.3] - 2023-11-15
 ### Added
 - Support for SSL connections
 
@@ -46,7 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump release version
 
 ## [3.1.0] - null
-[Unreleased]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.2...HEAD
+[Unreleased]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.3...HEAD
+[3.4.3]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.2...node-concordium/3.4.3
 [3.4.2]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.1...node-concordium/3.4.2
 [3.4.1]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.0...node-concordium/3.4.1
 [3.4.0]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.3.0...node-concordium/3.4.0
