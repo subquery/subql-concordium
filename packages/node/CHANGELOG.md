@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.4.5] - 2023-11-27
+### Changed
+- Update `@subql/node-core` with minor fixes
+
 ## [3.4.4] - 2023-11-16
 ### Fixed
 - Sync with `node-core` 6.4.2, Fix incorrect enqueuedBlocks, dictionaries timing out by updating `@subql/apollo-links` (#22)
@@ -24,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.4.0] - 2023-11-13
 ### Changed
-- Updates to match changes in
+- Updates to match changes in `@subql/node-core`
   - Dictionary service to use dictionary registry
   - Use yargs from node core
 
@@ -52,7 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump release version
 
 ## [3.1.0] - null
-[Unreleased]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.4...HEAD
+[Unreleased]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.5...HEAD
+[3.4.5]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.4...node-concordium/3.4.5
 [3.4.4]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.3...node-concordium/3.4.4
 [3.4.3]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.2...node-concordium/3.4.3
 [3.4.2]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.1...node-concordium/3.4.2
