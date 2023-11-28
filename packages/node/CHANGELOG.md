@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.4.6] - 2023-11-28
+### Fixed
+- Fix ipfs deployment templates path failed to resolved, issue was introduced node-core 7.0.0
+- Update with node-core to fix network dictionary timeout but not fallback to config dictionary issue
+
 ## [3.4.5] - 2023-11-27
 ### Changed
 - Update `@subql/node-core` with minor fixes
@@ -56,7 +61,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump release version
 
 ## [3.1.0] - null
-[Unreleased]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.5...HEAD
+[Unreleased]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.6...HEAD
+[3.4.6]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.5...node-concordium/3.4.6
 [3.4.5]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.4...node-concordium/3.4.5
 [3.4.4]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.3...node-concordium/3.4.4
 [3.4.3]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.2...node-concordium/3.4.3
