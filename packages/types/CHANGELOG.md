@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.4.3] - 2023-11-30
+### Changed
+- Sync with `@subql/types-core` 0.4.0
+
 ## [3.4.2] - 2023-11-15
 ### Removed
 - Unused type
@@ -31,7 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump release version
 
 ## [3.2.0] - null
-[Unreleased]: https://github.com/subquery/subql-concordium/compare/types-concordium/3.4.2...HEAD
+[Unreleased]: https://github.com/subquery/subql-concordium/compare/types-concordium/3.4.3...HEAD
+[3.4.3]: https://github.com/subquery/subql-concordium/compare/types-concordium/3.4.2...types-concordium/3.4.3
 [3.4.2]: https://github.com/subquery/subql-concordium/compare/types-concordium/3.4.1...types-concordium/3.4.2
 [3.4.1]: https://github.com/subquery/subql-concordium/compare/types-concordium/3.4.0...types-concordium/3.4.1
 [3.4.0]: https://github.com/subquery/subql-concordium/compare/types-concordium/3.3.0...types-concordium/3.4.0
