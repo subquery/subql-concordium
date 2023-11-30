@@ -1,6 +1,6 @@
 {
   "name": "@subql/types-concordium",
-  "version": "3.4.2",
+  "version": "3.4.3",
   "description": "",
   "homepage": "https://github.com/subquery/subql",
   "repository": "github:subquery/subql",
@@ -14,7 +14,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@concordium/node-sdk": "9.4.0",
-    "@subql/types-core": "^0.3.0"
+    "@subql/types-core": "^0.4.0"
   },
   "files": [
     "src/global.d.ts",
