@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.5.0] - 2024-01-25
+### Changed
+- Update @subql/node-core with
+  - a performance fix when using modulo filters with other datasources
+  - support for CSV exports
+  - support for schema migrations
+
 ## [3.4.7] - 2023-11-30
 ### Fixed
 - Sync with `node-core` 7.0.2
@@ -37,7 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.4.0] - 2023-11-13
 ### Changed
-- Updates to match changes in `@subql/node-core`
+- Updates to match changes in 
   - Dictionary service to use dictionary registry
   - Use yargs from node core
 
@@ -65,7 +72,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump release version
 
 ## [3.1.0] - null
-[Unreleased]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.7...HEAD
+[Unreleased]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.5.0...HEAD
+[3.5.0]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.7...node-concordium/3.5.0
 [3.4.7]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.6...node-concordium/3.4.7
 [3.4.6]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.5...node-concordium/3.4.6
 [3.4.5]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.4...node-concordium/3.4.5
