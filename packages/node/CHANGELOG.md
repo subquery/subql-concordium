@@ -6,9 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.6.0] - 2024-02-23
+## [3.8.0] - 2024-02-23
 ### Changed
-- Update `@subql/node-core` to 7.3.0
+- Updates to match changes in `@subql/node-core` to 7.3.0
 
 ## [3.5.1] - 2024-02-07
 ### Fixed
@@ -80,8 +80,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump release version
 
 ## [3.1.0] - null
-[Unreleased]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.6.0...HEAD
-[3.6.0]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.5.1...node-concordium/3.6.0
+[Unreleased]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.8.0...HEAD
+[3.8.0]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.5.1...node-concordium/3.8.0
 [3.5.1]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.5.0...node-concordium/3.5.1
 [3.5.0]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.7...node-concordium/3.5.0
 [3.4.7]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.6...node-concordium/3.4.7
