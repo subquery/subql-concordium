@@ -15,6 +15,7 @@ import {
   ISubqueryProject,
   mainThreadOnly,
   PoiSyncService,
+  profiler,
 } from '@subql/node-core';
 import { ConcordiumBlock } from '@subql/types-concordium';
 import {
@@ -71,6 +72,11 @@ export class ProjectService extends BaseProjectService<
       eventEmitter,
       unfinalizedBlockService,
     );
+  }
+
+  @profiler()
+  async init(startHeight?: number): Promise<void> {
+    return super.init(startHeight);
   }
 
   protected async getBlockTimestamp(height: number): Promise<Date> {

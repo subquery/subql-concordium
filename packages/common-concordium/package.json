@@ -1,6 +1,6 @@
 {
   "name": "@subql/common-concordium",
-  "version": "3.4.1",
+  "version": "3.4.2",
   "description": "",
   "scripts": {
     "build": "rm -rf dist && tsc -b",
@@ -15,7 +15,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@concordium/node-sdk": "9.4.0",
-    "@subql/common": "^3.4.0",
+    "@subql/common": "^3.4.1",
     "@subql/types-concordium": "workspace:*",
     "js-yaml": "^4.1.0",
     "pino": "^6.13.3",
