@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.8.1] - 2024-03-01
+### Fixed
+- Update `@subql/node-core` to fix Poi generation issue with negative integer, also drop subscription triggers and notifiy_functions
+
 ## [3.8.0] - 2024-02-23
 ### Changed
 - Updates to match changes in `@subql/node-core` to 7.3.0
@@ -80,7 +84,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump release version
 
 ## [3.1.0] - null
-[Unreleased]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.8.0...HEAD
+[Unreleased]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.8.1...HEAD
+[3.8.1]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.8.0...node-concordium/3.8.1
 [3.8.0]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.5.1...node-concordium/3.8.0
 [3.5.1]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.5.0...node-concordium/3.5.1
 [3.5.0]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.4.7...node-concordium/3.5.0
