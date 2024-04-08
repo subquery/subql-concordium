@@ -1,6 +1,6 @@
 {
   "name": "@subql/common-concordium",
-  "version": "3.4.2",
+  "version": "3.5.0",
   "description": "",
   "scripts": {
     "build": "rm -rf dist && tsc -b",
