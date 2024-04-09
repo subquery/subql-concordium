@@ -104,10 +104,12 @@ export class IndexerManager extends BaseIndexerManager<
     );
   }
 
+  /** @deprecated remove once https://github.com/subquery/subql/pull/2346 is released */
   getBlockHeight(block: ConcordiumBlock): number {
     return Number(block.blockHeight);
   }
 
+  /** @deprecated remove once https://github.com/subquery/subql/pull/2346 is released */
   getBlockHash(block: ConcordiumBlock): string {
     return block.blockHash;
   }
