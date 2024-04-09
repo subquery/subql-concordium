@@ -1,6 +1,7 @@
 // Copyright 2020-2023 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
+import {ConcordiumGRPCClient} from '@concordium/node-sdk';
 import {
   BaseTemplateDataSource,
   CommonSubqueryProject,
@@ -19,12 +20,13 @@ import {
   ConcordiumTransactionEvent,
   ConcordiumTransactionEventFilter,
 } from './concordium';
-import {ApiWrapper} from './interfaces';
 
-export type RuntimeDatasourceTemplate = BaseTemplateDataSource<SubqlRuntimeDatasource>;
-export type CustomDatasourceTemplate = BaseTemplateDataSource<SubqlCustomDatasource>;
+export type RuntimeDatasourceTemplate = BaseTemplateDataSource<ConcordiumRuntimeDatasource>;
+export type CustomDatasourceTemplate = BaseTemplateDataSource<ConcordiumCustomDatasource>;
 
-export type ConcordiumProjectManifestV1_0_0 = ProjectManifestV1_0_0<SubqlRuntimeDatasource | SubqlCustomDatasource>;
+export type ConcordiumProjectManifestV1_0_0 = ProjectManifestV1_0_0<
+  ConcordiumRuntimeDatasource | ConcordiumCustomDatasource
+>;
 
 /**
  * Kind of Concordium datasource.
@@ -175,8 +177,9 @@ interface ISubqlDatasource<M extends SubqlMapping> {
  * @interface
  * @template M - The mapping type for the datasource (default: SubqlMapping<ConcordiumRuntimeHandler>).
  */
-export interface SubqlRuntimeDatasource<M extends SubqlMapping<SubqlRuntimeHandler> = SubqlMapping<SubqlRuntimeHandler>>
-  extends ISubqlDatasource<M> {
+export interface ConcordiumRuntimeDatasource<
+  M extends SubqlMapping<SubqlRuntimeHandler> = SubqlMapping<SubqlRuntimeHandler>
+> extends ISubqlDatasource<M> {
   /**
    * The kind of the datasource, which is `concordium/Runtime`.
    * @type {ConcordiumDatasourceKind.Runtime}
@@ -185,11 +188,11 @@ export interface SubqlRuntimeDatasource<M extends SubqlMapping<SubqlRuntimeHandl
   assets?: Map<string, {file: string}>;
 }
 
-export type SubqlDatasource = SubqlRuntimeDatasource | SubqlCustomDatasource;
+export type ConcordiumDatasource = ConcordiumRuntimeDatasource | ConcordiumCustomDatasource;
 
 export type CustomDataSourceAsset = FileReference;
 
-export interface SubqlCustomDatasource<
+export interface ConcordiumCustomDatasource<
   K extends string = string,
   M extends SubqlMapping = SubqlMapping<SubqlCustomHandler>,
   O = any
@@ -202,22 +205,27 @@ export interface SubqlCustomDatasource<
 export interface HandlerInputTransformer_0_0_0<
   T extends ConcordiumHandlerKind,
   E,
-  DS extends SubqlCustomDatasource = SubqlCustomDatasource
+  DS extends ConcordiumCustomDatasource = ConcordiumCustomDatasource
 > {
-  (input: ConcordiumRuntimeHandlerInputMap[T], ds: DS, api: ApiWrapper, assets?: Record<string, string>): Promise<E>; //  | SubstrateBuiltinDataSource
+  (
+    input: ConcordiumRuntimeHandlerInputMap[T],
+    ds: DS,
+    api: ConcordiumGRPCClient,
+    assets?: Record<string, string>
+  ): Promise<E>; //  | SubstrateBuiltinDataSource
 }
 
 export interface HandlerInputTransformer_1_0_0<
   T extends ConcordiumHandlerKind,
   F,
   E,
-  DS extends SubqlCustomDatasource = SubqlCustomDatasource
+  DS extends ConcordiumCustomDatasource = ConcordiumCustomDatasource
 > {
   (params: {
     input: ConcordiumRuntimeHandlerInputMap[T];
     ds: DS;
     filter?: F;
-    api: ApiWrapper;
+    api: ConcordiumGRPCClient;
     assets?: Record<string, string>;
   }): Promise<E[]>; //  | SubstrateBuiltinDataSource
 }
@@ -237,7 +245,7 @@ export type SecondLayerHandlerProcessorArray<
   K extends string,
   F,
   T,
-  DS extends SubqlCustomDatasource<K> = SubqlCustomDatasource<K>
+  DS extends ConcordiumCustomDatasource<K> = ConcordiumCustomDatasource<K>
 > =
   | SecondLayerHandlerProcessor<ConcordiumHandlerKind.Block, F, T, DS>
   | SecondLayerHandlerProcessor<ConcordiumHandlerKind.Transaction, F, T, DS>
@@ -247,7 +255,7 @@ export type SecondLayerHandlerProcessorArray<
 export interface SubqlDatasourceProcessor<
   K extends string,
   F,
-  DS extends SubqlCustomDatasource<K> = SubqlCustomDatasource<K>,
+  DS extends ConcordiumCustomDatasource<K> = ConcordiumCustomDatasource<K>,
   P extends Record<string, SecondLayerHandlerProcessorArray<K, F, any, DS>> = Record<
     string,
     SecondLayerHandlerProcessorArray<K, F, any, DS>
@@ -255,14 +263,14 @@ export interface SubqlDatasourceProcessor<
 > {
   kind: K;
   validate(ds: DS, assets: Record<string, string>): void;
-  dsFilterProcessor(ds: DS, api: ApiWrapper): boolean;
+  dsFilterProcessor(ds: DS, api: ConcordiumGRPCClient): boolean;
   handlerProcessors: P;
 }
 
 interface SecondLayerHandlerProcessorBase<
   K extends ConcordiumHandlerKind,
   F,
-  DS extends SubqlCustomDatasource = SubqlCustomDatasource
+  DS extends ConcordiumCustomDatasource = ConcordiumCustomDatasource
 > {
   baseHandlerKind: K;
   baseFilter: ConcordiumRuntimeFilterMap[K] | ConcordiumRuntimeFilterMap[K][];
@@ -274,7 +282,7 @@ export interface SecondLayerHandlerProcessor_0_0_0<
   K extends ConcordiumHandlerKind,
   F,
   E,
-  DS extends SubqlCustomDatasource = SubqlCustomDatasource
+  DS extends ConcordiumCustomDatasource = ConcordiumCustomDatasource
 > extends SecondLayerHandlerProcessorBase<K, F, DS> {
   specVersion: undefined;
   transformer: HandlerInputTransformer_0_0_0<K, E, DS>;
@@ -285,7 +293,7 @@ export interface SecondLayerHandlerProcessor_1_0_0<
   K extends ConcordiumHandlerKind,
   F,
   E,
-  DS extends SubqlCustomDatasource = SubqlCustomDatasource
+  DS extends ConcordiumCustomDatasource = ConcordiumCustomDatasource
 > extends SecondLayerHandlerProcessorBase<K, F, DS> {
   specVersion: '1.0.0';
   transformer: HandlerInputTransformer_1_0_0<K, F, E, DS>;
@@ -296,15 +304,21 @@ export type SecondLayerHandlerProcessor<
   K extends ConcordiumHandlerKind,
   F,
   E,
-  DS extends SubqlCustomDatasource = SubqlCustomDatasource
+  DS extends ConcordiumCustomDatasource = ConcordiumCustomDatasource
 > = SecondLayerHandlerProcessor_0_0_0<K, F, E, DS> | SecondLayerHandlerProcessor_1_0_0<K, F, E, DS>;
+
+/**
+ * Represents a Ethereum subquery network configuration, which is based on the CommonSubqueryNetworkConfig template.
+ * @type {IProjectNetworkConfig}
+ */
+export type ConcordiumNetworkConfig = IProjectNetworkConfig;
 
 /**
  * Represents a Concordium project configuration based on the CommonSubqueryProject template.
  * @type {CommonSubqueryProject<IProjectNetworkConfig, SubqlDatasource, RuntimeDatasourceTemplate | CustomDatasourceTemplate>}
  */
-export type ConcordiumProject<DS extends SubqlDatasource = SubqlRuntimeDatasource> = CommonSubqueryProject<
-  IProjectNetworkConfig,
-  SubqlRuntimeDatasource | DS,
-  BaseTemplateDataSource<SubqlRuntimeDatasource> | BaseTemplateDataSource<DS>
+export type ConcordiumProject<DS extends ConcordiumDatasource = ConcordiumRuntimeDatasource> = CommonSubqueryProject<
+  ConcordiumNetworkConfig,
+  ConcordiumRuntimeDatasource | DS,
+  BaseTemplateDataSource<ConcordiumRuntimeDatasource> | BaseTemplateDataSource<DS>
 >;

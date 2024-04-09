@@ -2818,7 +2818,6 @@ __metadata:
     "@subql/common": ^3.5.0
     "@subql/common-concordium": "workspace:*"
     "@subql/node-core": ^8.0.1
-    "@subql/testing": 2.1.0
     "@subql/types-concordium": "workspace:*"
     "@types/express": ^4.17.13
     "@types/jest": ^27.4.0
@@ -2876,15 +2875,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subql/testing@npm:2.1.0":
-  version: 2.1.0
-  resolution: "@subql/testing@npm:2.1.0"
-  dependencies:
-    "@subql/types-core": ^0.1.2-0
-  checksum: 42885519277ec48d079accbc68ca600da64e1c960930d506dcd4a207188ad399ff42f81dfeb5d447f235f3bf7ef61ea55d332d47cb10e6d89c4fafda61fe8bac
-  languageName: node
-  linkType: hard
-
 "@subql/testing@npm:2.1.1-0":
   version: 2.1.1-0
   resolution: "@subql/testing@npm:2.1.1-0"
@@ -2909,15 +2899,6 @@ __metadata:
   dependencies:
     package-json-type: ^1.0.3
   checksum: 0688f1973f830d1d2ab34864b00fc7efb105228b0328ac485c69950957da3a67a92d9477bc94945e57e3cccbf1b732bdea097c1a452a907e23704e9cbeff31fc
-  languageName: node
-  linkType: hard
-
-"@subql/types-core@npm:^0.1.2-0":
-  version: 0.1.2-1
-  resolution: "@subql/types-core@npm:0.1.2-1"
-  dependencies:
-    package-json-type: ^1.0.3
-  checksum: 1c54fecfd7b99875528a87109a3cb8cfcb86a61221f7e715be49198381c6c97e481b60f351c8210df67d1074d3541cd6ee0aad17831f0896dcea63e9784bda64
   languageName: node
   linkType: hard
 

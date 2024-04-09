@@ -11,17 +11,15 @@ import {
   DatasourceParams,
   DynamicDsService as BaseDynamicDsService,
 } from '@subql/node-core';
+import { ConcordiumDatasource } from '@subql/types-concordium';
 import { plainToClass } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import { cloneDeep } from 'lodash';
-import {
-  ConcordiumProjectDs,
-  SubqueryProject,
-} from '../configure/SubqueryProject';
+import { SubqueryProject } from '../configure/SubqueryProject';
 import { DsProcessorService } from './ds-processor.service';
 
 @Injectable()
-export class DynamicDsService extends BaseDynamicDsService<ConcordiumProjectDs> {
+export class DynamicDsService extends BaseDynamicDsService<ConcordiumDatasource> {
   constructor(
     private readonly dsProcessorService: DsProcessorService,
     @Inject('ISubqueryProject') private readonly project: SubqueryProject,
@@ -31,21 +29,23 @@ export class DynamicDsService extends BaseDynamicDsService<ConcordiumProjectDs> 
 
   protected async getDatasource(
     params: DatasourceParams,
-  ): Promise<ConcordiumProjectDs> {
-    const { name, ...template } = cloneDeep(
-      this.project.templates?.find((t) => t.name === params.templateName),
+  ): Promise<ConcordiumDatasource> {
+    const t = this.project.templates?.find(
+      (t) => t.name === params.templateName,
     );
 
-    if (!template) {
+    if (!t) {
       throw new Error(
         `Unable to find matching template in project for name: "${params.templateName}"`,
       );
     }
 
+    const { name, ...template } = cloneDeep(t);
+
     const dsObj = {
       ...template,
       startBlock: params.startBlock,
-    } as ConcordiumProjectDs;
+    } as ConcordiumDatasource;
     try {
       if (isCustomDs(dsObj)) {
         dsObj.processor.options = {

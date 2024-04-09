@@ -17,7 +17,7 @@ import {
   PoiSyncService,
   profiler,
 } from '@subql/node-core';
-import { ConcordiumBlock } from '@subql/types-concordium';
+import { ConcordiumBlock, ConcordiumDatasource } from '@subql/types-concordium';
 import {
   IProjectNetworkConfig,
   BaseTemplateDataSource,
@@ -25,10 +25,7 @@ import {
 import { Sequelize } from '@subql/x-sequelize';
 import { ConcordiumApi } from '../concordium';
 import SafeConcordiumGRPCClient from '../concordium/safe-api';
-import {
-  ConcordiumProjectDs,
-  SubqueryProject,
-} from '../configure/SubqueryProject';
+import { SubqueryProject } from '../configure/SubqueryProject';
 import { DsProcessorService } from './ds-processor.service';
 import { DynamicDsService } from './dynamic-ds.service';
 import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
@@ -38,7 +35,7 @@ const { version: packageVersion } = require('../../package.json');
 @Injectable()
 export class ProjectService extends BaseProjectService<
   ApiService<ConcordiumApi, SafeConcordiumGRPCClient, ConcordiumBlock[]>,
-  ConcordiumProjectDs
+  ConcordiumDatasource
 > {
   protected packageVersion = packageVersion;
 
@@ -94,8 +91,8 @@ export class ProjectService extends BaseProjectService<
   protected onProjectChange(
     project: ISubqueryProject<
       IProjectNetworkConfig,
-      ConcordiumProjectDs,
-      BaseTemplateDataSource<ConcordiumProjectDs>,
+      ConcordiumDatasource,
+      BaseTemplateDataSource<ConcordiumDatasource>,
       unknown
     >,
   ): void | Promise<void> {

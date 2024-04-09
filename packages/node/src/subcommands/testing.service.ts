@@ -9,14 +9,12 @@ import {
   TestingService as BaseTestingService,
   NestLogger,
   TestRunner,
+  IBlock,
 } from '@subql/node-core';
-import { ConcordiumBlock } from '@subql/types-concordium';
+import { ConcordiumBlock, ConcordiumDatasource } from '@subql/types-concordium';
 import { ConcordiumApi } from '../concordium';
 import SafeEthProvider from '../concordium/safe-api';
-import {
-  ConcordiumProjectDs,
-  SubqueryProject,
-} from '../configure/SubqueryProject';
+import { SubqueryProject } from '../configure/SubqueryProject';
 import { IndexerManager } from '../indexer/indexer.manager';
 import { ProjectService } from '../indexer/project.service';
 import { TestingModule } from './testing.module';
@@ -26,7 +24,7 @@ export class TestingService extends BaseTestingService<
   ConcordiumApi,
   SafeEthProvider,
   ConcordiumBlock,
-  ConcordiumProjectDs
+  ConcordiumDatasource
 > {
   constructor(
     nodeConfig: NodeConfig,
@@ -42,7 +40,7 @@ export class TestingService extends BaseTestingService<
         ConcordiumApi,
         SafeEthProvider,
         ConcordiumBlock,
-        ConcordiumProjectDs
+        ConcordiumDatasource
       >,
     ]
   > {
@@ -62,7 +60,7 @@ export class TestingService extends BaseTestingService<
   }
 
   async indexBlock(
-    block: ConcordiumBlock,
+    block: IBlock<ConcordiumBlock>,
     handler: string,
     indexerManager: IndexerManager,
   ): Promise<void> {

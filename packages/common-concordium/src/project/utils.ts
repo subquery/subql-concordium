@@ -3,11 +3,11 @@
 
 import {
   SecondLayerHandlerProcessor,
-  SubqlCustomDatasource,
-  SubqlDatasource,
+  ConcordiumCustomDatasource,
+  ConcordiumDatasource,
   ConcordiumDatasourceKind,
   ConcordiumHandlerKind,
-  SubqlRuntimeDatasource,
+  ConcordiumRuntimeDatasource,
 } from '@subql/types-concordium';
 
 export function isBlockHandlerProcessor<E>(
@@ -34,10 +34,10 @@ export function isSpecialEventHandlerProcessor<E>(
   return hp.baseHandlerKind === ConcordiumHandlerKind.SpecialEvent;
 }
 
-export function isCustomDs(ds: SubqlDatasource): ds is SubqlCustomDatasource<string> {
-  return ds.kind !== ConcordiumDatasourceKind.Runtime && !!(ds as SubqlCustomDatasource<string>).processor;
+export function isCustomDs(ds: ConcordiumDatasource): ds is ConcordiumCustomDatasource<string> {
+  return ds.kind !== ConcordiumDatasourceKind.Runtime && !!(ds as ConcordiumCustomDatasource<string>).processor;
 }
 
-export function isRuntimeDs(ds: SubqlDatasource): ds is SubqlRuntimeDatasource {
+export function isRuntimeDs(ds: ConcordiumDatasource): ds is ConcordiumRuntimeDatasource {
   return ds.kind === ConcordiumDatasourceKind.Runtime;
 }

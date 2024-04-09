@@ -10,8 +10,8 @@ import {
   SubqlMapping,
   SubqlHandler,
   SubqlRuntimeHandler,
-  SubqlRuntimeDatasource,
-  SubqlCustomDatasource,
+  ConcordiumRuntimeDatasource,
+  ConcordiumCustomDatasource,
   CustomDataSourceAsset,
   SubqlBlockHandler,
   ConcordiumTransactionFilter,
@@ -24,7 +24,6 @@ import {
 import {FileReference, Processor} from '@subql/types-core';
 import {plainToClass, Transform, Type} from 'class-transformer';
 import {IsArray, IsEnum, IsInt, IsOptional, IsString, IsObject, ValidateNested} from 'class-validator';
-import {SubqlConcordiumDatasourceKind, SubqlConcordiumHandlerKind} from './types';
 
 export class TransactionFilter implements ConcordiumTransactionFilter {
   @IsOptional()
@@ -58,7 +57,7 @@ export class BlockHandler implements SubqlBlockHandler {
   @IsOptional()
   @Type(() => BlockFilterImpl)
   filter?: BlockFilterImpl;
-  @IsEnum(SubqlConcordiumHandlerKind, {groups: [SubqlConcordiumHandlerKind.Block]})
+  @IsEnum(ConcordiumHandlerKind, {groups: [ConcordiumHandlerKind.Block]})
   kind: ConcordiumHandlerKind.Block;
   @IsString()
   handler: string;
@@ -69,7 +68,7 @@ export class TransactionHandler implements SubqlTransactionHandler {
   @ValidateNested()
   @Type(() => TransactionFilter)
   filter?: ConcordiumTransactionFilter;
-  @IsEnum(SubqlConcordiumHandlerKind, {groups: [SubqlConcordiumHandlerKind.Transaction]})
+  @IsEnum(ConcordiumHandlerKind, {groups: [ConcordiumHandlerKind.Transaction]})
   kind: ConcordiumHandlerKind.Transaction;
   @IsString()
   handler: string;
@@ -80,7 +79,7 @@ export class TransactionEventHandler implements SubqlTransactionEventHandler {
   @ValidateNested()
   @Type(() => TransactionEventFilter)
   filter?: ConcordiumTransactionEventFilter;
-  @IsEnum(SubqlConcordiumHandlerKind, {groups: [SubqlConcordiumHandlerKind.TransactionEvent]})
+  @IsEnum(ConcordiumHandlerKind, {groups: [ConcordiumHandlerKind.TransactionEvent]})
   kind: ConcordiumHandlerKind.TransactionEvent;
   @IsString()
   handler: string;
@@ -91,7 +90,7 @@ export class SpecialEventHandler implements SubqlSpecialEventHandler {
   @ValidateNested()
   @Type(() => SpecialEventFilter)
   filter?: ConcordiumTransactionEventFilter;
-  @IsEnum(SubqlConcordiumHandlerKind, {groups: [SubqlConcordiumHandlerKind.SpecialEvent]})
+  @IsEnum(ConcordiumHandlerKind, {groups: [ConcordiumHandlerKind.SpecialEvent]})
   kind: ConcordiumHandlerKind.SpecialEvent;
   @IsString()
   handler: string;
@@ -112,13 +111,13 @@ export class ConcordiumMapping implements SubqlMapping {
     const handlers: SubqlHandler[] = params.value;
     return handlers.map((handler) => {
       switch (handler.kind) {
-        case SubqlConcordiumHandlerKind.SpecialEvent:
+        case ConcordiumHandlerKind.SpecialEvent:
           return plainToClass(SpecialEventHandler, handler);
-        case SubqlConcordiumHandlerKind.TransactionEvent:
+        case ConcordiumHandlerKind.TransactionEvent:
           return plainToClass(TransactionEventHandler, handler);
-        case SubqlConcordiumHandlerKind.Transaction:
+        case ConcordiumHandlerKind.Transaction:
           return plainToClass(TransactionHandler, handler);
-        case SubqlConcordiumHandlerKind.Block:
+        case ConcordiumHandlerKind.Block:
           return plainToClass(BlockHandler, handler);
         default:
           throw new Error(`handler ${(handler as any).kind} not supported`);
@@ -143,10 +142,10 @@ export class CustomMapping implements SubqlMapping<SubqlCustomHandler> {
 
 export class RuntimeDataSourceBase<M extends SubqlMapping<SubqlRuntimeHandler>>
   extends BaseDataSource
-  implements SubqlRuntimeDatasource<M>
+  implements ConcordiumRuntimeDatasource<M>
 {
-  @IsEnum(SubqlConcordiumDatasourceKind, {
-    groups: [SubqlConcordiumDatasourceKind.Runtime],
+  @IsEnum(ConcordiumDatasourceKind, {
+    groups: [ConcordiumDatasourceKind.Runtime],
   })
   kind: ConcordiumDatasourceKind.Runtime;
   @Type(() => ConcordiumMapping)
@@ -163,7 +162,7 @@ export class FileReferenceImpl implements FileReference {
 
 export class CustomDataSourceBase<K extends string, M extends SubqlMapping = SubqlMapping<SubqlCustomHandler>, O = any>
   extends BaseDataSource
-  implements SubqlCustomDatasource<K, M>
+  implements ConcordiumCustomDatasource<K, M>
 {
   @IsString()
   kind: K;

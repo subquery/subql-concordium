@@ -14,12 +14,10 @@ import {
   ApiService,
   IProjectUpgradeService,
   PoiSyncService,
+  IBlock,
 } from '@subql/node-core';
-import { ConcordiumBlock } from '@subql/types-concordium';
-import {
-  ConcordiumProjectDs,
-  SubqueryProject,
-} from '../../configure/SubqueryProject';
+import { ConcordiumBlock, ConcordiumDatasource } from '@subql/types-concordium';
+import { SubqueryProject } from '../../configure/SubqueryProject';
 import { DynamicDsService } from '../dynamic-ds.service';
 import { IndexerManager } from '../indexer.manager';
 
@@ -28,7 +26,7 @@ import { IndexerManager } from '../indexer.manager';
  */
 @Injectable()
 export class BlockDispatcherService
-  extends BlockDispatcher<ConcordiumBlock, ConcordiumProjectDs>
+  extends BlockDispatcher<ConcordiumBlock, ConcordiumDatasource>
   implements OnApplicationShutdown
 {
   constructor(
@@ -37,7 +35,7 @@ export class BlockDispatcherService
     private indexerManager: IndexerManager,
     eventEmitter: EventEmitter2,
     @Inject('IProjectService')
-    projectService: IProjectService<ConcordiumProjectDs>,
+    projectService: IProjectService<ConcordiumDatasource>,
     @Inject('IProjectUpgradeService')
     projectUpgradeService: IProjectUpgradeService,
     smartBatchService: SmartBatchService,
@@ -62,16 +60,12 @@ export class BlockDispatcherService
     );
   }
 
-  protected getBlockHeight(block: ConcordiumBlock): number {
-    return Number(block.blockHeight);
-  }
-
   protected async indexBlock(
-    block: ConcordiumBlock,
+    block: IBlock<ConcordiumBlock>,
   ): Promise<ProcessBlockResponse> {
     return this.indexerManager.indexBlock(
       block,
-      await this.projectService.getDataSources(this.getBlockHeight(block)),
+      await this.projectService.getDataSources(block.getHeader().blockHeight),
     );
   }
 }

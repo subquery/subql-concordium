@@ -3,24 +3,23 @@
 
 import { Injectable } from '@nestjs/common';
 import {
-  SubqlConcordiumHandlerKind,
+  ConcordiumHandlerKind,
   isCustomDs,
-  SubqlConcordiumCustomDataSource,
-  SubqlConcordiumDataSource,
   SubqlDatasourceProcessor,
 } from '@subql/common-concordium';
 import { BaseDsProcessorService } from '@subql/node-core';
 import {
+  ConcordiumCustomDatasource,
+  ConcordiumDatasource,
   SecondLayerHandlerProcessor_0_0_0,
   SecondLayerHandlerProcessor_1_0_0,
-  SubqlCustomDatasource,
 } from '@subql/types-concordium';
 
 export function isSecondLayerHandlerProcessor_0_0_0<
-  K extends SubqlConcordiumHandlerKind,
+  K extends ConcordiumHandlerKind,
   F extends Record<string, unknown>,
   E,
-  DS extends SubqlCustomDatasource = SubqlConcordiumCustomDataSource,
+  DS extends ConcordiumCustomDatasource = ConcordiumCustomDatasource,
 >(
   processor:
     | SecondLayerHandlerProcessor_0_0_0<K, F, E, DS>
@@ -31,10 +30,10 @@ export function isSecondLayerHandlerProcessor_0_0_0<
 }
 
 export function isSecondLayerHandlerProcessor_1_0_0<
-  K extends SubqlConcordiumHandlerKind,
+  K extends ConcordiumHandlerKind,
   F extends Record<string, unknown>,
   E,
-  DS extends SubqlConcordiumCustomDataSource = SubqlConcordiumCustomDataSource,
+  DS extends ConcordiumCustomDatasource = ConcordiumCustomDatasource,
 >(
   processor:
     | SecondLayerHandlerProcessor_0_0_0<K, F, E, DS>
@@ -44,10 +43,10 @@ export function isSecondLayerHandlerProcessor_1_0_0<
 }
 
 export function asSecondLayerHandlerProcessor_1_0_0<
-  K extends SubqlConcordiumHandlerKind,
+  K extends ConcordiumHandlerKind,
   F extends Record<string, unknown>,
   E,
-  DS extends SubqlConcordiumCustomDataSource = SubqlConcordiumCustomDataSource,
+  DS extends ConcordiumCustomDatasource = ConcordiumCustomDatasource,
 >(
   processor:
     | SecondLayerHandlerProcessor_0_0_0<K, F, E, DS>
@@ -75,8 +74,8 @@ export function asSecondLayerHandlerProcessor_1_0_0<
 
 @Injectable()
 export class DsProcessorService extends BaseDsProcessorService<
-  SubqlConcordiumDataSource,
-  SubqlConcordiumCustomDataSource<string>,
+  ConcordiumDatasource,
+  ConcordiumCustomDatasource<string>,
   SubqlDatasourceProcessor<string, Record<string, unknown>>
 > {
   protected isCustomDs = isCustomDs;

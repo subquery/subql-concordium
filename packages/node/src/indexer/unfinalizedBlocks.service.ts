@@ -1,7 +1,6 @@
 // Copyright 2020-2023 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import { BlockInfo } from '@concordium/node-sdk';
 import { Injectable } from '@nestjs/common';
 import {
   ApiService,
@@ -12,14 +11,7 @@ import {
   mainThreadOnly,
 } from '@subql/node-core';
 import { ConcordiumBlock } from '@subql/types-concordium';
-
-export function blockToHeader(block: ConcordiumBlock | BlockInfo): Header {
-  return {
-    blockHeight: Number(block.blockHeight),
-    blockHash: block.blockHash,
-    parentHash: block.blockParent,
-  };
-}
+import { blockToHeader } from '../concordium';
 
 @Injectable()
 export class UnfinalizedBlocksService extends BaseUnfinalizedBlocksService<ConcordiumBlock> {
@@ -29,11 +21,6 @@ export class UnfinalizedBlocksService extends BaseUnfinalizedBlocksService<Conco
     storeCache: StoreCacheService,
   ) {
     super(nodeConfig, storeCache);
-  }
-
-  @mainThreadOnly()
-  protected blockToHeader(block: ConcordiumBlock): Header {
-    return blockToHeader(block);
   }
 
   @mainThreadOnly()

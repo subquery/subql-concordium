@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import {plainToClass} from 'class-transformer';
-import {IConcordiumProjectManifest, SubqlConcordiumDataSource} from '../types';
+import {ConcordiumDatasource, IConcordiumProjectManifest} from '../types';
 import {ProjectManifestV1_0_0Impl} from './v1_0_0';
 export type VersionedProjectManifest = {specVersion: string};
 
@@ -49,7 +49,7 @@ export class ConcordiumProjectManifestVersioned implements IConcordiumProjectMan
     return this._impl.validate();
   }
 
-  get dataSources(): SubqlConcordiumDataSource[] {
+  get dataSources(): ConcordiumDatasource[] {
     return this._impl.dataSources;
   }
 

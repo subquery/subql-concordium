@@ -5,15 +5,13 @@ import {
   SubqlRuntimeHandler,
   SubqlCustomHandler,
   SubqlHandler,
-  SubqlConcordiumHandlerKind,
+  ConcordiumHandlerKind,
 } from '@subql/common-concordium';
 
 export function isBaseHandler(
   handler: SubqlHandler,
 ): handler is SubqlRuntimeHandler {
-  return Object.values<string>(SubqlConcordiumHandlerKind).includes(
-    handler.kind,
-  );
+  return Object.values<string>(ConcordiumHandlerKind).includes(handler.kind);
 }
 
 export function isCustomHandler(

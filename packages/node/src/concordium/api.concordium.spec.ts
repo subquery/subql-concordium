@@ -25,7 +25,7 @@ describe('ConcordiumApi', () => {
   it('should get blocks at a specific height', async () => {
     const block = await api.fetchBlock(0);
 
-    expect(block.blockHeight).toEqual(BigInt(0));
+    expect(block.getHeader().blockHeight).toEqual(BigInt(0));
   });
 
   it('should get finalized block height', async () => {
