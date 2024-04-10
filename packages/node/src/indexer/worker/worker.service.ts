@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import { Inject, Injectable } from '@nestjs/common';
-import { SubqlConcordiumDataSource } from '@subql/common-concordium';
 import {
   NodeConfig,
   IProjectService,
@@ -10,9 +9,9 @@ import {
   BaseWorkerService,
   IProjectUpgradeService,
   ApiService,
+  IBlock,
 } from '@subql/node-core';
-import { ConcordiumBlock } from '@subql/types-concordium';
-import { ConcordiumProjectDs } from '../../configure/SubqueryProject';
+import { ConcordiumBlock, ConcordiumDatasource } from '@subql/types-concordium';
 import { IndexerManager } from '../indexer.manager';
 
 export type FetchBlockResponse = { parentHash: string } | undefined;
@@ -28,14 +27,14 @@ export type WorkerStatusResponse = {
 export class WorkerService extends BaseWorkerService<
   ConcordiumBlock,
   FetchBlockResponse,
-  SubqlConcordiumDataSource,
+  ConcordiumDatasource,
   {}
 > {
   constructor(
     private apiService: ApiService,
     private indexerManager: IndexerManager,
     @Inject('IProjectService')
-    projectService: IProjectService<ConcordiumProjectDs>,
+    projectService: IProjectService<ConcordiumDatasource>,
     @Inject('IProjectUpgradeService')
     projectUpgradeService: IProjectUpgradeService,
     nodeConfig: NodeConfig,
@@ -46,7 +45,7 @@ export class WorkerService extends BaseWorkerService<
   protected async fetchChainBlock(
     heights: number,
     extra: {},
-  ): Promise<ConcordiumBlock> {
+  ): Promise<IBlock<ConcordiumBlock>> {
     const [block] = await this.apiService.fetchBlocks([heights]);
     return block;
   }
@@ -58,8 +57,8 @@ export class WorkerService extends BaseWorkerService<
   }
 
   protected async processFetchedBlock(
-    block: ConcordiumBlock,
-    dataSources: SubqlConcordiumDataSource[],
+    block: IBlock<ConcordiumBlock>,
+    dataSources: ConcordiumDatasource[],
   ): Promise<ProcessBlockResponse> {
     return this.indexerManager.indexBlock(block, dataSources);
   }

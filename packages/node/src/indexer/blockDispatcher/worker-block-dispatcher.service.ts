@@ -17,13 +17,10 @@ import {
   InMemoryCacheService,
   createIndexerWorker,
 } from '@subql/node-core';
-import { ConcordiumBlock } from '@subql/types-concordium';
+import { ConcordiumBlock, ConcordiumDatasource } from '@subql/types-concordium';
 import { ConcordiumApiConnection } from '../../concordium/api.connection';
 
-import {
-  ConcordiumProjectDs,
-  SubqueryProject,
-} from '../../configure/SubqueryProject';
+import { SubqueryProject } from '../../configure/SubqueryProject';
 import { DynamicDsService } from '../dynamic-ds.service';
 import { UnfinalizedBlocksService } from '../unfinalizedBlocks.service';
 import { IIndexerWorker } from '../worker/worker';
@@ -34,14 +31,18 @@ type IndexerWorker = IIndexerWorker & {
 
 @Injectable()
 export class WorkerBlockDispatcherService
-  extends WorkerBlockDispatcher<ConcordiumProjectDs, IndexerWorker>
+  extends WorkerBlockDispatcher<
+    ConcordiumDatasource,
+    IndexerWorker,
+    ConcordiumBlock
+  >
   implements OnApplicationShutdown
 {
   constructor(
     nodeConfig: NodeConfig,
     eventEmitter: EventEmitter2,
     @Inject('IProjectService')
-    projectService: IProjectService<ConcordiumProjectDs>,
+    projectService: IProjectService<ConcordiumDatasource>,
     @Inject('IProjectUpgradeService')
     projectUpgadeService: IProjectUpgradeService,
     smartBatchService: SmartBatchService,
@@ -70,7 +71,7 @@ export class WorkerBlockDispatcherService
           IIndexerWorker,
           ConcordiumApiConnection,
           ConcordiumBlock,
-          ConcordiumProjectDs
+          ConcordiumDatasource
         >(
           path.resolve(__dirname, '../../../dist/indexer/worker/worker.js'),
           [],

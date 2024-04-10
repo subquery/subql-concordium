@@ -6,10 +6,13 @@ import { Injectable } from '@nestjs/common';
 import {
   Header,
   HostUnfinalizedBlocks,
+  IBlock,
   IUnfinalizedBlocksService,
 } from '@subql/node-core';
 import { ConcordiumBlock } from '@subql/types-concordium';
 
+/**
+ * @deprecated use node-core version once released https://github.com/subquery/subql/pull/2346 */
 @Injectable()
 export class WorkerUnfinalizedBlocksService
   implements IUnfinalizedBlocksService<ConcordiumBlock>
@@ -24,16 +27,10 @@ export class WorkerUnfinalizedBlocksService
     return this.host.unfinalizedBlocksProcess(header);
   }
 
-  async processUnfinalizedBlocks({
-    blockHash,
-    blockHeight,
-    blockParent,
-  }: ConcordiumBlock): Promise<number | null> {
-    return this.host.unfinalizedBlocksProcess({
-      blockHash,
-      blockHeight: Number(blockHeight),
-      parentHash: blockParent,
-    });
+  async processUnfinalizedBlocks(
+    block: IBlock<ConcordiumBlock>,
+  ): Promise<number | null> {
+    return this.host.unfinalizedBlocksProcess(block.getHeader());
   }
 
   // eslint-disable-next-line @typescript-eslint/promise-function-async

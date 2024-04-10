@@ -6,25 +6,24 @@ import { Injectable } from '@nestjs/common';
 
 import { validateSemver } from '@subql/common';
 import {
-  ConcordiumProjectNetworkConfig,
   parseConcordiumProjectManifest,
-  SubqlConcordiumDataSource,
   ConcordiumBlockFilter,
   ProjectManifestV1_0_0Impl,
   isRuntimeDs,
-  SubqlConcordiumHandlerKind,
   isCustomDs,
 } from '@subql/common-concordium';
 import {
   insertBlockFiltersCronSchedules,
   ISubqueryProject,
   loadProjectTemplates,
-  SubqlProjectDs,
   updateDataSourcesV1_0_0,
 } from '@subql/node-core';
 import {
+  ConcordiumNetworkConfig,
   CustomDatasourceTemplate,
   RuntimeDatasourceTemplate,
+  ConcordiumDatasource,
+  ConcordiumHandlerKind,
 } from '@subql/types-concordium';
 import { ParentProject, Reader, RunnerSpecs } from '@subql/types-core';
 import { buildSchemaFromString } from '@subql/utils';
@@ -33,11 +32,9 @@ import { GraphQLSchema } from 'graphql';
 
 const { version: packageVersion } = require('../../package.json');
 
-export type ConcordiumProjectDs = SubqlProjectDs<SubqlConcordiumDataSource>;
-
 export type ConcordiumProjectDsTemplate =
-  | SubqlProjectDs<RuntimeDatasourceTemplate>
-  | SubqlProjectDs<CustomDatasourceTemplate>;
+  | RuntimeDatasourceTemplate
+  | CustomDatasourceTemplate;
 
 export type SubqlProjectBlockFilter = ConcordiumBlockFilter & {
   cronSchedule?: {
@@ -50,18 +47,18 @@ const NOT_SUPPORT = (name: string) => {
   throw new Error(`Manifest specVersion ${name} is not supported`);
 };
 
-// This is the runtime type after we have mapped genesisHash to chainId and endpoint/dict have been provided when dealing with deployments
-type NetworkConfig = ConcordiumProjectNetworkConfig & { chainId: string };
+// // This is the runtime type after we have mapped genesisHash to chainId and endpoint/dict have been provided when dealing with deployments
+// type NetworkConfig = ConcordiumProjectNetworkConfig & { chainId: string };
 
 @Injectable()
 export class SubqueryProject implements ISubqueryProject {
-  #dataSources: ConcordiumProjectDs[];
+  #dataSources: ConcordiumDatasource[];
 
   constructor(
     readonly id: string,
     readonly root: string,
-    readonly network: NetworkConfig,
-    dataSources: ConcordiumProjectDs[],
+    readonly network: ConcordiumNetworkConfig,
+    dataSources: ConcordiumDatasource[],
     readonly schema: GraphQLSchema,
     readonly templates: ConcordiumProjectDsTemplate[],
     readonly runner?: RunnerSpecs,
@@ -70,7 +67,7 @@ export class SubqueryProject implements ISubqueryProject {
     this.#dataSources = dataSources;
   }
 
-  get dataSources(): ConcordiumProjectDs[] {
+  get dataSources(): ConcordiumDatasource[] {
     return this.#dataSources;
   }
 
@@ -81,7 +78,7 @@ export class SubqueryProject implements ISubqueryProject {
       this.dataSources,
       getTimestamp,
       isRuntimeDs,
-      SubqlConcordiumHandlerKind.Block,
+      ConcordiumHandlerKind.Block,
     );
   }
 
@@ -90,7 +87,7 @@ export class SubqueryProject implements ISubqueryProject {
     rawManifest: unknown,
     reader: Reader,
     root: string, // If project local then directory otherwise temp directory
-    networkOverrides?: Partial<ConcordiumProjectNetworkConfig>,
+    networkOverrides?: Partial<ConcordiumNetworkConfig>,
   ): Promise<SubqueryProject> {
     // rawManifest and reader can be reused here.
     // It has been pre-fetched and used for rebase manifest runner options with args
@@ -117,7 +114,7 @@ export class SubqueryProject implements ISubqueryProject {
   }
 }
 
-function processChainId(network: any): NetworkConfig {
+function processChainId(network: any): ConcordiumNetworkConfig {
   if (network.chainId && network.genesisHash) {
     throw new Error('Please only provide one of chainId and genesisHash');
   } else if (network.genesisHash && !network.chainId) {
@@ -134,7 +131,7 @@ async function loadProjectFromManifestBase(
   reader: Reader,
   path: string,
   root: string,
-  networkOverrides?: Partial<ConcordiumProjectNetworkConfig>,
+  networkOverrides?: Partial<ConcordiumNetworkConfig>,
 ): Promise<SubqueryProject> {
   if (typeof projectManifest.network.endpoint === 'string') {
     projectManifest.network.endpoint = [projectManifest.network.endpoint];

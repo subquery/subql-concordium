@@ -8,9 +8,7 @@ import {
   isTransactionEventHandlerProcessor,
   isCustomDs,
   isRuntimeDs,
-  SubqlConcordiumCustomDataSource,
   ConcordiumRuntimeHandlerInputMap,
-  SubqlConcordiumDataSource,
   isSpecialEventHandlerProcessor,
 } from '@subql/common-concordium';
 import {
@@ -21,6 +19,7 @@ import {
   ProcessBlockResponse,
   BaseIndexerManager,
   ApiService,
+  IBlock,
 } from '@subql/node-core';
 import {
   ConcordiumTransaction,
@@ -32,7 +31,8 @@ import {
   ConcordiumSpecialEventFilter,
   ConcordiumTransactionEventFilter,
   ConcordiumHandlerKind,
-  SubqlDatasource,
+  ConcordiumDatasource,
+  ConcordiumCustomDatasource,
 } from '@subql/types-concordium';
 import { ConcordiumApi, ConcordiumApiService } from '../concordium';
 import {
@@ -41,7 +41,6 @@ import {
   filterTxEventProcessor,
 } from '../concordium/block.concordium';
 import SafeConcordiumGRPCClient from '../concordium/safe-api';
-import { ConcordiumProjectDs } from '../configure/SubqueryProject';
 import {
   asSecondLayerHandlerProcessor_1_0_0,
   DsProcessorService,
@@ -59,8 +58,8 @@ export class IndexerManager extends BaseIndexerManager<
   ConcordiumApi,
   ConcordiumBlock,
   ApiService,
-  SubqlConcordiumDataSource,
-  SubqlConcordiumCustomDataSource,
+  ConcordiumDatasource,
+  ConcordiumCustomDatasource,
   typeof FilterTypeMap,
   typeof ProcessorTypeMap,
   ConcordiumRuntimeHandlerInputMap
@@ -97,18 +96,20 @@ export class IndexerManager extends BaseIndexerManager<
 
   @profiler()
   async indexBlock(
-    block: ConcordiumBlock,
-    dataSources: SubqlConcordiumDataSource[],
+    block: IBlock<ConcordiumBlock>,
+    dataSources: ConcordiumDatasource[],
   ): Promise<ProcessBlockResponse> {
     return super.internalIndexBlock(block, dataSources, () =>
-      this.getApi(block),
+      this.getApi(block.block),
     );
   }
 
+  /** @deprecated remove once https://github.com/subquery/subql/pull/2346 is released */
   getBlockHeight(block: ConcordiumBlock): number {
     return Number(block.blockHeight);
   }
 
+  /** @deprecated remove once https://github.com/subquery/subql/pull/2346 is released */
   getBlockHash(block: ConcordiumBlock): string {
     return block.blockHash;
   }
@@ -125,8 +126,8 @@ export class IndexerManager extends BaseIndexerManager<
 
   protected async indexBlockData(
     block: ConcordiumBlock,
-    dataSources: ConcordiumProjectDs[],
-    getVM: (d: ConcordiumProjectDs) => Promise<IndexerSandbox>,
+    dataSources: ConcordiumDatasource[],
+    getVM: (d: ConcordiumDatasource) => Promise<IndexerSandbox>,
   ): Promise<void> {
     await this.indexBlockContent(block, dataSources, getVM);
 
@@ -147,8 +148,8 @@ export class IndexerManager extends BaseIndexerManager<
 
   private async indexBlockContent(
     block: ConcordiumBlock,
-    dataSources: ConcordiumProjectDs[],
-    getVM: (d: ConcordiumProjectDs) => Promise<IndexerSandbox>,
+    dataSources: ConcordiumDatasource[],
+    getVM: (d: ConcordiumDatasource) => Promise<IndexerSandbox>,
   ): Promise<void> {
     for (const ds of dataSources) {
       await this.indexData(ConcordiumHandlerKind.Block, block, ds, getVM);
@@ -157,8 +158,8 @@ export class IndexerManager extends BaseIndexerManager<
 
   private async indexTransaction(
     tx: ConcordiumTransaction,
-    dataSources: ConcordiumProjectDs[],
-    getVM: (d: ConcordiumProjectDs) => Promise<IndexerSandbox>,
+    dataSources: ConcordiumDatasource[],
+    getVM: (d: ConcordiumDatasource) => Promise<IndexerSandbox>,
   ): Promise<void> {
     for (const ds of dataSources) {
       await this.indexData(ConcordiumHandlerKind.Transaction, tx, ds, getVM);
@@ -167,8 +168,8 @@ export class IndexerManager extends BaseIndexerManager<
 
   private async indexSpecialEvent(
     event: ConcordiumSpecialEvent,
-    dataSources: ConcordiumProjectDs[],
-    getVM: (d: ConcordiumProjectDs) => Promise<IndexerSandbox>,
+    dataSources: ConcordiumDatasource[],
+    getVM: (d: ConcordiumDatasource) => Promise<IndexerSandbox>,
   ): Promise<void> {
     for (const ds of dataSources) {
       await this.indexData(
@@ -182,8 +183,8 @@ export class IndexerManager extends BaseIndexerManager<
 
   private async indexTransactionEvent(
     event: ConcordiumTransactionEvent,
-    dataSources: ConcordiumProjectDs[],
-    getVM: (d: ConcordiumProjectDs) => Promise<IndexerSandbox>,
+    dataSources: ConcordiumDatasource[],
+    getVM: (d: ConcordiumDatasource) => Promise<IndexerSandbox>,
   ): Promise<void> {
     for (const ds of dataSources) {
       await this.indexData(
@@ -198,7 +199,7 @@ export class IndexerManager extends BaseIndexerManager<
   protected async prepareFilteredData<T = any>(
     kind: ConcordiumHandlerKind,
     data: T,
-    ds: SubqlDatasource,
+    ds: ConcordiumDatasource,
   ): Promise<T> {
     return Promise.resolve(data);
   }
@@ -222,21 +223,21 @@ const FilterTypeMap = {
   [ConcordiumHandlerKind.Block]: (
     data: ConcordiumBlock,
     filter: ConcordiumBlockFilter,
-    ds: SubqlConcordiumDataSource,
+    ds: ConcordiumDatasource,
   ) => filterBlocksProcessor(data, filter),
   [ConcordiumHandlerKind.SpecialEvent]: (
     data: ConcordiumSpecialEvent,
     filter: ConcordiumSpecialEventFilter,
-    ds: SubqlConcordiumDataSource,
+    ds: ConcordiumDatasource,
   ) => filterTxEventProcessor(data, filter),
   [ConcordiumHandlerKind.TransactionEvent]: (
     data: ConcordiumTransactionEvent,
     filter: ConcordiumTransactionEventFilter,
-    ds: SubqlConcordiumDataSource,
+    ds: ConcordiumDatasource,
   ) => filterTxEventProcessor(data, filter),
   [ConcordiumHandlerKind.Transaction]: (
     data: ConcordiumTransaction,
     filter: ConcordiumTransactionFilter,
-    ds: SubqlConcordiumDataSource,
+    ds: ConcordiumDatasource,
   ) => filterTransactionsProcessor(data, filter),
 };

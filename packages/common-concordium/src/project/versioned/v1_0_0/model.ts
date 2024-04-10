@@ -11,12 +11,14 @@ import {
   CommonProjectNetworkV1_0_0,
 } from '@subql/common';
 import {
-  SubqlCustomDatasource,
+  ConcordiumCustomDatasource,
   SubqlMapping,
-  SubqlRuntimeDatasource,
+  ConcordiumRuntimeDatasource,
   RuntimeDatasourceTemplate,
   CustomDatasourceTemplate,
   ConcordiumProjectManifestV1_0_0,
+  ConcordiumDatasource,
+  SubqlRuntimeHandler,
 } from '@subql/types-concordium';
 import {BaseMapping, NodeSpec, ParentProject, QuerySpec, RunnerSpecs} from '@subql/types-core';
 import {plainToClass, Transform, TransformFnParams, Type} from 'class-transformer';
@@ -32,7 +34,6 @@ import {
   validateSync,
 } from 'class-validator';
 import {CustomDataSourceBase, ConcordiumMapping, RuntimeDataSourceBase} from '../../models';
-import {SubqlConcordiumDataSource, SubqlRuntimeHandler} from '../../types';
 
 const Concordium_NODE_NAME = `@subql/node-concordium`;
 const Flare_NODE_NAME = `@subql/node-flare`;
@@ -59,7 +60,7 @@ function validateObject(object: any, errorMessage = 'failed to validate object.'
 
 export class ConcordiumRuntimeDataSourceImpl
   extends RuntimeDataSourceBase<SubqlMapping<SubqlRuntimeHandler>>
-  implements SubqlRuntimeDatasource
+  implements ConcordiumRuntimeDatasource
 {
   validate(): void {
     return validateObject(this, 'failed to validate runtime datasource.');
@@ -68,7 +69,7 @@ export class ConcordiumRuntimeDataSourceImpl
 
 export class ConcordiumCustomDataSourceImpl<K extends string = string, M extends BaseMapping<any> = BaseMapping<any>>
   extends CustomDataSourceBase<K, M>
-  implements SubqlCustomDatasource<K, M>
+  implements ConcordiumCustomDatasource<K, M>
 {
   validate(): void {
     return validateObject(this, 'failed to validate custom datasource.');
@@ -140,7 +141,7 @@ export class DeploymentV1_0_0 extends BaseDeploymentV1_0_0 {
     },
     keepDiscriminatorProperty: true,
   })
-  dataSources: (SubqlRuntimeDatasource | SubqlCustomDatasource)[];
+  dataSources: (ConcordiumRuntimeDatasource | ConcordiumCustomDatasource)[];
   @IsOptional()
   @IsArray()
   @ValidateNested()
@@ -171,7 +172,7 @@ export class ProjectManifestV1_0_0Impl
     },
     keepDiscriminatorProperty: true,
   })
-  dataSources: SubqlConcordiumDataSource[];
+  dataSources: ConcordiumDatasource[];
   @Type(() => ProjectNetworkV1_0_0)
   network: ProjectNetworkV1_0_0;
   @IsString()

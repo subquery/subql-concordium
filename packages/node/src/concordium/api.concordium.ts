@@ -14,9 +14,8 @@ import {
 import { ChannelCredentials } from '@grpc/grpc-js';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { GrpcTransport, GrpcOptions } from '@protobuf-ts/grpc-transport';
-import { getLogger } from '@subql/node-core';
+import { getLogger, Header, IBlock } from '@subql/node-core';
 import {
-  ApiWrapper,
   ConcordiumBlock,
   ConcordiumSpecialEvent,
   ConcordiumTransaction,
@@ -30,7 +29,15 @@ const { version: packageVersion } = require('../../package.json');
 
 const logger = getLogger('api.concordium');
 
-export class ConcordiumApi implements ApiWrapper {
+export function blockToHeader(block: ConcordiumBlock | BlockInfo): Header {
+  return {
+    blockHeight: Number(block.blockHeight),
+    blockHash: block.blockHash,
+    parentHash: block.blockParent,
+  };
+}
+
+export class ConcordiumApi {
   private client: ConcordiumGRPCClient;
   private transport: GrpcTransport;
   private chainId: string;
@@ -238,7 +245,7 @@ export class ConcordiumApi implements ApiWrapper {
     });
   }
 
-  async getAndWrapBlock(height: number): Promise<ConcordiumBlock> {
+  async getAndWrapBlock(height: number): Promise<IBlock<ConcordiumBlock>> {
     const blockHash = (await this.client.getBlocksAtHeight(BigInt(height)))[0]; //there is only one finalized block per height
     const blockInfo = await this.getBlockByHash(blockHash);
     const wrappedBlock: ConcordiumBlock = {
@@ -282,16 +289,21 @@ export class ConcordiumApi implements ApiWrapper {
       },
     );
 
-    return wrappedBlock;
+    return {
+      getHeader: () => blockToHeader(wrappedBlock),
+      block: wrappedBlock,
+    };
   }
 
-  async fetchBlock(height: number): Promise<ConcordiumBlock> {
+  async fetchBlock(height: number): Promise<IBlock<ConcordiumBlock>> {
     const block = await this.getAndWrapBlock(height);
     this.eventEmitter.emit('fetchBlock');
     return block;
   }
 
-  async fetchBlocks(bufferBlocks: number[]): Promise<ConcordiumBlock[]> {
+  async fetchBlocks(
+    bufferBlocks: number[],
+  ): Promise<IBlock<ConcordiumBlock>[]> {
     return Promise.all(bufferBlocks.map(async (num) => this.fetchBlock(num)));
   }
 

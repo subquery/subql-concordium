@@ -5,11 +5,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SchedulerRegistry } from '@nestjs/schedule';
 
-import {
-  isCustomDs,
-  SubqlConcordiumHandlerKind,
-  ConcordiumTransactionFilter,
-} from '@subql/common-concordium';
+import { isCustomDs } from '@subql/common-concordium';
 import {
   NodeConfig,
   BaseFetchService,
@@ -18,27 +14,17 @@ import {
   getModulos,
 } from '@subql/node-core';
 import {
-  ConcordiumSpecialEventFilter,
-  ConcordiumTransactionEventFilter,
-  SubqlDatasource,
+  ConcordiumBlock,
+  ConcordiumDatasource,
+  ConcordiumHandlerKind,
 } from '@subql/types-concordium';
-import {
-  DictionaryQueryCondition,
-  DictionaryQueryEntry,
-} from '@subql/types-core';
-import { setWith, sortBy, uniqBy } from 'lodash';
-import { ConcordiumApi } from '../concordium';
+import { blockToHeader, ConcordiumApi } from '../concordium';
 import { calcInterval } from '../concordium/utils.concordium';
 import { SubqueryProject } from '../configure/SubqueryProject';
 import { IConcordiumBlockDispatcher } from './blockDispatcher';
-import { DictionaryService } from './dictionary.service';
-import { DsProcessorService } from './ds-processor.service';
-import { DynamicDsService } from './dynamic-ds.service';
+import { DictionaryService } from './dictionary/dictionary.service';
 import { ProjectService } from './project.service';
-import {
-  blockToHeader,
-  UnfinalizedBlocksService,
-} from './unfinalizedBlocks.service';
+import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
 
 const logger = getLogger('fetch.service');
 
@@ -46,163 +32,11 @@ const BLOCK_TIME_VARIANCE = 5000;
 
 const INTERVAL_PERCENT = 0.9;
 
-export function txFilterToQueryEntry(
-  filter: ConcordiumTransactionFilter,
-): DictionaryQueryEntry {
-  const conditions: DictionaryQueryCondition[] = [
-    {
-      field: 'type',
-      value: filter.type,
-      matcher: 'equalTo',
-    },
-  ];
-
-  if (filter.values !== undefined) {
-    const nested = {};
-
-    Object.keys(filter.values).map((key) => {
-      const value = filter.values[key];
-      setWith(nested, key, value);
-    });
-
-    conditions.push({
-      field: 'data',
-      value: nested as any, // Cast to any for compat with node core
-      matcher: 'contains',
-    });
-  }
-  return {
-    entity: 'transactions',
-    conditions: conditions,
-  };
-}
-
-export function txEventFilterToQueryEntry(
-  filter: ConcordiumTransactionEventFilter,
-): DictionaryQueryEntry {
-  const conditions: DictionaryQueryCondition[] = [
-    {
-      field: 'type',
-      value: filter.type,
-      matcher: 'equalTo',
-    },
-  ];
-
-  if (filter.values !== undefined) {
-    const nested = {};
-
-    Object.keys(filter.values).map((key) => {
-      const value = filter.values[key];
-      setWith(nested, key, value);
-    });
-
-    conditions.push({
-      field: 'data',
-      value: nested as any, // Cast to any for compat with node core
-      matcher: 'contains',
-    });
-  }
-  return {
-    entity: 'txEvents',
-    conditions: conditions,
-  };
-}
-
-export function speicalEventFilterToQueryEntry(
-  filter: ConcordiumSpecialEventFilter,
-): DictionaryQueryEntry {
-  const conditions: DictionaryQueryCondition[] = [
-    {
-      field: 'type',
-      value: filter.type,
-      matcher: 'equalTo',
-    },
-  ];
-
-  if (filter.values !== undefined) {
-    const nested = {};
-
-    Object.keys(filter.values).map((key) => {
-      const value = filter.values[key];
-      setWith(nested, key, value);
-    });
-
-    conditions.push({
-      field: 'data',
-      value: nested as any, // Cast to any for compat with node core
-      matcher: 'contains',
-    });
-  }
-  return {
-    entity: 'specialEvents',
-    conditions: conditions,
-  };
-}
-
-export function buildDictionaryQueryEntries(
-  dataSources: SubqlDatasource[],
-): DictionaryQueryEntry[] {
-  const queryEntries: DictionaryQueryEntry[] = [];
-
-  for (const ds of dataSources) {
-    for (const handler of ds.mapping.handlers) {
-      // No filters, cant use dictionary
-      if (!handler.filter) return [];
-
-      switch (handler.kind) {
-        case SubqlConcordiumHandlerKind.Block: {
-          const filter = handler.filter;
-          if (filter.modulo === undefined) {
-            return [];
-          }
-          break;
-        }
-        case SubqlConcordiumHandlerKind.Transaction: {
-          const filter = handler.filter;
-          if (filter.type || filter.values) {
-            queryEntries.push(txFilterToQueryEntry(filter));
-          } else {
-            return [];
-          }
-          break;
-        }
-        case SubqlConcordiumHandlerKind.TransactionEvent: {
-          const filter = handler.filter;
-          if (filter.type || filter.values) {
-            queryEntries.push(txEventFilterToQueryEntry(filter));
-          } else {
-            return [];
-          }
-          break;
-        }
-        case SubqlConcordiumHandlerKind.SpecialEvent: {
-          const filter = handler.filter;
-          if (filter.type || filter.values) {
-            queryEntries.push(speicalEventFilterToQueryEntry(filter));
-          } else {
-            return [];
-          }
-          break;
-        }
-        default:
-      }
-    }
-  }
-
-  return uniqBy(
-    queryEntries,
-    (item) =>
-      `${item.entity}|${JSON.stringify(
-        sortBy(item.conditions, (c) => c.field),
-      )}`,
-  );
-}
-
 @Injectable()
 export class FetchService extends BaseFetchService<
-  SubqlDatasource,
+  ConcordiumDatasource,
   IConcordiumBlockDispatcher,
-  DictionaryService
+  ConcordiumBlock
 > {
   constructor(
     private apiService: ApiService,
@@ -212,8 +46,6 @@ export class FetchService extends BaseFetchService<
     @Inject('IBlockDispatcher')
     blockDispatcher: IConcordiumBlockDispatcher,
     dictionaryService: DictionaryService,
-    private dsProcessorService: DsProcessorService,
-    dynamicDsService: DynamicDsService,
     private unfinalizedBlocksService: UnfinalizedBlocksService,
     eventEmitter: EventEmitter2,
     schedulerRegistry: SchedulerRegistry,
@@ -224,7 +56,6 @@ export class FetchService extends BaseFetchService<
       project.network,
       blockDispatcher,
       dictionaryService,
-      dynamicDsService,
       eventEmitter,
       schedulerRegistry,
     );
@@ -236,12 +67,6 @@ export class FetchService extends BaseFetchService<
 
   protected getGenesisHash(): string {
     return this.apiService.networkMeta.genesisHash;
-  }
-
-  protected buildDictionaryQueryEntries(
-    dataSources: (SubqlDatasource & { name?: string })[],
-  ): DictionaryQueryEntry[] {
-    return buildDictionaryQueryEntries(dataSources);
   }
 
   protected async getFinalizedHeight(): Promise<number> {
@@ -264,12 +89,8 @@ export class FetchService extends BaseFetchService<
     return Math.min(BLOCK_TIME_VARIANCE, CHAIN_INTERVAL);
   }
 
-  protected getModulos(): number[] {
-    return getModulos(
-      this.projectService.getAllDataSources(),
-      isCustomDs,
-      SubqlConcordiumHandlerKind.Block,
-    );
+  protected getModulos(dataSources: ConcordiumDatasource[]): number[] {
+    return getModulos(dataSources, isCustomDs, ConcordiumHandlerKind.Block);
   }
 
   protected async initBlockDispatcher(): Promise<void> {

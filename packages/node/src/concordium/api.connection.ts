@@ -10,6 +10,7 @@ import {
   RateLimitError,
   TimeoutError,
   IApiConnectionSpecific,
+  IBlock,
 } from '@subql/node-core';
 import { ConcordiumBlock } from '@subql/types-concordium';
 import { ConcordiumApi } from './api.concordium';
@@ -18,14 +19,14 @@ import SafeConcordiumGRPCClient from './safe-api';
 type FetchFunc = (
   api: ConcordiumApi,
   batch: number[],
-) => Promise<ConcordiumBlock[]>;
+) => Promise<IBlock<ConcordiumBlock>[]>;
 
 export class ConcordiumApiConnection
   implements
     IApiConnectionSpecific<
       ConcordiumApi,
       SafeConcordiumGRPCClient,
-      ConcordiumBlock[]
+      IBlock<ConcordiumBlock>[]
     >
 {
   readonly networkMeta: NetworkMetadataPayload;
@@ -65,7 +66,7 @@ export class ConcordiumApiConnection
     await this.unsafeApi.disconnect();
   }
 
-  async fetchBlocks(heights: number[]): Promise<ConcordiumBlock[]> {
+  async fetchBlocks(heights: number[]): Promise<IBlock<ConcordiumBlock>[]> {
     const blocks = await this.fetchBlocksBatches(this.unsafeApi, heights);
     return blocks;
   }

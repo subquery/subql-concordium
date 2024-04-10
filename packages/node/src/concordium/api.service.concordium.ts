@@ -3,11 +3,11 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { ConcordiumProjectNetworkConfig } from '@subql/common-concordium';
 import {
   ApiService,
   ConnectionPoolService,
   getLogger,
+  IBlock,
   NodeConfig,
 } from '@subql/node-core';
 import { ConcordiumBlock } from '@subql/types-concordium';
@@ -22,7 +22,7 @@ const logger = getLogger('api');
 export class ConcordiumApiService extends ApiService<
   ConcordiumApi,
   SafeConcordiumGRPCClient,
-  ConcordiumBlock[]
+  IBlock<ConcordiumBlock>[]
 > {
   constructor(
     @Inject('ISubqueryProject') private project: SubqueryProject,
@@ -123,7 +123,7 @@ export class ConcordiumApiService extends ApiService<
   private async fetchBlockBatches(
     api: ConcordiumApi,
     batch: number[],
-  ): Promise<ConcordiumBlock[]> {
+  ): Promise<IBlock<ConcordiumBlock>[]> {
     return api.fetchBlocks(batch);
   }
 }
