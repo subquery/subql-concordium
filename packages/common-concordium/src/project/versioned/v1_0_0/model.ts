@@ -34,7 +34,6 @@ import {
   validateSync,
 } from 'class-validator';
 import {CustomDataSourceBase, ConcordiumMapping, RuntimeDataSourceBase} from '../../models';
-// import {SubqlConcordiumDataSource, SubqlRuntimeHandler} from '../../types';
 
 const Concordium_NODE_NAME = `@subql/node-concordium`;
 const Flare_NODE_NAME = `@subql/node-flare`;
