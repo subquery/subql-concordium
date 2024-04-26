@@ -7,11 +7,14 @@ import {
   ConcordiumSpecialEventFilter,
   ConcordiumTransactionEventFilter,
   ConcordiumTransactionFilter,
-  DictionaryQueryCondition,
   ConcordiumDatasource,
   ConcordiumHandlerKind,
 } from '@subql/types-concordium';
-import { DictionaryQueryEntry, DsProcessor } from '@subql/types-core';
+import {
+  DictionaryQueryCondition,
+  DictionaryQueryEntry,
+  DsProcessor,
+} from '@subql/types-core';
 import { setWith, sortBy, uniqBy } from 'lodash';
 import { SubqueryProject } from '../../../configure/SubqueryProject';
 
