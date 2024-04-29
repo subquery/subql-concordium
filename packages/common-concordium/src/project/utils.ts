@@ -10,27 +10,29 @@ import {
   ConcordiumRuntimeDatasource,
 } from '@subql/types-concordium';
 
+type DefaultFilter = Record<string, unknown>;
+
 export function isBlockHandlerProcessor<E>(
-  hp: SecondLayerHandlerProcessor<ConcordiumHandlerKind, unknown, unknown>
-): hp is SecondLayerHandlerProcessor<ConcordiumHandlerKind.Block, unknown, E> {
+  hp: SecondLayerHandlerProcessor<ConcordiumHandlerKind, DefaultFilter, unknown>
+): hp is SecondLayerHandlerProcessor<ConcordiumHandlerKind.Block, DefaultFilter, E> {
   return hp.baseHandlerKind === ConcordiumHandlerKind.Block;
 }
 
 export function isTransactionHandlerProcessor<E>(
-  hp: SecondLayerHandlerProcessor<ConcordiumHandlerKind, unknown, unknown>
-): hp is SecondLayerHandlerProcessor<ConcordiumHandlerKind.Transaction, unknown, E> {
+  hp: SecondLayerHandlerProcessor<ConcordiumHandlerKind, DefaultFilter, unknown>
+): hp is SecondLayerHandlerProcessor<ConcordiumHandlerKind.Transaction, DefaultFilter, E> {
   return hp.baseHandlerKind === ConcordiumHandlerKind.Transaction;
 }
 
 export function isTransactionEventHandlerProcessor<E>(
-  hp: SecondLayerHandlerProcessor<ConcordiumHandlerKind, unknown, unknown>
-): hp is SecondLayerHandlerProcessor<ConcordiumHandlerKind.TransactionEvent, unknown, E> {
+  hp: SecondLayerHandlerProcessor<ConcordiumHandlerKind, DefaultFilter, unknown>
+): hp is SecondLayerHandlerProcessor<ConcordiumHandlerKind.TransactionEvent, DefaultFilter, E> {
   return hp.baseHandlerKind === ConcordiumHandlerKind.TransactionEvent;
 }
 
 export function isSpecialEventHandlerProcessor<E>(
-  hp: SecondLayerHandlerProcessor<ConcordiumHandlerKind, unknown, unknown>
-): hp is SecondLayerHandlerProcessor<ConcordiumHandlerKind.SpecialEvent, unknown, E> {
+  hp: SecondLayerHandlerProcessor<ConcordiumHandlerKind, DefaultFilter, unknown>
+): hp is SecondLayerHandlerProcessor<ConcordiumHandlerKind.SpecialEvent, DefaultFilter, E> {
   return hp.baseHandlerKind === ConcordiumHandlerKind.SpecialEvent;
 }
 

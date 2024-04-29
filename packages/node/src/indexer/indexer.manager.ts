@@ -20,6 +20,7 @@ import {
   BaseIndexerManager,
   ApiService,
   IBlock,
+  SandboxService,
 } from '@subql/node-core';
 import {
   ConcordiumTransaction,
@@ -41,21 +42,17 @@ import {
   filterTxEventProcessor,
 } from '../concordium/block.concordium';
 import SafeConcordiumGRPCClient from '../concordium/safe-api';
-import {
-  asSecondLayerHandlerProcessor_1_0_0,
-  DsProcessorService,
-} from './ds-processor.service';
+import { DsProcessorService } from './ds-processor.service';
 import { DynamicDsService } from './dynamic-ds.service';
 import { ProjectService } from './project.service';
-import { SandboxService } from './sandbox.service';
 import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
 
 const logger = getLogger('indexer');
 
 @Injectable()
 export class IndexerManager extends BaseIndexerManager<
-  SafeConcordiumGRPCClient,
   ConcordiumApi,
+  SafeConcordiumGRPCClient,
   ConcordiumBlock,
   ApiService,
   ConcordiumDatasource,
@@ -66,12 +63,11 @@ export class IndexerManager extends BaseIndexerManager<
 > {
   protected isRuntimeDs = isRuntimeDs;
   protected isCustomDs = isCustomDs;
-  protected updateCustomProcessor = asSecondLayerHandlerProcessor_1_0_0;
 
   constructor(
     apiService: ApiService,
     nodeConfig: NodeConfig,
-    sandboxService: SandboxService,
+    sandboxService: SandboxService<SafeConcordiumGRPCClient, ConcordiumApi>,
     dsProcessorService: DsProcessorService,
     dynamicDsService: DynamicDsService,
     unfinalizedBlocksService: UnfinalizedBlocksService,

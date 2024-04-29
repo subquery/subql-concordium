@@ -9,6 +9,9 @@ import {
   IProjectNetworkConfig,
   Processor,
   ProjectManifestV1_0_0,
+  SecondLayerHandlerProcessor_0_0_0,
+  SecondLayerHandlerProcessor_1_0_0,
+  DsProcessor,
 } from '@subql/types-core';
 import {
   ConcordiumBlock,
@@ -62,13 +65,6 @@ export type ConcordiumRuntimeHandlerInputMap = {
   [ConcordiumHandlerKind.Block]: ConcordiumBlock;
   [ConcordiumHandlerKind.Transaction]: ConcordiumTransaction;
   [ConcordiumHandlerKind.TransactionEvent]: ConcordiumTransactionEvent;
-  [ConcordiumHandlerKind.SpecialEvent]: ConcordiumSpecialEvent;
-};
-
-type ConcordiumRuntimeFilterMap = {
-  [ConcordiumHandlerKind.Block]: ConcordiumBlockFilter;
-  [ConcordiumHandlerKind.Transaction]: ConcordiumTransactionFilter;
-  [ConcordiumHandlerKind.TransactionEvent]: ConcordiumTransactionEventFilter;
   [ConcordiumHandlerKind.SpecialEvent]: ConcordiumSpecialEvent;
 };
 
@@ -202,48 +198,18 @@ export interface ConcordiumCustomDatasource<
   processor: Processor<O>;
 }
 
-export interface HandlerInputTransformer_0_0_0<
-  T extends ConcordiumHandlerKind,
+export type SecondLayerHandlerProcessor<
+  K extends ConcordiumHandlerKind,
+  F extends Record<string, unknown>,
   E,
   DS extends ConcordiumCustomDatasource = ConcordiumCustomDatasource
-> {
-  (
-    input: ConcordiumRuntimeHandlerInputMap[T],
-    ds: DS,
-    api: ConcordiumGRPCClient,
-    assets?: Record<string, string>
-  ): Promise<E>; //  | SubstrateBuiltinDataSource
-}
-
-export interface HandlerInputTransformer_1_0_0<
-  T extends ConcordiumHandlerKind,
-  F,
-  E,
-  DS extends ConcordiumCustomDatasource = ConcordiumCustomDatasource
-> {
-  (params: {
-    input: ConcordiumRuntimeHandlerInputMap[T];
-    ds: DS;
-    filter?: F;
-    api: ConcordiumGRPCClient;
-    assets?: Record<string, string>;
-  }): Promise<E[]>; //  | SubstrateBuiltinDataSource
-}
-
-export interface DictionaryQueryCondition {
-  field: string;
-  value: string | string[];
-  matcher?: string;
-}
-
-export interface DictionaryQueryEntry {
-  entity: string;
-  conditions: DictionaryQueryCondition[];
-}
+> =
+  | SecondLayerHandlerProcessor_0_0_0<ConcordiumRuntimeHandlerInputMap, K, F, E, DS, ConcordiumGRPCClient>
+  | SecondLayerHandlerProcessor_1_0_0<ConcordiumRuntimeHandlerInputMap, K, F, E, DS, ConcordiumGRPCClient>;
 
 export type SecondLayerHandlerProcessorArray<
   K extends string,
-  F,
+  F extends Record<string, unknown>,
   T,
   DS extends ConcordiumCustomDatasource<K> = ConcordiumCustomDatasource<K>
 > =
@@ -252,60 +218,15 @@ export type SecondLayerHandlerProcessorArray<
   | SecondLayerHandlerProcessor<ConcordiumHandlerKind.TransactionEvent, F, T, DS>
   | SecondLayerHandlerProcessor<ConcordiumHandlerKind.SpecialEvent, F, T, DS>;
 
-export interface SubqlDatasourceProcessor<
+export type SubqlDatasourceProcessor<
   K extends string,
-  F,
+  F extends Record<string, unknown>,
   DS extends ConcordiumCustomDatasource<K> = ConcordiumCustomDatasource<K>,
   P extends Record<string, SecondLayerHandlerProcessorArray<K, F, any, DS>> = Record<
     string,
     SecondLayerHandlerProcessorArray<K, F, any, DS>
   >
-> {
-  kind: K;
-  validate(ds: DS, assets: Record<string, string>): void;
-  dsFilterProcessor(ds: DS, api: ConcordiumGRPCClient): boolean;
-  handlerProcessors: P;
-}
-
-interface SecondLayerHandlerProcessorBase<
-  K extends ConcordiumHandlerKind,
-  F,
-  DS extends ConcordiumCustomDatasource = ConcordiumCustomDatasource
-> {
-  baseHandlerKind: K;
-  baseFilter: ConcordiumRuntimeFilterMap[K] | ConcordiumRuntimeFilterMap[K][];
-  filterValidator: (filter?: F) => void;
-  dictionaryQuery?: (filter: F, ds: DS) => DictionaryQueryEntry | undefined;
-}
-
-export interface SecondLayerHandlerProcessor_0_0_0<
-  K extends ConcordiumHandlerKind,
-  F,
-  E,
-  DS extends ConcordiumCustomDatasource = ConcordiumCustomDatasource
-> extends SecondLayerHandlerProcessorBase<K, F, DS> {
-  specVersion: undefined;
-  transformer: HandlerInputTransformer_0_0_0<K, E, DS>;
-  filterProcessor: (filter: F | undefined, input: ConcordiumRuntimeHandlerInputMap[K], ds: DS) => boolean;
-}
-
-export interface SecondLayerHandlerProcessor_1_0_0<
-  K extends ConcordiumHandlerKind,
-  F,
-  E,
-  DS extends ConcordiumCustomDatasource = ConcordiumCustomDatasource
-> extends SecondLayerHandlerProcessorBase<K, F, DS> {
-  specVersion: '1.0.0';
-  transformer: HandlerInputTransformer_1_0_0<K, F, E, DS>;
-  filterProcessor: (params: {filter: F | undefined; input: ConcordiumRuntimeHandlerInputMap[K]; ds: DS}) => boolean;
-}
-
-export type SecondLayerHandlerProcessor<
-  K extends ConcordiumHandlerKind,
-  F,
-  E,
-  DS extends ConcordiumCustomDatasource = ConcordiumCustomDatasource
-> = SecondLayerHandlerProcessor_0_0_0<K, F, E, DS> | SecondLayerHandlerProcessor_1_0_0<K, F, E, DS>;
+> = DsProcessor<DS, P, ConcordiumGRPCClient>;
 
 /**
  * Represents a Ethereum subquery network configuration, which is based on the CommonSubqueryNetworkConfig template.
