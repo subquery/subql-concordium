@@ -1,6 +1,6 @@
 {
   "name": "@subql/node-concordium",
-  "version": "3.10.2-0",
+  "version": "3.10.2-1",
   "description": "",
   "author": "Ian He",
   "license": "GPL-3.0",
@@ -57,5 +57,5 @@
     "/dist",
     "/bin"
   ],
-  "stableVersion": "3.10.1"
+  "stableVersion": "3.10.2-0"
 }
