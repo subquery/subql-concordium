@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import { ContractAddress, AddressAccount, Address } from '@concordium/node-sdk';
+import { filterBlockTimestamp } from '@subql/node-core';
 
 import {
   ConcordiumBlock,
@@ -13,12 +14,21 @@ import {
   ConcordiumSpecialEvent,
   ConcordiumSpecialEventFilter,
 } from '@subql/types-concordium';
+import { SubqlProjectBlockFilter } from '../configure/SubqueryProject';
 
 export function filterBlocksProcessor(
   block: ConcordiumBlock,
   filter: ConcordiumBlockFilter,
 ): boolean {
   if (filter?.modulo && Number(block.blockHeight) % filter.modulo !== 0) {
+    return false;
+  }
+  if (
+    !filterBlockTimestamp(
+      block.blockReceiveTime.getTime(),
+      filter as SubqlProjectBlockFilter,
+    )
+  ) {
     return false;
   }
   return true;

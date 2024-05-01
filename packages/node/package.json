@@ -29,7 +29,6 @@
     "@subql/common-concordium": "workspace:*",
     "@subql/node-core": "^10.1.0",
     "@subql/types-concordium": "workspace:*",
-    "cron-converter": "^1.0.2",
     "lodash": "^4.17.21",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",

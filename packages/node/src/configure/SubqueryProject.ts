@@ -13,6 +13,7 @@ import {
   isCustomDs,
 } from '@subql/common-concordium';
 import {
+  CronFilter,
   insertBlockFiltersCronSchedules,
   ISubqueryProject,
   loadProjectTemplates,
@@ -27,7 +28,6 @@ import {
 } from '@subql/types-concordium';
 import { ParentProject, Reader, RunnerSpecs } from '@subql/types-core';
 import { buildSchemaFromString } from '@subql/utils';
-import Cron from 'cron-converter';
 import { GraphQLSchema } from 'graphql';
 
 const { version: packageVersion } = require('../../package.json');
@@ -36,12 +36,7 @@ export type ConcordiumProjectDsTemplate =
   | RuntimeDatasourceTemplate
   | CustomDatasourceTemplate;
 
-export type SubqlProjectBlockFilter = ConcordiumBlockFilter & {
-  cronSchedule?: {
-    schedule: Cron.Seeker;
-    next: number;
-  };
-};
+export type SubqlProjectBlockFilter = ConcordiumBlockFilter & CronFilter;
 
 const NOT_SUPPORT = (name: string) => {
   throw new Error(`Manifest specVersion ${name} is not supported`);
