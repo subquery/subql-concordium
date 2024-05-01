@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update dependencies and apply changes to match (#40)
 
+### Removed
+- Unused deps (#41)
+
 ## [3.10.1] - 2024-04-11
 ### Fixed
 - Fixed failed previous release
