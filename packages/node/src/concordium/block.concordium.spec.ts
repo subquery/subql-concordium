@@ -23,6 +23,7 @@ describe('ConcordiumBlockWrapped', () => {
     const block = {
       blockHeight: '10',
       blockHash: 'hash',
+      blockReceiveTime: new Date(),
     } as unknown as ConcordiumBlock;
     const filter = { modulo: 2 };
 

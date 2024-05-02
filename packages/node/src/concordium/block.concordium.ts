@@ -23,6 +23,7 @@ export function filterBlocksProcessor(
   if (filter?.modulo && Number(block.blockHeight) % filter.modulo !== 0) {
     return false;
   }
+
   if (
     !filterBlockTimestamp(
       block.blockReceiveTime.getTime(),
