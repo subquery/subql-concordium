@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [3.6.0] - 2024-05-02
 ### Changed
 - Update dependencies and apply changes to match (#40)
 
@@ -57,7 +59,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump release version
 
 ## [3.1.0] - null
-[Unreleased]: https://github.com/subquery/subql-concordium/compare/common-concordium/3.5.1...HEAD
+[Unreleased]: https://github.com/subquery/subql-concordium/compare/common-concordium/3.6.0...HEAD
+[3.6.0]: https://github.com/subquery/subql-concordium/compare/common-concordium/3.5.1...common-concordium/3.6.0
 [3.5.1]: https://github.com/subquery/subql-concordium/compare/common-concordium/3.5.0...common-concordium/3.5.1
 [3.5.0]: https://github.com/subquery/subql-concordium/compare/common-concordium/3.4.2...common-concordium/3.5.0
 [3.4.2]: https://github.com/subquery/subql-concordium/compare/common-concordium/3.4.1...common-concordium/3.4.2
