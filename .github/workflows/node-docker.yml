@@ -19,14 +19,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
-
       - name: Check for package changes and commit message
         id: check_changes
         run: |
           if [[ "${{ github.event_name }}" == "release" ]]
           then
             TAG_NAME=${GITHUB_REF#refs/tags/}
-            if [[ $TAG_NAME == "node/"* ]]
+            if [[ $TAG_NAME == "node-concordium/"* ]]
             then
               echo "changes_found=true" >> "$GITHUB_OUTPUT"
             else
