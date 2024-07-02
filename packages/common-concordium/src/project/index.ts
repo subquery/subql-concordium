@@ -6,3 +6,6 @@ export * from './models';
 export * from './types';
 export * from './utils';
 export * from './versioned';
+
+import {parseConcordiumProjectManifest} from './load';
+export {parseConcordiumProjectManifest as parseProjectManifest};
