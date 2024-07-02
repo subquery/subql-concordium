@@ -15,6 +15,7 @@ import {
   PoiSyncService,
   InMemoryCacheService,
   createIndexerWorker,
+  MonitorServiceInterface,
 } from '@subql/node-core';
 import { ConcordiumBlock, ConcordiumDatasource } from '@subql/types-concordium';
 import { ConcordiumApiConnection } from '../../concordium/api.connection';
@@ -52,6 +53,7 @@ export class WorkerBlockDispatcherService
     dynamicDsService: DynamicDsService,
     unfinalizedBlocksSevice: UnfinalizedBlocksService,
     connectionPoolState: ConnectionPoolStateManager<ConcordiumApiConnection>,
+    monitorService?: MonitorServiceInterface,
   ) {
     super(
       nodeConfig,
@@ -78,7 +80,9 @@ export class WorkerBlockDispatcherService
           connectionPoolState,
           project.root,
           projectService.startHeight,
+          monitorService,
         ),
+      monitorService,
     );
   }
 

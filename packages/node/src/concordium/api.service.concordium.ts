@@ -9,6 +9,7 @@ import {
   getLogger,
   IBlock,
   NodeConfig,
+  exitWithError,
 } from '@subql/node-core';
 import { ConcordiumBlock } from '@subql/types-concordium';
 import { SubqueryProject } from '../configure/SubqueryProject';
@@ -42,8 +43,7 @@ export class ConcordiumApiService extends ApiService<
         network.endpoint.push(this.nodeConfig.primaryNetworkEndpoint);
       }
     } catch (e) {
-      logger.error(Object.keys(e));
-      process.exit(1);
+      exitWithError(new Error(`Failed to init api`, { cause: e }), logger);
     }
 
     await this.createConnections(
@@ -54,7 +54,7 @@ export class ConcordiumApiService extends ApiService<
           this.fetchBlockBatches,
           this.eventEmitter,
         ),
-      //eslint-disable-next-line @typescript-eslint/require-await
+      // eslint-disable-next-line @typescript-eslint/require-await,@typescript-eslint/no-misused-promises
       async (connection: ConcordiumApiConnection) => {
         const api = connection.unsafeApi;
         return api.getChainId();

@@ -38,16 +38,11 @@ import {CustomDataSourceBase, ConcordiumMapping, RuntimeDataSourceBase} from '..
 const Concordium_NODE_NAME = `@subql/node-concordium`;
 const Flare_NODE_NAME = `@subql/node-flare`;
 
-export class ConcordiumProjectMapping extends ConcordiumMapping {
-  @IsString()
-  file: string;
-}
-
 export class ConcordiumRunnerNodeImpl extends RunnerNodeImpl {
   @IsIn([Concordium_NODE_NAME, Flare_NODE_NAME], {
     message: `Runner Substrate node name incorrect, suppose be '${Concordium_NODE_NAME}'`,
   })
-  name: string;
+  name: string = Concordium_NODE_NAME;
 }
 
 function validateObject(object: any, errorMessage = 'failed to validate object.'): void {
@@ -115,7 +110,7 @@ export class ProjectNetworkV1_0_0 extends CommonProjectNetworkV1_0_0<FileType> {
   @ValidateNested()
   @Type(() => FileType)
   @IsOptional()
-  chaintypes?: FileType;
+  chaintypes?: FileType = undefined;
 }
 
 export class DeploymentV1_0_0 extends BaseDeploymentV1_0_0 {
@@ -164,7 +159,7 @@ export class ProjectManifestV1_0_0Impl
   }
 
   @Equals('1.0.0')
-  specVersion: string;
+  specVersion = '1.0.0';
   @Type(() => ConcordiumCustomDataSourceImpl, {
     discriminator: {
       property: 'kind',

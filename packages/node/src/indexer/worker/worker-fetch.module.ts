@@ -14,6 +14,8 @@ import {
   WorkerInMemoryCacheService,
   WorkerUnfinalizedBlocksService,
   SandboxService,
+  MonitorService,
+  WorkerMonitorService,
 } from '@subql/node-core';
 import { ConcordiumApiService } from '../../concordium';
 import { ConcordiumApiConnection } from '../../concordium/api.connection';
@@ -73,6 +75,10 @@ import { WorkerService } from './worker.service';
       provide: UnfinalizedBlocksService,
       useFactory: () =>
         new WorkerUnfinalizedBlocksService((global as any).host),
+    },
+    {
+      provide: MonitorService,
+      useFactory: () => new WorkerMonitorService((global as any).host),
     },
     {
       provide: InMemoryCacheService,
