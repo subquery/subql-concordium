@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.1] - 2024-07-03
+### Fixed
+- re-publish due to last release ci failed
+
 ## [4.0.0] - 2024-07-03
 ### Added
 - Add alias `parseProjectManifest`, also follow type of `INetworkCommonModule` (#47)
@@ -63,7 +67,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump release version
 
 ## [3.1.0] - null
-[Unreleased]: https://github.com/subquery/subql-concordium/compare/common-concordium/4.0.0...HEAD
+[Unreleased]: https://github.com/subquery/subql-concordium/compare/common-concordium/4.0.1...HEAD
+[4.0.1]: https://github.com/subquery/subql-concordium/compare/common-concordium/4.0.0...common-concordium/4.0.1
 [4.0.0]: https://github.com/subquery/subql-concordium/compare/common-concordium/3.6.0...common-concordium/4.0.0
 [3.6.0]: https://github.com/subquery/subql-concordium/compare/common-concordium/3.5.1...common-concordium/3.6.0
 [3.5.1]: https://github.com/subquery/subql-concordium/compare/common-concordium/3.5.0...common-concordium/3.5.1
