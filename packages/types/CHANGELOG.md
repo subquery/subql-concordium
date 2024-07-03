@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.7.0] - 2024-07-03
 ### Changed
 - Bump version with `@subql/types-core`
 
@@ -54,7 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump release version
 
 ## [3.2.0] - null
-[Unreleased]: https://github.com/subquery/subql-concordium/compare/types-concordium/3.6.0...HEAD
+[Unreleased]: https://github.com/subquery/subql-concordium/compare/types-concordium/3.7.0...HEAD
+[3.7.0]: https://github.com/subquery/subql-concordium/compare/types-concordium/3.6.0...types-concordium/3.7.0
 [3.6.0]: https://github.com/subquery/subql-concordium/compare/types-concordium/3.5.1...types-concordium/3.6.0
 [3.5.1]: https://github.com/subquery/subql-concordium/compare/types-concordium/3.5.0...types-concordium/3.5.1
 [3.5.0]: https://github.com/subquery/subql-concordium/compare/types-concordium/3.4.4...types-concordium/3.5.0
