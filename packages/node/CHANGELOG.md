@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.12.1] - 2024-07-03
+### Fixed
+- re-publish due to last release ci failed
+
 ## [3.12.0] - 2024-07-03
 ### Changed
 - Bump version with `@subql/common-concordium`,sync with `@subql/node-core`, add admin module
@@ -118,7 +122,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump release version
 
 ## [3.1.0] - null
-[Unreleased]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.12.0...HEAD
+[Unreleased]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.12.1...HEAD
+[3.12.1]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.12.0...node-concordium/3.12.1
 [3.12.0]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.11.1...node-concordium/3.12.0
 [3.11.1]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.11.0...node-concordium/3.11.1
 [3.11.0]: https://github.com/subquery/subql-concordium/compare/node-concordium/3.10.1...node-concordium/3.11.0
