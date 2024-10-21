@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Bump `@subql/common` and `@subql/node-core` dependency (#52)
+
 
 ## [3.12.1] - 2024-07-03
 ### Fixed
